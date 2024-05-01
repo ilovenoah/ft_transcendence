@@ -1,0 +1,84 @@
+  # version: '3'
+services:
+  nginx:
+    build:
+      context: ./requirements/nginx/
+    image: nginx:4242
+    container_name: nginx4242
+    networks:
+      - net_trans
+    volumes:
+      - ../data/html:/var/www/html
+    ports:
+      - "443:443"
+    depends_on:
+      - django
+      - postgres
+    init: true
+    restart: always
+
+  django:
+    build:
+      context: ./requirements/django/
+    image: django:4242
+    container_name: django4242
+    networks:
+      - net_trans
+    # expose:
+    #   - "8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../data/django:/app
+    depends_on:
+      - postgres
+    init: true
+    restart: always
+    command:
+      tail -f /dev/null
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres4242
+    networks:
+      - net_trans
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    expose:
+      - "5432"
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/data
+    init: true
+    restart: always
+
+
+networks:
+  net_trans:
+    name: net_trans
+      
+  # volumes:
+  #   vol_wordpress:
+  #     driver_opts:
+  #       type: 'none'
+  #       o: 'bind'
+  #       device: '/home/tyonezaw/data/wordpress'
+  #   vol_python:
+  #     driver_opts:
+  #       type: 'none'
+  #       o: 'bind'
+  #       device: '/home/tyonezaw/data/python'
+  #   vol_adminer:
+  #     driver_opts:
+  #       type: 'none'
+  #       o: 'bind'
+  #       device: '/home/tyonezaw/data/adminer'
+  #   vol_mariadb:
+  #     driver_opts:
+  #       type: 'none'
+  #       o: 'bind'
+  #       device: '/home/tyonezaw/data/mariadb'
+  

@@ -1,0 +1,81 @@
+  # version: '3'
+  services:
+
+    python:
+      build:
+        context: ./requirements/python/
+        dockerfile: Dockerfile
+      image: python:trans
+      container_name: python_trans
+      networks:
+        - net_trans
+      # ports:
+      #   - "9001:9001"
+      volumes:
+        - vol_python:/var/www/html
+      expose:
+        - "9000"
+      depends_on:
+        - postgres
+      init: true
+      restart: always
+
+    nginx:
+      build:
+        context: ./requirements/nginx/
+      image: nginx:trans
+      container_name: nginx_trans
+      networks:
+        - net_trans
+      volumes:
+        - vol_python:/var/www/html
+      ports:
+        - "443:443"
+      depends_on:
+        - python
+      init: true
+      restart: always
+
+
+    postgres:
+      build:
+        context: ./requirements/postgres/
+      image: postgres:trans
+      container_name: postgres_trans
+      env_file: 
+        - .env
+      networks:
+        - net_trans
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+      expose:
+        - "5432"
+      init: true
+      restart: always
+
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: docker
+#        POSTGRES_DB: db
+#        PGDATA: /tmp
+#      command:
+#        tail -f /dev/null
+
+
+  networks:
+    net_trans:
+      name: net_trans
+
+  volumes:
+    vol_python:
+      driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: '/home/teko/data_t/python'
+    pgdata:
+      # driver_opts:
+      #   type: 'none'
+      #   o: 'bind'
+      #   device: '/home/teko/data_t/postgres'
+      # #external: true  
+      
