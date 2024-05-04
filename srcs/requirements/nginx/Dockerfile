@@ -20,5 +20,6 @@ WORKDIR /var/www/html
 COPY    ./conf/default.conf /etc/nginx/sites-available/default
 
 EXPOSE  443
+EXPOSE  8080
 
 CMD     ["nginx", "-g", "daemon off;"]
