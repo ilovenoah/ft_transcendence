@@ -1,4 +1,4 @@
-  # version: '3'
+#version: '3'
 services:
   nginx:
     build:
@@ -7,8 +7,6 @@ services:
     container_name: nginx4242
     networks:
       - net_trans
-    volumes:
-      - ../data/html:/var/www/html
     ports:
       - "443:443"
     depends_on:
@@ -27,15 +25,15 @@ services:
     # expose:
     #   - "8000"
     ports:
-      - "8080:8080"
+      - "8000:8000"
     volumes:
-      - ../data/django:/app
+      - vol_django:/app
     depends_on:
       - postgres
     init: true
     restart: always
-    command:
-      tail -f /dev/null
+    # command:
+    #   tail -f /dev/null
 
   postgres:
     image: postgres:latest
@@ -51,34 +49,22 @@ services:
     # ports:
     #   - "5432:5432"
     volumes:
-      - ../data/postgres:/var/lib/postgresql/data
+      - vol_postgres:/var/lib/postgresql/data
     init: true
     restart: always
-
 
 networks:
   net_trans:
     name: net_trans
       
-  # volumes:
-  #   vol_wordpress:
-  #     driver_opts:
-  #       type: 'none'
-  #       o: 'bind'
-  #       device: '/home/tyonezaw/data/wordpress'
-  #   vol_python:
-  #     driver_opts:
-  #       type: 'none'
-  #       o: 'bind'
-  #       device: '/home/tyonezaw/data/python'
-  #   vol_adminer:
-  #     driver_opts:
-  #       type: 'none'
-  #       o: 'bind'
-  #       device: '/home/tyonezaw/data/adminer'
-  #   vol_mariadb:
-  #     driver_opts:
-  #       type: 'none'
-  #       o: 'bind'
-  #       device: '/home/tyonezaw/data/mariadb'
-  
+volumes:
+  vol_django:
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: './data/django'
+  vol_postgres:
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: './data/postgres'

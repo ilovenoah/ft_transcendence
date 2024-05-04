@@ -1,6 +1,8 @@
 DOCKER_COMPOSE_YML = ./srcs/docker-compose.yml
 
 build:
+#	mkdir -p ./data/postgres
+#	mkdir -p ./data/django
 	docker compose -f $(DOCKER_COMPOSE_YML) build
 
 up: build
