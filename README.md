@@ -7,16 +7,10 @@ dockerの起動方法
  で、nginx, djanngo, postgreSQLのコンテナがbuildされて起動する
  
 
- sudo docker cp app django4242:/
- 
- で、appフォルダのファイル群をdjango4242コンテナの/appにコピーする
-
-
  sudo docker exec -it django4242 bash
  
  で、djangoコンテナに入って
  
-
  python manage.py runserver 0.0.0.0:8000
  
  で、djangoの開発用サーバーを起動する
