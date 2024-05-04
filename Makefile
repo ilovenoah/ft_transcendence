@@ -1,8 +1,6 @@
 DOCKER_COMPOSE_YML = ./srcs/docker-compose.yml
 
 build:
-#	mkdir -p ./data/postgres
-#	mkdir -p ./data/django
 	docker compose -f $(DOCKER_COMPOSE_YML) build
 
 up: build
@@ -15,13 +13,13 @@ down:
 	docker compose -f $(DOCKER_COMPOSE_YML) down --rmi all
 
 clean:
-#	rm -fr ./data
 	docker compose -f $(DOCKER_COMPOSE_YML) down --rmi all -v --remove-orphans
+#	rm -fr ./src/data
 
 allclean:
-#	rm -fr ./data
 	docker compose -f $(DOCKER_COMPOSE_YML) down --rmi all -v --remove-orphans
 	docker builder prune
+#	rm -fr ./src/data
 	
 re: down up
 

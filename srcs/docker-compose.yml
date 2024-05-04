@@ -11,7 +11,6 @@ services:
       - "443:443"
     depends_on:
       - django
-      - postgres
     init: true
     restart: always
 
@@ -24,12 +23,13 @@ services:
       - net_trans
     # expose:
     #   - "8000"
+    volumes:
+      - ./data/django:/app
     ports:
       - "8000:8000"
-    volumes:
-      - vol_django:/app
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     init: true
     restart: always
     # command:
@@ -49,22 +49,27 @@ services:
     # ports:
     #   - "5432:5432"
     volumes:
-      - vol_postgres:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     init: true
     restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   net_trans:
     name: net_trans
       
 volumes:
-  vol_django:
+  #vol_django:
     # driver_opts:
     #   type: 'none'
     #   o: 'bind'
     #   device: './data/django'
   vol_postgres:
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: './data/postgres'
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/postgres
