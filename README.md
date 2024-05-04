@@ -17,7 +17,7 @@ dockerの起動方法
  で、djangoコンテナに入って
  
 
- python manage.py runserver nginx:8000
+ python manage.py runserver 0.0.0.0:8000
  
  で、djangoの開発用サーバーを起動する
 
