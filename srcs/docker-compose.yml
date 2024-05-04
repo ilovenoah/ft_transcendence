@@ -5,6 +5,8 @@ services:
       context: ./requirements/nginx/
     image: nginx:4242
     container_name: nginx4242
+    volumes:
+      - ./data/nginx:/var/www/html
     networks:
       - net_trans
     ports:
@@ -65,14 +67,14 @@ networks:
   net_trans:
     name: net_trans
       
-volumes:
-  #vol_django:
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: './data/django'
-  vol_postgres:
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/postgres
+# volumes:
+#   vol_django:
+#     driver_opts:
+#       type: 'none'
+#       o: 'bind'
+#       device: './data/django'
+#   vol_postgres:
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./data/postgres

@@ -5,7 +5,7 @@ build:
 
 up: build
 	docker compose -f $(DOCKER_COMPOSE_YML) up -d
-	chmod -R 777 ./data/postgres
+	chmod -R 777 ./src/data/postgres
 
 stop:
 	docker compose -f $(DOCKER_COMPOSE_YML) stop
