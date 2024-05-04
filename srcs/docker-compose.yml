@@ -21,10 +21,10 @@ services:
     container_name: django4242
     networks:
       - net_trans
+    volumes:
+      - ./data/django:/app
     # expose:
     #   - "8000"
-    volumes:
-      - ./requirements/django/data:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -52,11 +52,11 @@ services:
     # ports:
     #   - "5432:5432"
     volumes:
-      - ./requirements/postgres/data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     init: true
     restart: always
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      test: [ "CMD", "pg_isready", "-U", "myuser", "-d", "mydatabase"]
       interval: 10s
       timeout: 5s
       retries: 5
