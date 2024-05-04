@@ -24,7 +24,7 @@ services:
     # expose:
     #   - "8000"
     volumes:
-      - ./data/django:/app
+      - ./requirements/django/data:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -36,7 +36,10 @@ services:
     #   tail -f /dev/null
 
   postgres:
-    image: postgres:latest
+    build:
+      context: ./requirements/postgres/
+    image: postgres:4242
+#    image: postgres:latest
     container_name: postgres4242
     networks:
       - net_trans
@@ -49,7 +52,7 @@ services:
     # ports:
     #   - "5432:5432"
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ./requirements/postgres/data:/var/lib/postgresql/data
     init: true
     restart: always
     healthcheck:
