@@ -140,6 +140,11 @@ function update() {
     if ((ball.x - ball.radius <= user1.x + user1.width && ball.y >= user1.y && ball.y <= user1.y + user1.height)
         || (ball.x + ball.radius >= user2.x && ball.y >= user2.y && ball.y <= user2.y + user2.height)) {
         ball.velocityX = -ball.velocityX; // Reverse the ball's horizontal direction
+        // Calculate impact point and change velocityY based on it
+        let paddle = (ball.x < canvas.width / 2) ? user1 : user2; // Check if ball hits the left or right paddles
+        let impactPoint = (ball.y - (paddle.y + paddle.height / 2)) / (paddle.height / 2); // Calculate the position where the ball hits the paddle
+        const MAX_BOUNCE_ANGLE = Math.PI / 3;  // Max bounce angle: 60
+        ball.velocityY = ball.speed * Math.sin(impactPoint * MAX_BOUNCE_ANGLE);
     }
     // Check if ball hits the left or right walls
     if (ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width) {
