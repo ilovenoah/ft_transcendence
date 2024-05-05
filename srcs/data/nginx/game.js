@@ -8,7 +8,11 @@ canvas.height = 400;
 // Ball object
 function randomVelocity() {
     let speed = 5;  // 速度の基準値
-    let angle = Math.random() * 2 * Math.PI;  // ランダムな角度をラジアンで生成
+    let angle;  // ランダムな角度をラジアンで生成
+    do {
+        angle = Math.random() * 2 * Math.PI; // 0から360度のランダムな角度
+    } while ((angle > Math.PI / 4 && angle < 3 * Math.PI / 4) || 
+             (angle > 5 * Math.PI / 4 && angle < 7 * Math.PI / 4)); // 45 - 135, 225 - 315
     return {
         velocityX: speed * Math.cos(angle),
         velocityY: speed * Math.sin(angle)
