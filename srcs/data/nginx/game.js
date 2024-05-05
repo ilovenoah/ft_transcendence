@@ -17,6 +17,8 @@ const ball = {
     visible: true
 };
 
+let ballMoving = false;
+
 // Paddles
 const user1 = {
     x: 0, // left side of canvas
@@ -51,6 +53,11 @@ window.addEventListener('keydown', function(event) {
         case 40: // Down Arrow for User2 down
             user2.y = Math.min(canvas.height - user2.height, user2.y + 20); // Prevent moving below the canvas
             break;
+        case 32: // Space key to start ball movement
+        if (!ballMoving) {
+            ballMoving = true;
+        }
+        break;
     }
 });
 
@@ -115,7 +122,7 @@ function update() {
         ball.velocityX = 0;    // Stop the ball's horizontal movement
         ball.velocityY = 0;    // Stop the ball's vertical movement
     }
-    if (ball.visible == true) {
+    if (ball.visible && ballMoving) {
         ball.x += ball.velocityX;
         ball.y += ball.velocityY;
     }
