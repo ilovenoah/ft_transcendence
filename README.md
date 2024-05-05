@@ -47,3 +47,10 @@ $ vim ~/.docker/config.json
 {   "credsStore": "osxkeychain" }
 ```
 
+---
+Chapter 2
+データベースのモデルをPythonで記述することができる.
+
+---
+Chapter 3
+urlを色々定義できる.
