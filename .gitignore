@@ -54,5 +54,5 @@ dkms.conf
 .vscode/*
 .DS_Store
 
-*/__pycache__/
-./srcs/data/postgres/
+__pycache__/
+/srcs/data/postgres/
