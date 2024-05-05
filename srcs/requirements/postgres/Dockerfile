@@ -1,7 +1,6 @@
-From    postgres:latest
+From    postgres:16.2
 
-#RUN     chmod -R 777 ./data
-RUN     chmod -R 777 /var/lib/postgresql/data
+#RUN     chmod -R 777 /var/lib/postgresql/data
 
 EXPOSE  5432
 
