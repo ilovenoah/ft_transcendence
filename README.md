@@ -50,7 +50,31 @@ $ vim ~/.docker/config.json
 ---
 Chapter 2
 データベースのモデルをPythonで記述することができる.
+models.py
 
 ---
 Chapter 3
 urlを色々定義できる.
+urls.py
+
+---
+Chapter 4
+formでPOST.
+views.py
+
+---
+Chapter 5
+testの実行
+python manage.py test polls
+tests.py
+
+---
+Chpater 6
+stylesheetの適用
+static/
+
+---
+Chapter 7
+管理画面のカスタム
+admin.py
+
