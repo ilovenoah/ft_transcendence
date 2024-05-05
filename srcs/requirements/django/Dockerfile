@@ -9,6 +9,7 @@ RUN     pip install --upgrade pip
 RUN     pip install --no-cache-dir -r requirements.txt
 #RUN     python -m pip install django
 #RUN     pip install django
+RUN	apt update && apt install vim -y
 
 EXPOSE  8000
 
