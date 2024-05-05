@@ -6,12 +6,23 @@ canvas.width = 800;
 canvas.height = 400;
 
 // Ball object
+function randomVelocity() {
+    let speed = 5;  // 速度の基準値
+    let angle = Math.random() * 2 * Math.PI;  // ランダムな角度をラジアンで生成
+    return {
+        velocityX: speed * Math.cos(angle),
+        velocityY: speed * Math.sin(angle)
+    };
+}
+
+const initialVelocity = randomVelocity();
+
 const ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     radius: 10,
-    velocityX: 5,
-    velocityY: 5,
+    velocityX: initialVelocity.velocityX,
+    velocityY: initialVelocity.velocityY,
     speed: 7,
     color: 'WHITE',
     visible: true
