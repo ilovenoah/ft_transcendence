@@ -6,22 +6,17 @@ dockerの起動方法
  
  で、nginx, djanngo, postgreSQLのコンテナがbuildされて起動する
  
-
- sudo docker exec -it django4242 bash
- 
- で、djangoコンテナに入って
- 
- python manage.py runserver 0.0.0.0:8000
- 
- で、djangoの開発用サーバーを起動する
-
-
  ブラウザで
  
  localhost
  
  にアクセスすると、nginxがアクセスをdjangoに投げる
 
+ src/data/django 
+
+ ディレクトリの中を編集していけば、
+ 
+ 自動的にdjangoの開発サーバーが再起動されます
 
  最終的に提出するときは、djangoフォルダをtarにしておいて
  
