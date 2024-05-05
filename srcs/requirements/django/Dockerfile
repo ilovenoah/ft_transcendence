@@ -10,6 +10,9 @@ RUN     pip install --no-cache-dir -r requirements.txt
 #RUN     python -m pip install django
 #RUN     pip install django
 
+#テスト
+RUN pip install websockets
+
 EXPOSE  8000
 
 # カレントディレクトリの内容をコンテナにコピー

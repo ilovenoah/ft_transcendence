@@ -23,7 +23,7 @@ const user1 = {
     y: (canvas.height - 100) / 2,
     width: 10,
     height: 100,
-    score: 0,
+    score: 0, //今後使用
     color: 'WHITE'
 };
 
@@ -36,22 +36,42 @@ const user2 = {
     color: 'WHITE'
 };
 
-// Control the paddles
+const socket = new WebSocket('ws://localhost:8000/');
+
+socket.onopen = function(event) {
+    console.log("WebSocket is open now.");
+};
+
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    user2.y = data.y;
+    ball.x = data.ballX;
+    ball.y = data.ballY;
+    ball.velocityX = data.ballVelocityX;
+    ball.velocityY = data.ballVelocityY;
+};
+
+socket.onerror = function(error) {
+    console.log("WebSocket error: " + error.message);
+};
+
+// // Control the paddles
 window.addEventListener('keydown', function(event) {
-    switch(event.keyCode) {
-        case 87: // W key for User1 up
-            user1.y = Math.max(0, user1.y - 20); // Prevent moving above the canvas
+    switch (event.keyCode) {
+        case 87: // W key
+            user1.y = Math.max(0, user1.y - 20);
             break;
-        case 83: // S key for User1 down
-            user1.y = Math.min(canvas.height - user1.height, user1.y + 20); // Prevent moving below the canvas
-            break;
-        case 38: // Up Arrow for User2 up
-            user2.y = Math.max(0, user2.y - 20); // Prevent moving above the canvas
-            break;
-        case 40: // Down Arrow for User2 down
-            user2.y = Math.min(canvas.height - user2.height, user2.y + 20); // Prevent moving below the canvas
+        case 83: // S key
+            user1.y = Math.min(canvas.height - user1.height, user1.y + 20);
             break;
     }
+    socket.send(JSON.stringify({
+        y: user1.y,
+        ballX: ball.x,
+        ballY: ball.y,
+        ballVelocityX: ball.velocityX,
+        ballVelocityY: ball.velocityY
+    }));
 });
 
 // Draw paddles and background
