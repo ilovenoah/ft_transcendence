@@ -71,12 +71,25 @@ function drawArc(x, y, r, color) {
     }
 }
 
+// Draw center line
+function drawDashedLine() {
+    ctx.beginPath();
+    ctx.setLineDash([10, 10]);  // Set the dash array as [dash length, gap length]
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.strokeStyle = 'WHITE';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.setLineDash([]);  // Reset to solid line
+}
+
 // Game functions (collision detection, update, render) remain the same
 
 // Render the game
 function render() {
     // clear the canvas
     drawRect(0, 0, canvas.width, canvas.height, 'BLACK');
+    drawDashedLine();
     // draw the paddles and ball
     drawRect(user1.x, user1.y, user1.width, user1.height, user1.color);
     drawRect(user2.x, user2.y, user2.width, user2.height, user2.color);
