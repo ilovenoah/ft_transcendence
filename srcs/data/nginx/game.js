@@ -50,6 +50,15 @@ const user2 = {
 };
 
 // Control the paddles
+function resetBall() {
+    const initialVelocity = randomVelocity();  // 新しいランダム速度を生成
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.velocityX = initialVelocity.velocityX;
+    ball.velocityY = initialVelocity.velocityY;
+    ball.visible = true;  // ボールを再び表示
+}
+
 window.addEventListener('keydown', function(event) {
     switch(event.keyCode) {
         case 87: // W key for User1 up
@@ -66,6 +75,7 @@ window.addEventListener('keydown', function(event) {
             break;
         case 32: // Space key to start ball movement
         if (!ballMoving) {
+            resetBall(); 
             ballMoving = true;
         }
         break;
@@ -130,8 +140,7 @@ function update() {
     // Check if ball hits the left or right walls
     if (ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width) {
         ball.visible = false;  // Make the ball invisible
-        ball.velocityX = 0;    // Stop the ball's horizontal movement
-        ball.velocityY = 0;    // Stop the ball's vertical movement
+        ballMoving = false; // Stop the ball's movement
     }
     if (ball.visible && ballMoving) {
         ball.x += ball.velocityX;
