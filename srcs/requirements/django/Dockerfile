@@ -12,9 +12,8 @@ RUN     pip install --no-cache-dir -r requirements.txt
 
 EXPOSE  8000
 
-# カレントディレクトリの内容をコンテナにコピー
-#COPY . /app/
 
 # Djangoアプリケーションの開発サーバーを起動
-#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-CMD ["tail",  "-f", "/dev/null"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000", "--noreload"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["tail",  "-f", "/dev/null"]
