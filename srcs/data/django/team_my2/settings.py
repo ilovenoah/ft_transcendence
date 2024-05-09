@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
      # 自作アプリケーション
-   # 'main', 
+    'main', 
 ]
 
 MIDDLEWARE = [
@@ -58,8 +58,8 @@ ROOT_URLCONF = 'team_my2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-#        'DIRS': [],
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # プロジェクト全体のテンプレートディレクトリのパス      
+        'DIRS': [],
+#        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # プロジェクト全体のテンプレートディレクトリのパス      
 #       'DIRS': [os.path.join(BASE_DIR, 'main/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
