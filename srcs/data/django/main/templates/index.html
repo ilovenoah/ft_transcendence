@@ -4,14 +4,14 @@
 {% block title %}Top Page{% endblock %}
 
 {% block content %}
-<div id="app"></div>
-<h1>Welcome to my2</h1>
-<p>これはmy2のトップページです</p>
-<p>今は、/main/で表示されるけど、djangoの設定で/の下に表示できるからね</p>
-<p>a をクリックしたら、ここのspanの内容を書き換えられるようにすればいいと思う</p>
-<p>test-> <a href="./second/">second ここをクリック</a></p>
-<p>test-> <a href="./third/">third ここをクリック</a></p>
+
+
+<a href="#" id="my-anchor">Click me</a>
+
+<div id="content">
+    <!-- SPAのコンテンツがここに表示される -->
+</div>
+
 
 <script src="{% static 'js/app.js' %}"></script>
-</span>
 {% endblock %}

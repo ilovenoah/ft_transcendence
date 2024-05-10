@@ -1,31 +1,30 @@
-// ルーティング
-const routes = {
-    '/': () => {
-      // トップページを表示
-      document.getElementById('app').innerHTML = '<h1>Top Page</h1>';
-    },
-    '/about': () => {
-        // アバウトページを表示
-        document.getElementById('app').innerHTML = '<h1>About Page</h1>';
-    },
-    '/second': () => {
-        // アバウトページを表示
-        document.getElementById('app').innerHTML = '<h1>second Page</h1>';
-    },
-};
+// コンテンツをロードして表示
+function loadContent(url) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("content").innerHTML = this.responseText;
+        // URLを変更せずに履歴を追加
+        window.history.pushState(url, url, url);
+      }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.send();
+  }
   
-  // パスに一致するルートを検索して実行
-  const navigateTo = (path) => {
-    const route = routes[path] || routes['/'];
-    route();
+  // ページの初期状態を設定
+  window.onload = function() {
+    // URLからページをロード
+    var url = window.location.pathname.split("/").pop();
+    if (url === "") {
+      url = "/main/first/"; // デフォルトのページ
+    }
+    loadContent(url);
   };
   
-  // 初期ページ
-  // 初期ページの表示
-navigateTo(window.location.pathname);
-
-// ハッシュ変更イベントのハンドリング
-window.addEventListener('hashchange', () => {
-  navigateTo(window.location.hash.slice(1));
-});
-
+  // ブラウザの戻るボタンが押されたときの処理
+  window.onpopstate = function(event) {
+    if (event.state && event.state.page) {
+      loadContent(event.state.page);
+    }
+  };
