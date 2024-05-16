@@ -1,30 +1,28 @@
-// コンテンツをロードして表示
-function loadContent(url) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("content").innerHTML = this.responseText;
-        // URLを変更せずに履歴を追加
-        window.history.pushState(url, url, url);
-      }
-    };
-    xhttp.open("GET", url, true);
-    xhttp.send();
+// myapp/static/js/main.js
+document.addEventListener('DOMContentLoaded', function() {
+  function loadContent(url) {
+      fetch(url)
+          .then(response => response.text())
+          .then(html => {
+              document.getElementById('app').innerHTML = html;
+              document.title = document.querySelector('#app h1').innerText; // Update the document title
+          })
+          .catch(error => console.error('Error loading content:', error));
   }
-  
-  // ページの初期状態を設定
-  window.onload = function() {
-    // URLからページをロード
-    var url = window.location.pathname.split("/").pop();
-    if (url === "") {
-      url = "/main/first/"; // デフォルトのページ
-    }
-    loadContent(url);
-  };
-  
-  // ブラウザの戻るボタンが押されたときの処理
-  window.onpopstate = function(event) {
-    if (event.state && event.state.page) {
-      loadContent(event.state.page);
-    }
-  };
+
+  document.addEventListener('click', function(event) {
+      if (event.target.tagName === 'A' && event.target.dataset.spa === 'true') {
+          event.preventDefault();
+          loadContent(event.target.dataset.url);
+      }
+  });
+
+  window.addEventListener('popstate', function(event) {
+      if (event.state && event.state.url) {
+          loadContent(event.state.url);
+      }
+  });
+
+  // Initialize the content without changing the URL
+  loadContent(window.location.pathname);
+});
