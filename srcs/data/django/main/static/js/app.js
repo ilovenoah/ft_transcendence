@@ -31,13 +31,7 @@ document.addEventListener('click', function(event) {
         return response.text();
       })
       .then(function(html) {
-        // 取得したHTMLからコンテンツを抽出
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(html, 'text/html');
-        var content = doc.querySelector('#content').innerHTML;
-
-        // ページのコンテンツを更新
-        document.querySelector('#content').innerHTML = content;
+        loadPage(html);
 
         // 取得したコンテンツのURLを配列に追加
         history.pushState({url: href}, '', '');
@@ -56,12 +50,37 @@ window.addEventListener('popstate', function(event) {
       return response.text();
     })
     .then(function(html) {
-      // 取得したHTMLからコンテンツを抽出
-      var parser = new DOMParser();
+      loadPage(html);
+    });
+});
+
+function loadPage(html)
+{
+  var parser = new DOMParser();
       var doc = parser.parseFromString(html, 'text/html');
       var content = doc.querySelector('#content').innerHTML;
+      var contenthead = doc.querySelector('#head').innerHTML;
+      var contentfoot = doc.querySelector('#foot').innerHTML;
+      var content_title = doc.querySelector('title');
 
       // ページのコンテンツを更新
       document.querySelector('#content').innerHTML = content;
-    });
-});
+      document.querySelector('#head').innerHTML = contenthead;
+      document.querySelector('#foot').innerHTML = contentfoot;
+      document.title = content_title.textContent;
+      
+      //ここからheaderにscriptをいれる
+      newCode = doc.querySelector('#headerscript').innerHTML;
+      // <head> タグを取得
+      const head = document.head;
+      // 既存のスクリプトタグを削除
+      const scripts = head.querySelectorAll('script');
+      scripts.forEach(script => script.remove());
+      // 新しいスクリプトタグを作成してコードを追加
+      const newScript = document.createElement('script');
+      newScript.textContent = newCode;
+      // <head> タグに新しいスクリプトタグを挿入
+      head.appendChild(newScript);
+
+
+}

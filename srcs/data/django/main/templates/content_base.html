@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Default Title{% endblock %}</title>
+</head>
+<body>
+    <header id="headerscript">
+        <!-- Header content -->
+        {% block headerscript %}{% endblock %}
+    </header>
+    <header id="head">
+        <!-- Header content -->
+        {% block head %}{% endblock %}
+    </header>
+    <main id="content">
+        <!-- main content -->
+        {% block content %}{% endblock %}
+    </main>
+    <footer id="foot">
+        <!-- Footer content -->
+        {% block foot %}{% endblock %}
+    </footer>
+</body>
+</html>
