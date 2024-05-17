@@ -37,7 +37,7 @@ document.addEventListener('click', function(event) {
         document.querySelector('#content').innerHTML = content;
 
         // 取得したコンテンツのURLを配列に追加
-        history.pushState({url: href}, '', href);
+        history.pushState({url: href}, '', '');
       });
   }
 });

@@ -43,6 +43,11 @@ INSTALLED_APPS = [
     'main', 
 ]
 
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -141,10 +146,13 @@ LANGUAGES = [
 
 # 静的ファイルの設定（オプション）
 #STATIC_URL = 'static/'
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATIC_URL = 'static/'
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),
+# ]
+STATICFILES_MIME_TYPE_MAPPING = {
+    '.js': 'application/javascript',
+}
 
 MEDIA_URL = '/media/'
 

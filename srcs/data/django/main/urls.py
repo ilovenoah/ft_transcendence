@@ -6,6 +6,7 @@ from main import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
-    path('first/', views.first, name='first'),
-    path('second/', views.second, name='second'),
+    path('page1/', views.page1, name='page1'),
+    path('page2/', views.page2, name='page2'),
+    path('page3/', views.page3, name='page3'),
 ]

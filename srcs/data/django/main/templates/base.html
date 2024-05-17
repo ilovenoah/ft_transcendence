@@ -1,19 +1,33 @@
-<!-- myapp/templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPA with Django and Vanilla JS</title>
-    <script defer src="js/app.js"></script>
+    <title>{% block title %}Default Title{% endblock %}</title>
+    {% block head %}{% endblock %}
 </head>
 <body>
-    <div id="app">
-        <!-- Initial content loaded via Django -->
-        <nav>
-            <a href="#" data-url="first/" data-spa="true">Page 1</a>
-            <a href="#" data-url="second/" data-spa="true">Page 2</a>
-        </nav>
-    </div>
+    <header>
+        <!-- Header content -->
+    </header>
+    <nav>
+        <!-- Navigation content -->
+        <div id="app">
+          <nav>
+            <a href="#" data-url="page1/" data-spa="true">Page 1</a>
+            <a href="#" data-url="page2/" data-spa="true">Page 2</a>
+            <a href="#" data-url="page3/" data-spa="true">Page 3</a>
+          </nav>
+      </div>  
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <!-- Footer content -->
+        {% load static %}
+        <script src="{% static 'js/app.js' %}"></script>
+    </footer>
+    {% block foot %}{% endblock %}
 </body>
 </html>

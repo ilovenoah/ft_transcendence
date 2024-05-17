@@ -3,15 +3,16 @@
 
 {% block title %}Top Page{% endblock %}
 
+{% block head %}
+    <!-- Additional JavaScript for this page -->
+{% endblock %}
+
 {% block content %}
-
-
-<a href="#" id="my-anchor">Click me</a>
-
 <div id="content">
     <!-- SPAのコンテンツがここに表示される -->
 </div>
+{% endblock %}
 
-
-<script src="{% static 'js/app.js' %}"></script>
+{% block foot %}
+    <!-- Additional JavaScript for this page -->
 {% endblock %}

@@ -2,12 +2,12 @@ from django.shortcuts import render
 
 def index(request):
     return render(request, 'index.html')
-def first(request):
-    return render(request, 'first.html')
-def second(request):
-    return render(request, 'second.html')
-def third(request):
-    return render(request, 'third.html')
+def page1(request):
+    return render(request, 'page1.html')
+def page2(request):
+    return render(request, 'page2.html')
+def page3(request):
+    return render(request, 'page3.html')
 
 
 
