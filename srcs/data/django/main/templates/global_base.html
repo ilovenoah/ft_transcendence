@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,18 +8,20 @@
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
     <title>{% block title %}Default Title{% endblock %}</title>
     {% block headerscript %}{% endblock %}
+    {% block headerscriptfile %}{% endblock %}
 </head>
+
 <body>
     <nav>
         <!-- Navigation content -->
         <div id="nav">
-          <nav>
-            <a href="#" data-url="page1/" data-spa="true">Page 1</a>
-            <a href="#" data-url="page2/" data-spa="true">Page 2</a>
-            <a href="#" data-url="page3/" data-spa="true">Page 3</a>
-            <a href="#" data-url="ponggame/" data-spa="true">Pong Game</a>
-          </nav>
-      </div>  
+            <nav>
+                <a href="#" data-url="page1/" data-spa="true">Page 1</a>
+                <a href="#" data-url="page2/" data-spa="true">Page 2</a>
+                <a href="#" data-url="page3/" data-spa="true">Page 3</a>
+                <a href="#" data-url="ponggame/" data-spa="true">Pong Game</a>
+            </nav>
+        </div>
     </nav>
     <header id="head">
         <!-- Header content -->
@@ -35,4 +38,5 @@
     <script src="{% static 'js/app.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
 </body>
+
 </html>

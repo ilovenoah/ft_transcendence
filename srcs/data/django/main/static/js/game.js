@@ -1,12 +1,12 @@
-const canvas = document.getElementById('pongCanvas');
-const ctx = canvas.getContext('2d');
+canvas = document.getElementById('pongCanvas');
+ctx = canvas.getContext('2d');
 
 // Set canvas size
 canvas.width = 800;
 canvas.height = 400;
 
 // Ball object
-const ball = {
+ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     radius: 10,
@@ -18,7 +18,7 @@ const ball = {
 };
 
 // Paddles
-const user1 = {
+user1 = {
     x: 0, // left side of canvas
     y: (canvas.height - 100) / 2,
     width: 10,
@@ -27,7 +27,7 @@ const user1 = {
     color: 'WHITE'
 };
 
-const user2 = {
+user2 = {
     x: canvas.width - 10, // right side of canvas
     y: (canvas.height - 100) / 2,
     width: 10,
@@ -110,3 +110,4 @@ function update() {
 
 // Start the game
 requestAnimationFrame(render);
+console.log('Script loaded and executed immediately');
