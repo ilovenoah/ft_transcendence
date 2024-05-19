@@ -4,8 +4,9 @@
 <!--タイトルはここで必ず設定して -->
 {% block title %}Page 1{% endblock %}
 
-{% block headerscript %}
 <!-- Additional JavaScript for this page -->
+{% block headerscript %}
+console.log("page 1");
 console.log("page 1");
 {% endblock %}
 
@@ -13,12 +14,12 @@ console.log("page 1");
 <p>This is the content of Page 1 header</p>
 {% endblock %}
 
-{% block content %}
 <!-- SPAのコンテンツをここに記載 -->
+{% block content %}
 <p>This is the content of Page 1.</p>
 {% endblock %}
 
-{% block foot %}
 <!-- Additional JavaScript for this page -->
+{% block foot %}
 <p>This is the content of Page 1 footer</p>
 {% endblock %}

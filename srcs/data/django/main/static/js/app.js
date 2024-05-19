@@ -23,8 +23,6 @@ document.addEventListener('click', function (event) {
     // var href = event.target.getAttribute('href');
     var href = event.target.getAttribute('data-url');
 
-
-
     // 非同期通信でページのコンテンツを取得
     fetch(href)
       .then(function (response) {
@@ -81,19 +79,18 @@ function loadPage(html) {
   // <head> タグに新しいスクリプトタグを挿入
   head.appendChild(newScript);
 
-  //ここからheaderにscriptをいれる
+  //ここからfootにscriptfileをいれる
   rawFile = doc.querySelector('#headerscriptfile').innerHTML;
   scriptFiles = rawFile.trim().split("\n");
-
   for (i = 0; i < scriptFiles.length; i++) {
+    //値が空のときは実行しない
     if (scriptFiles[i] === "")
       continue;
     // 新しいスクリプトタグを作成してコードを追加
     let arrayScript = document.createElement('script');
-    arrayScript.src = scriptFiles[i].trim() + "?timestamp=" + new Date().getTime();
+    //キャッシュされたjsファイルが利用されないようにtimestampを付加する
+    arrayScript.src = scriptFiles[i].trim() + "?" + new Date().getTime();
     // <foot> タグに新しいスクリプトタグを挿入
     foot.appendChild(arrayScript);
   }
-
-
 }
