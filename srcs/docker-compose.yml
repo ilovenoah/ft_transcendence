@@ -1,0 +1,82 @@
+#version: '3'
+services:
+  nginx:
+    build:
+      context: ./requirements/nginx/
+    image: nginx:4242
+    container_name: nginx4242
+    volumes:
+      - ./data/nginx:/var/www/html
+    networks:
+      - net_trans
+    ports:
+      - "443:443"
+      - "8080:8080"
+    depends_on:
+      - django
+    init: true
+    restart: always
+
+  django:
+    build:
+      context: ./requirements/django/
+    image: django:4242
+    container_name: django4242
+    networks:
+      - net_trans
+    volumes:
+      - ./data/django:/app
+    tty: true
+    # expose:
+    #   - "8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    init: true
+    restart: always
+    # command:
+    #   tail -f /dev/null
+
+  postgres:
+    build:
+      context: ./requirements/postgres/
+    image: postgres:4242
+#    image: postgres:latest
+    container_name: postgres4242
+    networks:
+      - net_trans
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    expose:
+      - "5432"
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    init: true
+    restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "myuser", "-d", "mydatabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  net_trans:
+    name: net_trans
+      
+# volumes:
+#   vol_django:
+#     driver_opts:
+#       type: 'none'
+#       o: 'bind'
+#       device: './data/django'
+#   vol_postgres:
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./data/postgres

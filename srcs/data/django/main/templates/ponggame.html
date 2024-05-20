@@ -1,0 +1,27 @@
+{% extends 'content_base.html' %}
+{% load static %}
+
+<!--タイトルはここで必ず設定して -->
+{% block title %}Pong Game{% endblock %}
+
+{% block headerscript %}
+<!-- Additional JavaScript for this page -->
+console.log("pong game");
+{% endblock %}
+
+{% block headerscriptfile %}
+{% static 'js/game.js' %}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<!-- SPAのコンテンツをここに記載 -->
+<canvas id="pongCanvas"></canvas>
+
+{% endblock %}
+
+{% block foot %}
+<!-- Additional JavaScript for this page -->
+{% endblock %}

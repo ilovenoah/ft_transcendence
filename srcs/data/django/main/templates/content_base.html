@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Default Title{% endblock %}</title>
+</head>
+
+<body>
+    <!-- Header content -->
+    <header id="headerscript">
+        {% block headerscript %}{% endblock %}
+    </header>
+    <!-- Header content -->
+    <header id="headerscriptfile">
+        {% block headerscriptfile %}{% endblock %}
+    </header>
+    <!-- Header content -->
+    <header id="head">
+        {% block head %}{% endblock %}
+    </header>
+    <!-- main content -->
+    <main id="content">
+        {% block content %}{% endblock %}
+    </main>
+    <!-- Footer content -->
+    <footer id="foot">
+        {% block foot %}{% endblock %}
+    </footer>
+</body>
+
+</html>

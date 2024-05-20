@@ -1,0 +1,24 @@
+{% extends 'content_base.html' %}
+{% load static %}
+
+<!--タイトルはここで必ず設定して -->
+{% block title %}Page 2{% endblock %}
+
+{% block headerscript %}
+<!-- Additional JavaScript for this page -->
+console.log("page 2");
+{% endblock %}
+
+{% block head %}
+<p>This is the content of Page 2 header</p>
+{% endblock %}
+
+{% block content %}
+<!-- SPAのコンテンツをここに記載 -->
+<p>This is the content of Page 2.</p>
+{% endblock %}
+
+{% block foot %}
+<!-- Additional JavaScript for this page -->
+<p>This is the content of Page 2 footer</p>
+{% endblock %}
