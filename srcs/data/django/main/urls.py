@@ -14,7 +14,7 @@ urlpatterns = [
     path('page2/', views.page2, name='page2'),
     path('page3/', views.page3, name='page3'),
     path('ponggame/', views.ponggame, name='ponggame'),
-    path('signup/', views.signup, name='signup'),
+    path('signup/', signup, name='signup'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html', redirect_authenticated_user=True), name='login'),
     path('accounts/profile/', profile, name='profile'),
 ]

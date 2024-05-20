@@ -1,4 +1,29 @@
-<!DOCTYPE html>
+{% extends 'content_base.html' %}
+{% load static %}
+
+<!--タイトルはここで必ず設定して -->
+{% block title %}Account Plofile{% endblock %}
+
+{% block headerscript %}
+<!-- Additional JavaScript for this page -->
+console.log("account plofile");
+{% endblock %}
+
+{% block head %}
+<p>This is the content of Account Plofile header</p>
+{% endblock %}
+<h1>User Profile</h1>
+<p>Username: {{ user.username }}</p>
+<p>Email: {{ user.email }}</p>
+<!-- SPAのコンテンツをここに記載 -->
+{% block content %}
+
+{% block foot %}
+<!-- Additional JavaScript for this page -->
+<p>This is the content of Account Plofile footer</p>
+{% endblock %}
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,4 +35,4 @@
     <p>Email: {{ user.email }}</p>
     <!-- その他のユーザー情報の表示 -->
 </body>
-</html>
+</html> -->

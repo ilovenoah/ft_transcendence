@@ -1,4 +1,35 @@
-<!DOCTYPE html>
+{% extends 'content_base.html' %}
+{% load static %}
+
+<!--タイトルはここで必ず設定して -->
+{% block title %}Signup{% endblock %}
+
+{% block headerscript %}
+<!-- Additional JavaScript for this page -->
+console.log("Signup");
+{% endblock %}
+
+{% block head %}
+<p>This is the content for Signup header</p>
+{% endblock %}
+
+{% block content %}
+<!-- SPAのコンテンツをここに記載 -->
+<h2>Signup</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign up</button>
+</form>
+{% endblock %}
+
+<!-- Additional JavaScript for this page -->
+{% block foot %}
+<p>This is the content of Signup footer</p>
+{% endblock %}
+
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,5 +43,5 @@
         <button type="submit">Sign up</button>
     </form>
 </body>
-</html>
+</html> -->
 
