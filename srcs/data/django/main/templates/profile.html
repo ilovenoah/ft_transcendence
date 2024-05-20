@@ -12,11 +12,13 @@ console.log("account plofile");
 {% block head %}
 <p>This is the content of Account Plofile header</p>
 {% endblock %}
+
+{% block content %}
+<!-- SPAのコンテンツをここに記載 -->
 <h1>User Profile</h1>
 <p>Username: {{ user.username }}</p>
 <p>Email: {{ user.email }}</p>
-<!-- SPAのコンテンツをここに記載 -->
-{% block content %}
+{% endblock %}
 
 {% block foot %}
 <!-- Additional JavaScript for this page -->
@@ -33,6 +35,6 @@ console.log("account plofile");
     <h1>User Profile</h1>
     <p>Username: {{ user.username }}</p>
     <p>Email: {{ user.email }}</p>
-    <!-- その他のユーザー情報の表示 -->
+
 </body>
-</html> -->
+</html> --> 

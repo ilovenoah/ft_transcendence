@@ -3,9 +3,9 @@ from django.contrib import admin
 from django.urls import path
 from main import views
 
-from .views import signup
+# from .views import signup
 from django.contrib.auth import views as auth_views
-from .views import profile
+# from .views import profile
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,9 +14,9 @@ urlpatterns = [
     path('page2/', views.page2, name='page2'),
     path('page3/', views.page3, name='page3'),
     path('ponggame/', views.ponggame, name='ponggame'),
-    path('signup/', signup, name='signup'),
+    path('signup/', views.signup, name='signup'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html', redirect_authenticated_user=True), name='login'),
-    path('accounts/profile/', profile, name='profile'),
+    path('accounts/profile/', views.profile, name='profile'),
 ]
 
 
