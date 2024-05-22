@@ -15,6 +15,9 @@
 
 {% block content %}
 これがデフォルトのコンテンツ
+<a href="#" class="post-link" data-url="/process-post/" data-param1="value1" data-param2="value2">Click me</a>
+<a href="#" class="post-link" data-url="/process-post/" page="index">Click me</a>
+<script src="{% static 'js/main.js' %}"></script>
 {% endblock %}
 
 <!-- Additional JavaScript for this page -->

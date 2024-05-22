@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     {% load static %}
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
     <title>{% block title %}Default Title{% endblock %}</title>
@@ -35,7 +36,7 @@
         <!-- Footer content -->
         {% block foot %}{% endblock %}
     </footer>
-    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
 </body>
 
