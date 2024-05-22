@@ -6,6 +6,8 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.contrib.auth import logout
 
+from .forms import CustomUserChangeForm
+
 def index(request):
     return render(request, 'index.html')
 def page1(request):
@@ -46,6 +48,14 @@ class CustomLogoutView(TemplateView):
     def get_success_url(self):
         return reverse_lazy('index')  # ログアウト後のリダイレクト先
 
-
-
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # ユーザープロファイルページへリダイレクト
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+    return render(request, 'edit_profile.html', {'form': form})
 

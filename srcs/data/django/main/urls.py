@@ -7,6 +7,8 @@ from django.contrib.auth import views as auth_views
 
 from .views import CustomLogoutView  # カスタムビューをインポート
 
+from .views import edit_profile
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
@@ -18,7 +20,6 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('accounts/profile/', views.profile, name='profile'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
+    path('edit_profile/', views.edit_profile, name='edit_profile'),
 ]
-
-
 

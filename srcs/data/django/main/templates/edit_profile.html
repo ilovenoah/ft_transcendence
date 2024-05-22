@@ -1,0 +1,26 @@
+{% extends 'content_base.html' %}
+{% load static %}
+
+<!--タイトルはここで必ず設定して -->
+{% block title %}Edit Plofile{% endblock %}
+
+{% block headerscript %}
+<!-- Additional JavaScript for this page -->
+console.log("edit plofile");
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<!-- SPAのコンテンツをここに記載 -->
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+</form>
+{% endblock %}
+
+<!-- Additional JavaScript for this page -->
+{% block foot %}
+{% endblock %}
