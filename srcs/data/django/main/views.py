@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from .forms import SignUpForm
 from django.contrib.auth.decorators import login_required
 
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+from django.contrib.auth import logout
+
 def index(request):
     return render(request, 'index.html')
 def page1(request):
@@ -31,6 +35,16 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+class CustomLogoutView(TemplateView):
+    template_name = 'logout.html'
+
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        return redirect(self.get_success_url())
+    
+    def get_success_url(self):
+        return reverse_lazy('index')  # ログアウト後のリダイレクト先
 
 
 
