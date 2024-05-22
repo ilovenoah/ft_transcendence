@@ -18,23 +18,26 @@ def process_post_data(request):
     if request.method == 'POST':
         try:
             post_data = json.loads(request.body)
-            
-            if post_data.get('page') == 'index':
+            page = post_data.get('page')   
+            if page == 'index':
                 response_data = {
-                    'message': 'dango',
-                }            
+                    'content': 'index',
+                }
+            else if page == 'page1':
+                response_data = {
+                    'content': 'page1',
+                }
             else:
                 param1 = post_data.get('param1')
                 param2 = post_data.get('param2')
-                page = post_data.get('page')
                 # データ処理ロジックをここに追加
                 response_data = {
                     'message': 'Data received and processed successfully',
                     'param1': param1,
                     'param2': param2,
                     'page': page,
-
                 }
+
 
 
             return JsonResponse(response_data)
