@@ -23,7 +23,7 @@ def process_post_data(request):
                 response_data = {
                     'content': 'index',
                 }
-            else if page == 'page1':
+            elif page == 'page1':
                 response_data = {
                     'content': 'page1',
                 }
