@@ -5,13 +5,13 @@ document.addEventListener("DOMContentLoaded", function() {
   var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
   links.forEach(function(link) {
-      link.addEventListener("click", function(event) {
-          event.preventDefault();
+    link.addEventListener("click", function(event) {
+      event.preventDefault();
 
-     // 属性を取得し、オブジェクトに変換
+      // 属性を取得し、オブジェクトに変換
       var postData = {};
       Array.from(link.attributes).forEach(function(attr) {
-          postData[attr.name] = attr.value;
+        postData[attr.name] = attr.value;
       });
 
       var xhr = new XMLHttpRequest();
@@ -24,17 +24,12 @@ document.addEventListener("DOMContentLoaded", function() {
           var parser = new DOMParser();
           if (xhr.status === 200) {
             var response = JSON.parse(xhr.responseText);
-                      
-            // ページのコンテンツを更新
-            document.querySelector('#content').innerHTML = response.content;
-            document.querySelector('#head').innerHTML = contenthead;
-            document.querySelector('#foot').innerHTML = contentfoot;
-            document.title = content_title.textContent;
 
-            console.log(response);
+            updateContent(response);
+            history.pushState({ data: response }, response.title, '');
+
+//            console.log(response);
           } else {
-
-
             console.error('There was a problem with the request:', xhr.statusText);
           }
         }
@@ -44,3 +39,23 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 });
+
+ // popstateイベントをリッスン
+ window.addEventListener("popstate", function(event) {
+  if (event.state) {
+    // 状態オブジェクトが存在する場合、表示内容を更新
+    updateContent(event.state.data);
+  }
+});
+
+function updateContent(data) {
+  // 表示内容をデータに基づいて更新する処理
+  // ここに実際の更新ロジックを記述
+
+  // ページのコンテンツを更新
+  document.querySelector('#content').innerHTML = data.content;
+  document.querySelector('#head').innerHTML = data.head;
+  document.querySelector('#foot').innerHTML = data.foot;
+  document.title = data.title;
+
+}

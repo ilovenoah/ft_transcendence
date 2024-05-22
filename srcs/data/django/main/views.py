@@ -19,13 +19,14 @@ def process_post_data(request):
         try:
             post_data = json.loads(request.body)
             page = post_data.get('page')   
+            title = post_data.get('title')   
             if page == 'index':
                 response_data = {
                     'content': 'index',
                 }
-            elif page == 'page1':
+            elif page == 'page15':
                 response_data = {
-                    'content': 'page1',
+                    'content': 'page15',
                 }
             else:
                 param1 = post_data.get('param1')
@@ -35,7 +36,9 @@ def process_post_data(request):
                     'message': 'Data received and processed successfully',
                     'param1': param1,
                     'param2': param2,
+                    'content':page,
                     'page': page,
+                    'title': title,
                 }
 
 
