@@ -170,7 +170,8 @@ SESSION_COOKIE_SECURE = False  # HTTPS 環境では True に設定
 SESSION_COOKIE_HTTPONLY = True  # Trueにすると、クライアントサイドスクリプトからセッションクッキーにアクセスできなくなる
 SESSION_SAVE_EVERY_REQUEST = False  # Trueにすると、リクエストが発生するたびにセッションが保存される
 
-
+# settings.py
+AUTH_USER_MODEL = 'main.CustomUser'
 
 
 
