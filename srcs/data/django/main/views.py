@@ -5,12 +5,6 @@ import json
 
 def index(request):
     return render(request, 'index.html')
-def page1(request):
-    return render(request, 'page1.html')
-def page2(request):
-    return render(request, 'page2.html')
-def page3(request):
-    return render(request, 'page3.html')
 def ponggame(request):
     return render(request, 'ponggame.html')
 
@@ -24,9 +18,9 @@ def process_post_data(request):
                 response_data = {
                     'content': 'index',
                 }
-            elif page == 'page15':
+            elif page == 'page3':
                 response_data = {
-                    'content': 'page15',
+                    'content': 'ここにどうやって記述するつもりなだろうか<br>どうしてそうなるのか',
                 }
             else:
                 param1 = post_data.get('param1')
@@ -41,11 +35,10 @@ def process_post_data(request):
                     'title': title,
                 }
 
-
-
             return JsonResponse(response_data)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
+#関数　ファイルを指定すると内容を返す
