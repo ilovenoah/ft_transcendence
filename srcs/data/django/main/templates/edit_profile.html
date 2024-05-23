@@ -14,7 +14,7 @@ console.log("edit plofile");
 
 {% block content %}
 <!-- SPAのコンテンツをここに記載 -->
-<form method="post" enctype="multipart/form-data">
+<form method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save Changes</button>

@@ -16,7 +16,7 @@ console.log("Signup");
 {% block content %}
 <!-- SPAのコンテンツをここに記載 -->
 <h2>Signup</h2>
-<form method="post" enctype="multipart/form-data">
+<form method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Sign up</button>

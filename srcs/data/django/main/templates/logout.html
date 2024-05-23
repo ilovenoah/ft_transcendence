@@ -15,7 +15,7 @@ console.log("Login");
 
 {% block content %}
 <!-- SPAのコンテンツをここに記載 -->
-<form method="post">
+<form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
     <button type="submit">Logout</button>
 </form>
