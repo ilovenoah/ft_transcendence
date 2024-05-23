@@ -2,6 +2,8 @@
 from django.contrib import admin
 from django.urls import path
 from main import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
 
@@ -23,3 +25,5 @@ urlpatterns = [
     path('edit_profile/', views.edit_profile, name='edit_profile'),
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

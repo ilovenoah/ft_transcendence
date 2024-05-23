@@ -7,6 +7,7 @@ WORKDIR /app
 COPY    ./conf/requirements.txt /app
 RUN     pip install --upgrade pip
 RUN     pip install --no-cache-dir -r requirements.txt
+RUN     pip install Pillow
 #RUN     python -m pip install django
 #RUN     pip install django
 

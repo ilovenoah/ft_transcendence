@@ -10,7 +10,7 @@ class SignUpForm(UserCreationForm):
 
     class Meta:
         model = get_user_model() 
-        fields = ('username', 'email', 'nickname', 'password1', 'password2')
+        fields = ('username', 'email', 'nickname', 'avatar', 'password1', 'password2')
 
 class CustomUserChangeForm(UserChangeForm):
     password1 = forms.CharField(label='New password', widget=forms.PasswordInput, required=False)
@@ -18,7 +18,7 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'nickname', 'password1', 'password2')
+        fields = ('username', 'email', 'nickname', 'avatar', 'password1', 'password2')
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")

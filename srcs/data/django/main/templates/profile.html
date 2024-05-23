@@ -2,20 +2,26 @@
 {% load static %}
 
 <!--タイトルはここで必ず設定して -->
-{% block title %}Account Plofile{% endblock %}
+{% block title %}Account Profile{% endblock %}
 
 {% block headerscript %}
-<!-- Additional JavaScript for this page -->
-console.log("account plofile");
+<script>
+console.log("account profile");
+</script>
 {% endblock %}
 
 {% block head %}
-<!-- <p>This is the content of Account Plofile header</p> -->
+<!-- <p>This is the content of Account Profile header</p> -->
 {% endblock %}
 
 {% block content %}
 <!-- SPAのコンテンツをここに記載 -->
 <h1>User Profile</h1>
+{% if user.avatar %}
+    <p><img src="{{ user.avatar.url }}" alt="User Avatar"></p>
+{% else %}
+    <!-- <p>No avatar available.</p> -->
+{% endif %}
 <p>Username: {{ user.username }}</p>
 <p>Email: {{ user.email }}</p>
 <p>Nickname: {{ user.nickname }}</p>
@@ -23,8 +29,9 @@ console.log("account plofile");
 
 <!-- Additional JavaScript for this page -->
 {% block foot %}
-<!-- <p>This is the content of Account Plofile footer</p> -->
+<!-- <p>This is the content of Account Profile footer</p> -->
 {% endblock %}
+
 
 <!-- <!DOCTYPE html>
 <html lang="en">
