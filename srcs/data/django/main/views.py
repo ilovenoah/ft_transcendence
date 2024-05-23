@@ -54,7 +54,7 @@ def edit_profile(request):
         form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('profile')  # ユーザープロファイルページへリダイレクト
+            return redirect('index')  
     else:
         form = CustomUserChangeForm(instance=request.user)
     return render(request, 'edit_profile.html', {'form': form})
