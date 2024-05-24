@@ -35,15 +35,36 @@ document.addEventListener("DOMContentLoaded", function() {
       xhr.send(JSON.stringify(postData));
     });
   });
+
+
+  var forms = document.querySelectorAll("form");
+  forms.forEach(function(form) {
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const xhr = new XMLHttpRequest();        
+      xhr.open('POST', '/process-post/', true);
+      xhr.setRequestHeader('X-CSRFToken', csrftoken);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          console.log('Success:', data);
+         // データが成功裏に処理された後のアクションをここに追加します
+        } else {
+          console.error('Error:', xhr.statusText);
+                // エラー処理をここに追加します
+        }
+      };
+
+      xhr.onerror = function() {
+        console.error('Request failed');
+      // ネットワークエラーの処理をここに追加します
+      };
+
+      xhr.send(formData);
+    });
+  });
 });
-
-//formの送信スクリプトを挿入
-
-
-
-
-
-
 
  // popstateイベントをリッスン
  window.addEventListener("popstate", function(event) {
