@@ -49,7 +49,7 @@ def process_post_data(request):
                     'content':read_file('ponggame.html'),
                     'title': title,
                     # javascriptのファイルを指定するとき
-                    'scriptfiles': 'static/js/game.js',
+                    'scriptfiles': '/static/js/game.js',
                 }
             else:
                 if is_file_exists(page + '.html') :
