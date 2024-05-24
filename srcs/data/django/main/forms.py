@@ -29,10 +29,13 @@ class CustomUserChangeForm(UserChangeForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"])
+        password = self.cleaned_data.get("password1")  # password1からパスワードを取得
+        if password:  # 新しいパスワードが入力されているかを確認
+            user.set_password(password)
         if commit:
             user.save()
         return user
+
 
     def __init__(self, *args, **kwargs):
         super(CustomUserChangeForm, self).__init__(*args, **kwargs)
