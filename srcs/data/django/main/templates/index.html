@@ -20,10 +20,11 @@
 <a href="#" class="post-link" data-url="/process-post/" page="singup">Click me</a>
 
 <script src="{% static 'js/main.js' %}"></script>
-<form>
-    <input type="hidden" name="page" value="dango">
-    <input type="hidden" name="content" value="どれどれ">
-    <input type="submit">
+<form class="ajax-form" id="form1" action="/process-post/">
+    <input type="hidden" name="page" value="page1">
+    <input type="hidden" name="title" value="page1">
+    <input type="hidden" name="content" value="dango">
+    <button type="submit">Submit Form 1</button>
 </form>
 {% endblock %}
 

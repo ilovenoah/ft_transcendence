@@ -3,12 +3,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // CSRFトークンをmetaタグから取得
   var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  //const csrftoken = getCookie('csrftoken');
 
   links.forEach(function(link) {
     link.addEventListener("click", function(event) {
       event.preventDefault();
-
-      // 属性を取得し、オブジェクトに変換
+  // 属性を取得し、オブジェクトに変換
       var postData = {};
       Array.from(link.attributes).forEach(function(attr) {
         postData[attr.name] = attr.value;
@@ -31,37 +31,41 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('There was a problem with the request:', xhr.statusText);
           }
         }
-      };
+      };  
       xhr.send(JSON.stringify(postData));
     });
   });
 
 
-  var forms = document.querySelectorAll("form");
-  forms.forEach(function(form) {
-    form.addEventListener("submit", function(event) {
+
+  const forms = document.querySelectorAll('.ajax-form');
+  forms.forEach(form => {
+    form.addEventListener('submit', function(event) {
       event.preventDefault();
       const formData = new FormData(this);
-      const xhr = new XMLHttpRequest();        
-      xhr.open('POST', '/process-post/', true);
-      xhr.setRequestHeader('X-CSRFToken', csrftoken);
+      const formJSON = Object.fromEntries(formData.entries());
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', this.action, true);  // `this.action` はフォームの `action` 属性を取得
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.onload = function() {
         if (xhr.status === 200) {
-          const data = JSON.parse(xhr.responseText);
-          console.log('Success:', data);
-         // データが成功裏に処理された後のアクションをここに追加します
+          const response = JSON.parse(xhr.responseText);
+          //データを更新する
+          updateContent(response);
+          //履歴にページを登録
+          history.pushState({ data: response }, response.title, '');
+        
         } else {
           console.error('Error:', xhr.statusText);
-                // エラー処理をここに追加します
+            // エラー処理をここに追加します     
         }
       };
-
       xhr.onerror = function() {
         console.error('Request failed');
-      // ネットワークエラーの処理をここに追加します
+            // ネットワークエラーの処理をここに追加します
       };
-
-      xhr.send(formData);
+      xhr.send(JSON.stringify(formJSON));
     });
   });
 });
@@ -112,3 +116,4 @@ function updateContent(data) {
     foot.appendChild(arrayScript);
   }
 }
+
