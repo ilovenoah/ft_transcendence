@@ -8,6 +8,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('process-post/', process_post_data, name='process_post_data'),
-    path('ponggame/', views.ponggame, name='ponggame'),
 ]
 

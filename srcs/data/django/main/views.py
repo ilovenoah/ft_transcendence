@@ -6,10 +6,6 @@ import os
 
 def index(request):
     return render(request, 'index.html')
-def ponggame(request):
-    return render(request, 'ponggame.html')
-
-
 
 def process_post_data(request):
     if request.method == 'POST':
