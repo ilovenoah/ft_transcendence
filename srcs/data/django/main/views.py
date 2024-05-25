@@ -21,7 +21,13 @@ def process_post_data(request):
             content = post_data.get('content') 
 
             #送信データの作成
-            if page == 'test':
+            if page == 'top':
+                response_data = {
+                    'page':page,
+                    'content':read_file('top.html'),
+                    'title': 'トラセントップ',
+                }
+            elif page == 'test':
                 response_data = {
                     'page':page,
                     'content': 'testページ',

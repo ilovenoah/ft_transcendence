@@ -1,10 +1,17 @@
 document.addEventListener("DOMContentLoaded", function() {
+
+
+  var postData = {};
+  postData['page'] = 'top'; 
+  postData['data_url']= '/process-post/';
+  send_ajax(postData);
+
+
   var links = document.querySelectorAll(".post-link");
 
   // CSRFトークンをmetaタグから取得
   var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   //const csrftoken = getCookie('csrftoken');
-
 
 
   links.forEach(function(link) {
@@ -16,25 +23,8 @@ document.addEventListener("DOMContentLoaded", function() {
         postData[attr.name] = attr.value;
       });
 
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", link.getAttribute("data-url"), true);
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      xhr.setRequestHeader("X-CSRFToken", csrfToken);  // CSRFトークンをヘッダーに設定
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-          var parser = new DOMParser();
-          if (xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            //データを更新する
-            updateContent(response);
-            //履歴にページを登録
-            history.pushState({ data: response }, response.title, '');
-          } else {
-            console.error('There was a problem with the request:', xhr.statusText);
-          }
-        }
-      };  
-      xhr.send(JSON.stringify(postData));
+      send_ajax(postData);
+
     });
   });
 
@@ -46,6 +36,8 @@ document.addEventListener("DOMContentLoaded", function() {
       const form = event.target;
       const formData = new FormData(form);
       const formJSON = Object.fromEntries(formData.entries());
+
+
       const xhr = new XMLHttpRequest();
       xhr.open('POST', form.action, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
@@ -145,4 +137,31 @@ window.addEventListener("popstate", function(event) {
     updateContent(event.state.data);
   }
 });
+
+function send_ajax(data)
+{
+  // CSRFトークンをmetaタグから取得
+  var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", data.data_url, true);
+  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhr.setRequestHeader("X-CSRFToken", csrfToken);  // CSRFトークンをヘッダーに設定
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      var parser = new DOMParser();
+      if (xhr.status === 200) {
+        var response = JSON.parse(xhr.responseText);
+        //データを更新する
+        updateContent(response);
+        //履歴にページを登録
+        history.pushState({ data: response }, response.title, '');
+      } else {
+        console.error('There was a problem with the request:', xhr.statusText);
+      }
+    }
+  };  
+  xhr.send(JSON.stringify(data));
+}
+
 
