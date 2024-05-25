@@ -5,5 +5,12 @@
     <div>djangoのview.pyにそのpageにアクセスされたときの処理を記述して、responseを作成するばSPAで表示できるようになっています</div>
     <div>page要素以外はhtmlで指定しなくても、view.pyで操作できるのでなくても大丈夫です</div>
     <div>a href="#" class="post-link" data_url="/process-post/" までは必須</div>
+    <div>またformはかならず下記のようにしてください</div>
+    <pre>
+        &lt;form class="ajax-form" action="/process-post/"&gt;
+        &lt;input type="hidden" name="page" value="form1"&gt;
+        &lt;button type="submit"&gt;送信&lt;/button&gt;
+        &lt;/form&gt;
+    </pre>
     <div>この仕組みはapp.jsで全て行っています。まだ不完全なところもあるかもしれないので、不具合に気づいたら連絡してください。改修します。</div>
 </p>
