@@ -46,7 +46,7 @@ dockerの起動方法
  
 アクセス先は、
  
- https://localhost/
+ https://localhost/dev/
  
  
  開発中、djangoを噛ませたくないときは、
