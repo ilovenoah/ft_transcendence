@@ -44,25 +44,10 @@ dockerの起動方法
  
  team_my2のsettings.pyやurls.pyを変更します
  
- 今は、urls.pyで
- 
- path("dev/", include("main.urls")),
- 
- のとおり、dev/を設定しているので、
- 
- アクセス先は、
- 
- https://localhost/dev/
- 
- になりますが、提出時は、
- 
- path("", include("main.urls")),
- 
- にすれば、
+アクセス先は、
  
  https://localhost/
  
- になります
  
  開発中、djangoを噛ませたくないときは、
  
@@ -81,39 +66,7 @@ dockerの起動方法
  templatesディレクトリの中に基本的なhtmlファイルがおいてあります
  
  global_base.htmlは、spaの基本となるhtmlです
- 
- はじめは、index.htmlが呼び出されますが、
- 
- index.htmlの中を見てください。
- 
- htmlのタグは入っていません。
- 
- その変わり、global_base.htmlが読み込まれ、
- 
- その中に各種情報を挿入して最終的なhtmlが出来上がることになります
- 
- また、index.htmlのなかのリンクをクリックすると、
- 
- page1.htmlなどがid=contentのタグ内に書き換えられます
- 
- page1.htmlの中身も、index.htmlと類似して、
- 
- content_base.html
- 
- をロードして、その中に各種情報を挿入しています。
- 
- そして、出来上がったpage1.htmlを読み込んで、
- 
- index.htmlの中身を書き換えることで、spaを実現します。
- 
- とりあえずは、この４つのファイルを眺めていれば、
- 
- どんなファイルを作っていけばいいか解ると思います。
- 
- これらの操作を行っているのが
- 
- staticディレクトリ内のapp.jsです
- 
+  
  spaの挙動などを変えたいときは、app.jsを改変します。
  
  その他、staticディレクトリにはboostrapのファイルも入っていますが、
