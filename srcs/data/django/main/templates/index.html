@@ -2,32 +2,29 @@
 {% load static %}
 
 {% block title %}Top Page{% endblock %}
-<!-- Additional JavaScript for this page -->
 {% block headerscript %}
 {% endblock %}
-<!-- Additional JavaScript files for this page -->
 {% block headerscriptfile %}
 {% endblock %}
 
 {% block head %}
-
 {% endblock %}
 
 {% block content %}
+
 これがデフォルトのコンテンツ
 <a href="#" class="post-link" data-url="/process-post/" data-param1="value1" data-param2="value2">Click me</a>
-<a href="#" class="post-link" data-url="/process-post/" page="index">Click me</a>
-<a href="#" class="post-link" data-url="/process-post/" page="singup">Click me</a>
+<a href="#" class="post-link" data-url="/process-post/" page="index" title="index">Click me</a>
+<a href="#" class="post-link" data-url="/process-post/" page="singup" title="signup">Click me</a>
 
-<script src="{% static 'js/main.js' %}"></script>
-<form class="ajax-form" id="form1" action="/process-post/">
-    <input type="hidden" name="page" value="page1">
-    <input type="hidden" name="title" value="page1">
-    <input type="hidden" name="content" value="dango">
-    <button type="submit">Submit Form 1</button>
+<form class="ajax-form" action="/process-post/">
+    <input type="hidden" name="page" value="form1">
+    <input type="hidden" name="title" value="タイトルはここに">
+    <input type="input" name="content" value="コンテントの内容はここで指定">
+    <button type="submit">送信</button>
 </form>
+
 {% endblock %}
 
-<!-- Additional JavaScript for this page -->
 {% block foot %}
 {% endblock %}

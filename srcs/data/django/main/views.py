@@ -14,48 +14,80 @@ def ponggame(request):
 def process_post_data(request):
     if request.method == 'POST':
         try:
+            #受信データの処理
             post_data = json.loads(request.body)
             page = post_data.get('page')   
-            title = post_data.get('title')   
-            if page == 'index':
+            title = post_data.get('title') 
+            content = post_data.get('content') 
+
+            #送信データの作成
+            if page == 'test':
                 response_data = {
-                    'content': 'index',
+                    'page':page,
+                    'content': 'testページ',
+                    'title': 'test',
+                    # 生のjavascriptを埋め込みたいとき
+                    'rawscripts': 'console.log("test");',
                 }
-            elif page == 'page3':
+            elif page == 'formtest':
                 response_data = {
-                    'content': 'ここにどうやって記述するつもりなだろうか<br>どうしてそうなるのか',
+                    'page':page,
+                    'content':read_file('formtest.html'),
+                    'title': title,
+                }    
+            elif page == 'form1':
+                response_data = {
+                    'page':page,
+                    'content': content,
+                    'title': title,
+                }    
+            elif page == 'ponggame':
+                response_data = {
+                    'page':page,
+                    'content':read_file('ponggame.html'),
+                    'title': title,
+                    # javascriptのファイルを指定するとき
+                    'scriptfiles': 'static/js/game.js',
                 }
             else:
-                param1 = post_data.get('param1')
-                param2 = post_data.get('param2')
-                # データ処理ロジックをここに追加
+                if is_file_exists(page + '.html') :
+                    response_data = {
+                        'page':page,
+                        # contentにmain/htmlの下のファイルを指定するとき
+                        'content':read_file(page + '.html'),
+                        'title': title,
+                    }
+                else: #指定のファイルが main/htmlの下に存在しないとき
+                    response_data = {
+                        'page':page,
+                        'content':read_file('default.html'),
+                        'title': '42-ft_transcendence',
+                    }
 
-
-                response_data = {
-                    'message': 'Data received and processed successfully',
-                    'param1': param1,
-                    'param2': param2,
-                    #'content':page,
-                    'content':read_file("page1.html"),
-                    'page': page,
-                    'title': title,
-                }
-
+                
             return JsonResponse(response_data)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
-#関数　ファイルを指定すると内容を返す
+#ファイルの存在チェック
+def is_file_exists(filename):
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # ファイルのパスを構築
+    file_path = os.path.join(base_dir, 'main/html', filename)
+    if not os.path.exists(file_path):
+        #raise FileNotFoundError(f"The file '{filepath}' does not exist.")
+        return False
+    return True
 
 
+#ファイルの中身を返す
 def read_file(filename):
-
     # プロジェクトのベースディレクトリを取得
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # ファイルのパスを構築
-    file_path = os.path.join(base_dir, 'main/templates', filename)
+    file_path = os.path.join(base_dir, 'main/html', filename)
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()

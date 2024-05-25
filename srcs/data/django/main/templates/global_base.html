@@ -8,8 +8,6 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
     <title>{% block title %}Default Title{% endblock %}</title>
-    {% block headerscript %}{% endblock %}
-    {% block headerscriptfile %}{% endblock %}
 </head>
 
 <body>
@@ -19,13 +17,14 @@
             <nav>
                 <a href="#" class="post-link" data-url="/process-post/" page="page1" title="title page1">Page 1</a>
                 <a href="#" class="post-link" data-url="/process-post/" page="page2" title="title page2">Page 2</a>
-                <a href="#" class="post-link" data-url="/process-post/" page="page3" title="title page3">Page 3</a>
-                <a href="#" class="post-link" data-url="/process-post/" page="ponggame" title="title ponggame">Ponggame</a>
+                <a href="#" class="post-link" data-url="/process-post/" page="test" title="test">Test</a>
+                ここはナビゲーションバー
+                <a href="#" class="post-link" data-url="/process-post/" page="ponggame" title="Pong Game">Ponggame</a>
+                <a href="#" class="post-link" data-url="/process-post/" page="formtest" title="formのテスト">フォームテスト</a>
             </nav>
         </div>
     </nav>
     <header id="head">
-        <!-- Header content -->
         {% block head %}{% endblock %}
     </header>
 
@@ -33,10 +32,9 @@
         {% block content %}{% endblock %}
     </main>
     <footer id="foot">
-        <!-- Footer content -->
         {% block foot %}{% endblock %}
     </footer>
-    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
 </body>
 
