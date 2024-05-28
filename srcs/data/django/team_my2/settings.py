@@ -124,6 +124,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'http://localhost']
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -169,7 +192,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'  #セッションデー�
 SESSION_COOKIE_NAME = 'sessionid'  #クッキー名
 SESSION_COOKIE_AGE = 1209600  # 有効期限(秒): 14日
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  #ブラウザを閉じた時にセッションが終了するか
-SESSION_COOKIE_SECURE = False  # HTTPS 環境では True に設定
+SESSION_COOKIE_SECURE = True  # HTTPS 環境では True に設定
 SESSION_COOKIE_HTTPONLY = True  # Trueにすると、クライアントサイドスクリプトからセッションクッキーにアクセスできなくなる
 SESSION_SAVE_EVERY_REQUEST = False  # Trueにすると、リクエストが発生するたびにセッションが保存される
 

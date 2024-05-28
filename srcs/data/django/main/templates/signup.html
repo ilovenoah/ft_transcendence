@@ -1,32 +1,17 @@
-{% extends 'content_base.html' %}
-{% load static %}
-
-<!--タイトルはここで必ず設定して -->
-{% block title %}Signup{% endblock %}
-
-{% block headerscript %}
-<!-- Additional JavaScript for this page -->
-console.log("Signup");
-{% endblock %}
-
-{% block head %}
-<!-- <p>This is the content for Signup header</p> -->
-{% endblock %}
-
-{% block content %}
-<!-- SPAのコンテンツをここに記載 -->
 <h2>Signup</h2>
-<form method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
+<form class="ajax-form" action="process-post/" enctype="multipart/form-data">
+    <input type="hidden" name="page" value="signup">
     {% csrf_token %}
     {{ form.as_p }}
+    {% if form.errors %}
+    <div class="form-errors">
+        <p>フォームの入力にエラーがあります：</p>
+        {{ form.errors }}
+    </div>
+    {% endif %} 
     <button type="submit">Sign up</button>
 </form>
-{% endblock %}
 
-<!-- Additional JavaScript for this page -->
-{% block foot %}
-<!-- <p>This is the content of Signup footer</p> -->
-{% endblock %}
 
 
 <!-- <!DOCTYPE html>

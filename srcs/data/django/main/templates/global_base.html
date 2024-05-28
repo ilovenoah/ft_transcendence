@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     {% load static %}
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
     <title>{% block title %}Default Title{% endblock %}</title>
-    {% block headerscript %}{% endblock %}
-    {% block headerscriptfile %}{% endblock %}
 </head>
 
 <body>
@@ -16,7 +15,7 @@
         <!-- Navigation content -->
         <div id="nav">
             <nav>
-                <a href="#" data-url="page1/" data-spa="true">Page 1</a>
+                <!-- <a href="#" data-url="page1/" data-spa="true">Page 1</a>
                 <a href="#" data-url="page2/" data-spa="true">Page 2</a>
                 <a href="#" data-url="page3/" data-spa="true">Page 3</a>
                 <a href="#" data-url="ponggame/" data-spa="true">Pong Game</a>
@@ -24,13 +23,22 @@
                 <a href="#" data-url="login/" data-spa="true">Login</a>
                 <a href="#" data-url="accounts/profile" data-spa="true">Acount Profile</a>
                 <a href="#" data-url="logout" data-spa="true">Logout</a>
-                <a href="#" data-url="edit_profile" data-spa="true">Edit Profile</a>
+                <a href="#" data-url="edit_profile" data-spa="true">Edit Profile</a> -->
 
+                <a href="#" id="top" class="post-link" data_url="process-post/" page="top" title="トラセントップ"> Top </a>
+                ここはナビゲーションバー
+                <a href="#" class="post-link" data_url="process-post/" page="page1" title="title page1">Page 1</a>
+                <a href="#" class="post-link" data_url="process-post/" page="page2" title="title page2">Page 2</a>
+                <a href="#" class="post-link" data_url="process-post/" page="test" title="test">Test</a>
+                <a href="#" class="post-link" data_url="process-post/" page="ponggame" title="Pong Game">Ponggame</a>
+                <a href="#" class="post-link" data_url="process-post/" page="formtest" title="formのテスト">フォームテスト</a>
+                <a href="#" class="post-link" data_url="process-post/" page="signup" title="signup">Signup</a>
+                <!-- <a href="#" id="login" class="post-link" data_url="process-post/" page="login" title="test">Login</a>
+                <a href="#" id="user" class="post-link" data_url="process-post/" page="signup" title="">Signup</a> -->
             </nav>
         </div>
     </nav>
     <header id="head">
-        <!-- Header content -->
         {% block head %}{% endblock %}
     </header>
 
@@ -38,7 +46,6 @@
         {% block content %}{% endblock %}
     </main>
     <footer id="foot">
-        <!-- Footer content -->
         {% block foot %}{% endblock %}
     </footer>
     <script src="{% static 'js/app.js' %}"></script>

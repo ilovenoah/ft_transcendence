@@ -1,8 +1,8 @@
-{% extends 'content_base.html' %}
-{% load static %}
+<!-- {% extends 'content_base.html' %}
+{% load static %} -->
 
 <!--タイトルはここで必ず設定して -->
-{% block title %}Account Profile{% endblock %}
+<!-- {% block title %}Account Profile{% endblock %}
 
 {% block headerscript %}
 <script>
@@ -10,12 +10,12 @@ console.log("account profile");
 </script>
 {% endblock %}
 
-{% block head %}
+{% block head %} -->
 <!-- <p>This is the content of Account Profile header</p> -->
-{% endblock %}
+<!-- {% endblock %}
 
 {% block content %}
-<!-- SPAのコンテンツをここに記載 -->
+SPAのコンテンツをここに記載 -->
 <h1>User Profile</h1>
 {% if user.avatar %}
     <p><img src="{{ user.avatar.url }}" alt="User Avatar"></p>
@@ -26,12 +26,12 @@ console.log("account profile");
 <p>Email: {{ user.email }}</p>
 <p>Nickname: {{ user.nickname }}</p>
 <p>Online Status: {{ user.is_online }}</p>
-{% endblock %}
+<!-- {% endblock %} -->
 
 <!-- Additional JavaScript for this page -->
-{% block foot %}
+<!-- {% block foot %} -->
 <!-- <p>This is the content of Account Profile footer</p> -->
-{% endblock %}
+<!-- {% endblock %} -->
 
 
 <!-- <!DOCTYPE html>

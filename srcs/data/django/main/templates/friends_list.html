@@ -1,0 +1,28 @@
+{% extends 'content_base.html' %}
+{% load static %}
+
+<!--タイトルはここで必ず設定して -->
+{% block title %}Friends List{% endblock %}
+
+{% block headerscript %}
+<script>
+console.log("friends list");
+</script>
+{% endblock %}
+
+{% block head %}
+<!-- <p>This is the content of friends list header</p> -->
+{% endblock %}
+
+{% block content %}
+<!-- SPAのコンテンツをここに記載 -->
+<h1>Frineds</h1>
+{% for friend in friends %}
+    <p>{{ friend.friend.username }} <a href="{% url 'remove_friend' friend.friend.id %}">Remove</a></p>
+{% endfor %}
+{% endblock %}
+
+<!-- Additional JavaScript for this page -->
+{% block foot %}
+<!-- <p>This is the content of friends list footer</p> -->
+{% endblock %}
