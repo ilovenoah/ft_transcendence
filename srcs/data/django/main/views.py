@@ -80,7 +80,7 @@ def process_post_data(request):
                     'scriptfiles': '/static/js/game.js',
                 }
             elif page == 'signup':
-                form = SignUpForm(data=post_data, files=request.FILES)
+                form = SignUpForm(data=post_data)
                 if form.is_valid():
                     user = form.save()
                     response_data = {
@@ -89,13 +89,19 @@ def process_post_data(request):
                         'title': 'トラセントップ'
                     }       
                 else:
-                    html_content = render_to_string('signup.html', context={'form': form, 'request': request})
                     response_data = {
                         'page':page,
-                        'content':html_content,
+                        'content':render_to_string('signup.html', context={'form': form, 'request': request}),
                         'title': 'signup',
-                        'foot':  post_data.get('username'),
                     }
+            elif page == 'login':
+                response_data = {
+                    'page':page,
+                    'content': 'testページ',
+                    'title': 'test',
+                    # 生のjavascriptを埋め込みたいとき
+                    'rawscripts': 'console.log("test");',
+                }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
@@ -110,9 +116,6 @@ def process_post_data(request):
                         'content':read_file('default.html'),
                         'title': '42-ft_transcendence',
                     }
-                
-
-                
             return JsonResponse(response_data)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
@@ -128,16 +131,6 @@ def is_file_exists(filename):
         #raise FileNotFoundError(f"The file '{filepath}' does not exist.")
         return False
     return True
-
-# def signup(request):
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('index')  # 登録後にリダイレクトするページ
-#     else:
-#         form = SignUpForm()
-#     return render(request, 'signup.html', {'form': form})
 
 # class CustomLogoutView(TemplateView):
 #     template_name = 'logout.html'

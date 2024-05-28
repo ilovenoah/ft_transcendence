@@ -1,5 +1,5 @@
 <h2>Signup</h2>
-<form class="ajax-form" action="process-post/" enctype="multipart/form-data">
+<form class="ajax-form" action="process-post/">
     <input type="hidden" name="page" value="signup">
     {% csrf_token %}
     {{ form.as_p }}

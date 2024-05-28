@@ -1,32 +1,11 @@
-{% extends 'content_base.html' %}
-{% load static %}
-
-<!--タイトルはここで必ず設定して -->
-{% block title %}Login{% endblock %}
-
-{% block headerscript %}
-<!-- Additional JavaScript for this page -->
-console.log("Login");
-{% endblock %}
-
-{% block head %}
-<!-- <p>This is the content of Login header</p> -->
-{% endblock %}
-
-{% block content %}
-<!-- SPAのコンテンツをここに記載 -->
 <h2>Login</h2>
-<form method="post" action="{% url 'login' %}">
+<form class="ajax-form" action="process-post/">
+    <input type="hidden" name="page" value="login">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Login</button>
 </form>
-{% endblock %}
 
-<!-- Additional JavaScript for this page -->
-{% block foot %}
-<!-- <p>This is the content of Login footer</p> -->
-{% endblock %}
 
 
 <!-- <!DOCTYPE html>
