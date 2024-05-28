@@ -91,24 +91,23 @@ services:
         condition: service_healthy
     restart: always
 
-  postfix:
-    build:
-      context: ./requirements/postfix/
-    image: postfix:4242
-    container_name: postfix4242
-    networks:
-      - net_trans
-    init: true
-    ports:
-      - "25:25"      # SMTP
-      - "587:587"    # Submission
-    environment:
-      - DOMAIN=mydomain.com
-      - RELAYHOST=[smtp.relayserver.com]:587
-      - RELAYHOST_USERNAME=myusername
-      - RELAYHOST_PASSWORD=mypassword
-      
-    restart: always
+  # postfix:
+  #   build:
+  #     context: ./requirements/postfix/
+  #   image: postfix:4242
+  #   container_name: postfix4242
+  #   networks:
+  #     - net_trans
+  #   init: true
+  #   ports:
+  #     - "25:25"      # SMTP
+  #     - "587:587"    # Submission
+  #   environment:
+  #     - DOMAIN=mydomain.com
+  #     - RELAYHOST=[smtp.relayserver.com]:587
+  #     - RELAYHOST_USERNAME=myusername
+  #     - RELAYHOST_PASSWORD=mypassword
+  #   restart: always
 
 networks:
   net_trans:
