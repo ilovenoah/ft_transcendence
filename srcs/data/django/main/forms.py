@@ -6,11 +6,10 @@ from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
-    nickname = forms.CharField(max_length=255, required=False)
 
     class Meta:
         model = get_user_model() 
-        fields = ('username', 'email', 'nickname', 'avatar', 'password1', 'password2')
+        fields = ('username', 'email', 'password1', 'password2')
 
 class CustomUserChangeForm(UserChangeForm):
     password1 = forms.CharField(label='New password', widget=forms.PasswordInput, required=False)
@@ -18,7 +17,7 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'nickname', 'avatar', 'password1', 'password2')
+        fields = ('username', 'email', 'avatar', 'password1', 'password2')
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")

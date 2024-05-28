@@ -80,12 +80,14 @@ def process_post_data(request):
                     'scriptfiles': '/static/js/game.js',
                 }
             elif page == 'signup':
-                form = SignUpForm(data=request.POST, files=request.FILES)
-
+                form = SignUpForm(data=post_data, files=request.FILES)
                 if form.is_valid():
                     user = form.save()
-                    return redirect('index')
-           
+                    response_data = {
+                        'page':page,
+                        'content': read_file('top.html'),
+                        'title': 'トラセントップ'
+                    }       
                 else:
                     html_content = render_to_string('signup.html', context={'form': form, 'request': request})
                     response_data = {
@@ -94,8 +96,6 @@ def process_post_data(request):
                         'title': 'signup',
                         'foot':  post_data.get('username'),
                     }
-                                        
-                    return JsonResponse(response_data)
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {

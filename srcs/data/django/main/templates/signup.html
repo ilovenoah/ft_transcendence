@@ -3,12 +3,6 @@
     <input type="hidden" name="page" value="signup">
     {% csrf_token %}
     {{ form.as_p }}
-    {% if form.errors %}
-    <div class="form-errors">
-        <p>フォームの入力にエラーがあります：</p>
-        {{ form.errors }}
-    </div>
-    {% endif %} 
     <button type="submit">Sign up</button>
 </form>
 
