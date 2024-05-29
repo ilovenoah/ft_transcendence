@@ -82,7 +82,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
-      - "8880:80"
+      - "8888:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     init: true
