@@ -52,6 +52,12 @@ def process_post_data(request):
                     'content':read_file('formtest.html'),
                     'title': title,
                 }    
+            elif page == 'uploadtest':
+                response_data = {
+                    'page':page,
+                    'content':read_file('upload.html'),
+                    'title': title,
+                }    
             elif page == 'form1':
                 response_data = {
                     'page':page,

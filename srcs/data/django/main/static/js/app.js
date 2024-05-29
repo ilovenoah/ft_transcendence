@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('image', image);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/upload/', true);
+        xhr.open('POST', 'upload/', true);
 
         xhr.onload = function() {
             if (xhr.status === 200) {
