@@ -1,8 +1,23 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-#from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
+from .forms import ImageForm
 import json
 import os
+
+
+
+@csrf_exempt
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'message': 'Image uploaded successfully!'})
+        else:
+            return JsonResponse({'error': 'Invalid form data'}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 def index(request):
     return render(request, 'index.html')
