@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   var postData = {};
   postData['page'] = 'top'; 
-  postData['data_url']= '/process-post/';
+  postData['data_url']= 'process-post/';
   send_ajax(postData);
 
 
