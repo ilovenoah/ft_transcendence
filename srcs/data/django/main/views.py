@@ -1,5 +1,7 @@
 # from django.shortcuts import render, redirect
 from .forms import SignUpForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login
 import logging
 
 logger = logging.getLogger(__name__)
@@ -95,13 +97,20 @@ def process_post_data(request):
                         'title': 'signup',
                     }
             elif page == 'login':
-                response_data = {
-                    'page':page,
-                    'content': 'testページ',
-                    'title': 'test',
-                    # 生のjavascriptを埋め込みたいとき
-                    'rawscripts': 'console.log("test");',
-                }
+                form = AuthenticationForm(data=post_data)
+                if form.is_valid():
+                    login(request, form.get_user())
+                    response_data = {
+                        'page': page,
+                        'content': 'Login successful',
+                        'title': 'Login Success'
+                    }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login'
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
