@@ -13,6 +13,9 @@ stop:
 down:
 	docker compose -f $(DOCKER_COMPOSE_YML) down --rmi all
 
+pgclean:
+	docker compose -f $(DOCKER_COMPOSE_YML) down --rmi all --remove-orphans
+	docker volume rm 
 clean:
 	docker compose -f $(DOCKER_COMPOSE_YML) down --rmi all -v --remove-orphans
 #	rm -fr ./src/data

@@ -5,20 +5,6 @@ from .forms import ImageForm
 import json
 import os
 
-
-
-@csrf_exempt
-def upload_image(request):
-    if request.method == 'POST':
-        form = ImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({'message': 'Image uploaded successfully!'})
-        else:
-            return JsonResponse({'error': 'Invalid form data'}, status=400)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
-
 def index(request):
     return render(request, 'index.html')
 
@@ -94,6 +80,26 @@ def process_post_data(request):
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
+
+@csrf_exempt
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+
+            response_data = {
+                'page':page,
+                'content': 'testページ',
+                'title': 'test',
+                # 生のjavascriptを埋め込みたいとき
+                'rawscripts': 'console.log("test");',
+            }
+            return JsonResponse(response_data)
+        else:
+            return JsonResponse({'error': 'Invalid form data'}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+    
 #ファイルの存在チェック
 def is_file_exists(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -103,7 +109,6 @@ def is_file_exists(filename):
         #raise FileNotFoundError(f"The file '{filepath}' does not exist.")
         return False
     return True
-
 
 #ファイルの中身を返す
 def read_file(filename):
