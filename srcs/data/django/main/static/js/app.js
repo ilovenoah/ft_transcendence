@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", function() {
   var links = document.querySelectorAll(".post-link");
 
   // CSRFトークンをmetaタグから取得
-  //var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  //const csrftoken = getCookie('csrftoken');
   var csrfToken = getCSRFToken();
   
   links.forEach(function(link) {
@@ -144,7 +142,6 @@ window.addEventListener("popstate", function(event) {
 function send_ajax(data)
 {
   // CSRFトークンをmetaタグから取得
-  //var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const csrfToken = getCSRFToken();
 
   var xhr = new XMLHttpRequest();
@@ -175,10 +172,16 @@ function getCSRFToken() {
 }
 
 // CSRFトークンを更新する関数
-function updateCSRFToken() {
-  return fetch('get-csrf-token/')
-    .then(response => response.json())
-    .then(data => {
-      document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrfToken);
-    });
+function updateCSRFToken(callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'get-csrf-token/', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrfToken);
+          if (callback) callback();
+      }
+  };
+  xhr.send();
 }
