@@ -48,22 +48,66 @@ services:
     networks:
       - net_trans
     environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file: 
+      - .env      
     expose:
       - "5432"
     # ports:
     #   - "5432:5432"
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    #  - ./data/postgres:/var/lib/postgresql/data
     init: true
     restart: always
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "myuser", "-d", "mydatabase"]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  pgadmin:
+    build:
+      context: ./requirements/pgadmin/
+    image: pgadmin:4242
+    container_name: pgadmin4242
+    networks:
+      - net_trans
+    env_file: 
+      - .env      
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "8888:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    init: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+
+  # postfix:
+  #   build:
+  #     context: ./requirements/postfix/
+  #   image: postfix:4242
+  #   container_name: postfix4242
+  #   networks:
+  #     - net_trans
+  #   init: true
+  #   ports:
+  #     - "25:25"      # SMTP
+  #     - "587:587"    # Submission
+  #   environment:
+  #     - DOMAIN=mydomain.com
+  #     - RELAYHOST=[smtp.relayserver.com]:587
+  #     - RELAYHOST_USERNAME=myusername
+  #     - RELAYHOST_PASSWORD=mypassword
+  #   restart: always
 
 networks:
   net_trans:
@@ -80,3 +124,7 @@ networks:
 #       type: none
 #       o: bind
 #       device: ./data/postgres
+
+volumes:
+  postgres_data:
+  pgadmin_data:
