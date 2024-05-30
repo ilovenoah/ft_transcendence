@@ -1,30 +1,10 @@
-{% extends 'content_base.html' %}
-{% load static %}
-
-<!--タイトルはここで必ず設定して -->
-{% block title %}Login{% endblock %}
-
-{% block headerscript %}
-<!-- Additional JavaScript for this page -->
-console.log("Login");
-{% endblock %}
-
-{% block head %}
-<!-- <p>This is the content of Login header</p> -->
-{% endblock %}
-
-{% block content %}
-<!-- SPAのコンテンツをここに記載 -->
-<form method="post" action="{% url 'logout' %}">
+<h2>Logout</h2>
+<form class="ajax-form" action="process-post/">
+    <input type="hidden" name="page" value="logout">
     {% csrf_token %}
     <button type="submit">Logout</button>
 </form>
-{% endblock %}
 
-<!-- Additional JavaScript for this page -->
-{% block foot %}
-<!-- <p>This is the content of Login footer</p> -->
-{% endblock %}
 
 <!-- <!DOCTYPE html>
 <html lang="en">

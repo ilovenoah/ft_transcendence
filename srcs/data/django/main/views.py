@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from .forms import SignUpForm
+from django.contrib.auth import logout
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 # from django.urls import reverse_lazy
 # from django.views.generic import TemplateView
-# from django.contrib.auth import logout
 
 # from .forms import CustomUserChangeForm
 
@@ -132,6 +132,13 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'logout':
+                logout(request)
+                response_data = {
+                    'page': page,
+                    'content': read_file('top.html'),
+                    'title': 'トラセントップ'
+                }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
