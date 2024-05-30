@@ -116,6 +116,22 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login'
                     }
+            elif page == 'profile':
+                user = request.user
+                if user.is_authenticated:
+                    context = {'user': user}
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('profile.html', context),
+                        'title': 'Profile',
+                    }
+                else:
+                    form = AuthenticationForm()  # ログインフォームのインスタンスを作成
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {

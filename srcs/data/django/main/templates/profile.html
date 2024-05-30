@@ -1,36 +1,9 @@
-<!-- {% extends 'content_base.html' %}
-{% load static %} -->
-
-<!--タイトルはここで必ず設定して -->
-<!-- {% block title %}Account Profile{% endblock %}
-
-{% block headerscript %}
-<script>
-console.log("account profile");
-</script>
-{% endblock %}
-
-{% block head %} -->
-<!-- <p>This is the content of Account Profile header</p> -->
-<!-- {% endblock %}
-
-{% block content %}
-SPAのコンテンツをここに記載 -->
 <h1>User Profile</h1>
-{% if user.avatar %}
-    <p><img src="{{ user.avatar.url }}" alt="User Avatar"></p>
-{% else %}
-    <!-- <p>No avatar available.</p> -->
-{% endif %}
+<p><img src="{{ user.avatar.url }}" alt="User Avatar"></p>
 <p>Username: {{ user.username }}</p>
 <p>Email: {{ user.email }}</p>
 <p>Online Status: {{ user.is_online }}</p>
-<!-- {% endblock %} -->
 
-<!-- Additional JavaScript for this page -->
-<!-- {% block foot %} -->
-<!-- <p>This is the content of Account Profile footer</p> -->
-<!-- {% endblock %} -->
 
 
 <!-- <!DOCTYPE html>
