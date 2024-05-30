@@ -27,5 +27,7 @@ urlpatterns = [
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     path('process-post/', process_post_data, name='process_post_data'),
+    path('get-csrf-token/', views.get_csrf_token, name='get_csrf_token'),
+    
 ]
 

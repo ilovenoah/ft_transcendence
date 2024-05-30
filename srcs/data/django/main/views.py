@@ -1,8 +1,14 @@
 # from django.shortcuts import render, redirect
-from .forms import SignUpForm
+import os
+import json
+import logging
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login
-import logging
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+from django.template.loader import render_to_string
+from .forms import SignUpForm
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +34,13 @@ logger = logging.getLogger(__name__)
 # def profile(request):
 #     return render(request, 'profile.html', {'user': request.user})
 
-from django.shortcuts import render
-from django.http import JsonResponse
-import json
-import os
-from django.template.loader import render_to_string
 
 def index(request):
     return render(request, 'index.html')
+
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
 
 def process_post_data(request):
     if request.method == 'POST':

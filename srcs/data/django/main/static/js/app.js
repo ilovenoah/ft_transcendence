@@ -10,10 +10,10 @@ document.addEventListener("DOMContentLoaded", function() {
   var links = document.querySelectorAll(".post-link");
 
   // CSRFトークンをmetaタグから取得
-  var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  //var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   //const csrftoken = getCookie('csrftoken');
-
-
+  var csrfToken = getCSRFToken();
+  
   links.forEach(function(link) {
     link.addEventListener("click", function(event) {
       event.preventDefault();
@@ -23,8 +23,8 @@ document.addEventListener("DOMContentLoaded", function() {
         postData[attr.name] = attr.value;
       });
 
-      send_ajax(postData);
 
+      send_ajax(postData);
     });
   });
 
@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
       xhr.open('POST', form.action, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
   
+      csrfToken = getCSRFToken();
       // CSRFトークンの変数が未定義でないことを確認
       if (typeof csrfToken !== 'undefined') {
         xhr.setRequestHeader('X-CSRFToken', csrfToken);
@@ -79,6 +80,8 @@ function updateContent(data) {
   // 表示内容をデータに基づいて更新する処理
   // ここに実際の更新ロジックを記述
 
+  //本来は失敗したときのことを記述したりすべき
+  updateCSRFToken()
 
   // ページのコンテンツを更新
   if (typeof data.content !== 'undefined') {     
@@ -141,7 +144,8 @@ window.addEventListener("popstate", function(event) {
 function send_ajax(data)
 {
   // CSRFトークンをmetaタグから取得
-  var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  //var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  const csrfToken = getCSRFToken();
 
   var xhr = new XMLHttpRequest();
   xhr.open("POST", data.data_url, true);
@@ -165,3 +169,16 @@ function send_ajax(data)
 }
 
 
+// CSRFトークンを取得する関数
+function getCSRFToken() {
+  return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}
+
+// CSRFトークンを更新する関数
+function updateCSRFToken() {
+  return fetch('get-csrf-token/')
+    .then(response => response.json())
+    .then(data => {
+      document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrfToken);
+    });
+}
