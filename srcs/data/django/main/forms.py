@@ -49,8 +49,8 @@ class UsernameForm(UserChangeForm):
         fields = ['username']
     def __init__(self, *args, **kwargs):
         super(UsernameForm, self).__init__(*args, **kwargs)
-        # パスワードフィールドを削除する
-        del self.fields['password']
+        self.fields['username'].required = True
+        del self.fields['password'] # パスワードフィールドを削除する
 
 class EmailForm(UserChangeForm):
     class Meta:

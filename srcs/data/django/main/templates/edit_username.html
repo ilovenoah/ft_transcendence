@@ -2,6 +2,10 @@
 <form class="ajax-form" action="process-post/">
     <input type="hidden" name="page" value="edit_username">
     {% csrf_token %}
-    {{ form_edit_username.as_p }}
+    <div>
+        <label for="id_username">Username:</label>
+        <input type="text" name="username" id="id_username" value="{{ form_edit_username.username.value|default_if_none:'' }}">
+    </div>
     <button type="submit">Save</button>
+    <!-- {{ form_edit_username.as_p }} -->
 </form>

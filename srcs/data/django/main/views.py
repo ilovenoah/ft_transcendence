@@ -138,12 +138,10 @@ def process_post_data(request):
                     else:
                         response_data = {
                             'page': page,
-                            #'content':render_to_string('edit_profile.html', context={'form': form, 'request': request}),
                             'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
                                 render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-     
                             'title': 'Edit Profile'
                         }
                 else:
