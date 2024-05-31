@@ -1,26 +1,8 @@
-{% extends 'content_base.html' %}
-{% load static %}
-
-<!--タイトルはここで必ず設定して -->
-{% block title %}Edit Profile{% endblock %}
-
-{% block headerscript %}
-<!-- Additional JavaScript for this page -->
-console.log("edit profile");
-{% endblock %}
-
-{% block head %}
-{% endblock %}
-
-{% block content %}
-<!-- SPAのコンテンツをここに記載 -->
-<form method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+<h2>Edit Profile</h2>
+<form class="ajax-form" action="process-post/" enctype="multipart/form-data">
+    <input type="hidden" name="page" value="edit_profile">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save Changes</button>
 </form>
-{% endblock %}
 
-<!-- Additional JavaScript for this page -->
-{% block foot %}
-{% endblock %}

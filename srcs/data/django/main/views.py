@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # from django.urls import reverse_lazy
 # from django.views.generic import TemplateView
 
-# from .forms import CustomUserChangeForm
+from .forms import CustomUserChangeForm
 
 # def index(request):
 #     return render(request, 'index.html')
@@ -92,8 +92,8 @@ def process_post_data(request):
                     user = form.save()
                     response_data = {
                         'page':page,
-                        'content': read_file('top.html'),
-                        'title': 'トラセントップ'
+                        'content': 'Signup successful',
+                        'title': 'Signup Success'
                     }       
                 else:
                     response_data = {
@@ -126,7 +126,7 @@ def process_post_data(request):
                         'title': 'Profile',
                     }
                 else:
-                    form = AuthenticationForm()  # ログインフォームのインスタンスを作成
+                    form = AuthenticationForm()
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -139,6 +139,30 @@ def process_post_data(request):
                     'content': read_file('top.html'),
                     'title': 'トラセントップ'
                 }
+            elif page == 'edit_profile':
+                user = request.user
+                if user.is_authenticated:
+                    form = CustomUserChangeForm(data=post_data, files=request.FILES, instance=user)
+                    if form.is_valid():
+                        user = form.save()
+                        response_data = {
+                        'page': page,
+                        'content': 'Edit successful',
+                        'title': 'Edit Success'
+                    }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content':render_to_string('edit_profile.html', context={'form': form, 'request': request}),
+                            'title': 'Edit Profile'
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
