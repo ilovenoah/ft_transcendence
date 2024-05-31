@@ -38,6 +38,6 @@ class CustomUserChangeForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super(CustomUserChangeForm, self).__init__(*args, **kwargs)
         self.fields.pop('password', None)  # password フィールドを削除
-        self.fields['email'].required = True
-        self.fields['avatar'].required = True
+        # self.fields['email'].required = True
+        # self.fields['avatar'].required = True
 
