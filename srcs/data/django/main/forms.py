@@ -38,6 +38,47 @@ class CustomUserChangeForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super(CustomUserChangeForm, self).__init__(*args, **kwargs)
         self.fields.pop('password', None)  # password フィールドを削除
-        # self.fields['email'].required = True
-        # self.fields['avatar'].required = True
+        self.fields['email'].required = True
+        self.fields['avatar'].required = True
 
+User = get_user_model()
+
+class UsernameForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ['username']
+    def __init__(self, *args, **kwargs):
+        super(UsernameForm, self).__init__(*args, **kwargs)
+        # パスワードフィールドを削除する
+        del self.fields['password']
+
+class EmailForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ['email']
+    def __init__(self, *args, **kwargs):
+        super(EmailForm, self).__init__(*args, **kwargs)
+        self.fields['email'].required = True
+        del self.fields['password']
+
+class AvatarForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['avatar']
+    def __init__(self, *args, **kwargs):
+        super(AvatarForm, self).__init__(*args, **kwargs)
+        self.fields['avatar'].required = True
+
+class PasswordChangeForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+
+    class Meta:
+        model = User
+        fields = ['password']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user

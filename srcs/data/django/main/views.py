@@ -10,29 +10,9 @@ from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from .forms import SignUpForm
 from django.contrib.auth import logout
-
+from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
+from .forms import CustomUserChangeForm #後で消す
 logger = logging.getLogger(__name__)
-
-# from django.contrib.auth.decorators import login_required
-
-# from django.urls import reverse_lazy
-# from django.views.generic import TemplateView
-
-from .forms import CustomUserChangeForm
-
-# def index(request):
-#     return render(request, 'index.html')
-# def page1(request):
-#     return render(request, 'page1.html')
-# def page2(request):
-#     return render(request, 'page2.html')
-# def page3(request):
-#     return render(request, 'page3.html')
-# def ponggame(request):
-#     return render(request, 'ponggame.html')
-
-# def profile(request):
-#     return render(request, 'profile.html', {'user': request.user})
 
 
 def index(request):
@@ -163,6 +143,109 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'edit_username':
+                user = request.user
+                if user.is_authenticated:
+                    form = UsernameForm(data=post_data, instance=user)
+                    if form.is_valid():
+                        user = form.save()
+                        response_data = {
+                        'page': page,
+                        'content': 'Edit successful',
+                        'title': 'Edit Success'
+                    }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content':render_to_string('edit_username.html', context={'form': form, 'request': request}),
+                            'title': 'Edit Profile'
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'edit_email':
+                user = request.user
+                if user.is_authenticated:
+                    form = EmailForm(data=post_data, instance=user)
+                    if form.is_valid():
+                        user = form.save()
+                        response_data = {
+                        'page': page,
+                        'content': 'Edit successful',
+                        'title': 'Edit Success'
+                    }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content':render_to_string('edit_email.html', context={'form': form, 'request': request}),
+                            'title': 'Edit Profile'
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'edit_avatar':
+                user = request.user
+                if user.is_authenticated:
+                    form = AvatarForm(data=post_data, files=request.FILES, instance=user)
+                    if form.is_valid():
+                        if 'avatar' in request.FILES: #新しいavatarがuploadされたか確認
+                            user = form.save()
+                            response_data = {
+                                'page': page,
+                                'content': 'Edit successful',
+                                'title': 'Edit Success'
+                            }
+                        else:
+                            response_data = {
+                                'page': page,
+                                'content':render_to_string('edit_avatar.html', context={'form': form, 'request': request}),
+                                'title': 'Edit Profile'
+                        }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content':render_to_string('edit_avatar.html', context={'form': form, 'request': request}),
+                            'title': 'Edit Profile'
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'change_password':
+                user = request.user
+                if user.is_authenticated:
+                    form = PasswordChangeForm(data=post_data, instance=user)
+                    if form.is_valid():
+                        user = form.save()
+                        response_data = {
+                        'page': page,
+                        'content': 'Change successful',
+                        'title': 'Change Success'
+                    }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content':render_to_string('change_password.html', context={'form': form, 'request': request}),
+                            'title': 'Edit Profile'
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }                
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
@@ -192,27 +275,6 @@ def is_file_exists(filename):
         #raise FileNotFoundError(f"The file '{filepath}' does not exist.")
         return False
     return True
-
-# class CustomLogoutView(TemplateView):
-#     template_name = 'logout.html'
-
-#     def post(self, request, *args, **kwargs):
-#         logout(request)
-#         return redirect(self.get_success_url())
-    
-#     def get_success_url(self):
-#         return reverse_lazy('index')  # ログアウト後のリダイレクト先
-
-# @login_required
-# def edit_profile(request):
-#     if request.method == 'POST':
-#         form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('index')  
-#     else:
-#         form = CustomUserChangeForm(instance=request.user)
-#     return render(request, 'edit_profile.html', {'form': form})
 
 #ファイルの中身を返す
 def read_file(filename):

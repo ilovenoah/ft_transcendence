@@ -1,0 +1,8 @@
+<h2>Edit Avatar</h2>
+
+<form class="ajax-form" action="process-post/" enctype="multipart/form-data">
+    <input type="hidden" name="page" value="edit_profile">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
