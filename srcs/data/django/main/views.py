@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-#from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
+from .forms import ImageForm
 import json
 import os
 
@@ -35,6 +36,12 @@ def process_post_data(request):
                 response_data = {
                     'page':page,
                     'content':read_file('formtest.html'),
+                    'title': title,
+                }    
+            elif page == 'uploadtest':
+                response_data = {
+                    'page':page,
+                    'content':read_file('upload.html'),
                     'title': title,
                 }    
             elif page == 'form1':
@@ -73,6 +80,33 @@ def process_post_data(request):
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
+
+@csrf_exempt
+def upload_image(request):
+    if request.method == 'POST':
+        try:
+            #受信データの処理
+            
+            form = ImageForm(request.POST, request.FILES)
+
+            if form.is_valid():
+                image_instance = form.save()
+                response_data = {
+                    'msgtagid':'result',
+                    'imgtagid':'uploaded',
+                    'message':'アップロードが成功しました',
+                    'imgsrc':'media/' + image_instance.image.name,
+                }
+                return JsonResponse(response_data)
+            else:
+                return JsonResponse({'error': 'Invalid form data'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+
+
 #ファイルの存在チェック
 def is_file_exists(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -82,7 +116,6 @@ def is_file_exists(filename):
         #raise FileNotFoundError(f"The file '{filepath}' does not exist.")
         return False
     return True
-
 
 #ファイルの中身を返す
 def read_file(filename):
