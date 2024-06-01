@@ -61,3 +61,5 @@ __pycache__/
 /srcs/data/postgres/
 srcs/data/django/media/images/*.png
 srcs/data/django/media/images/*.jpg
+srcs/data/django/media/avatars/*.png
+srcs/data/django/media/avatars/*.jpg
