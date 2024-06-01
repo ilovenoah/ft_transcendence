@@ -119,7 +119,8 @@ def process_post_data(request):
                 user = request.user
                 if user.is_authenticated:
                     user.is_online = False
-                    user.save(update_fields=['is_online'])
+                    user.last_active = timezone.now()
+                    user.save(update_fields=['last_active', 'is_online'])
                     logout(request)
                     response_data = {
                         'page': page,
@@ -274,10 +275,12 @@ def process_post_data(request):
                     if form_change_password.is_valid():
                         user = form_change_password.save()
                         response_data = {
-                        'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved'
-                    }
+                            'page': page,
+                            'content': 'Saved',
+                            'title': 'Saved'
+                        }
+                        user.is_online = False
+                        user.save(update_fields=['is_online'])
                     else:
                         response_data = {
                             'page': page,
