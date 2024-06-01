@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from .models import Image
+
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
@@ -82,3 +83,9 @@ class PasswordChangeForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = ['image']
+

@@ -3,16 +3,27 @@ import os
 import json
 import logging
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
-from .forms import SignUpForm
-from django.contrib.auth import logout
-from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserChangeForm #後で消す
+from .forms import ImageForm
+from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
+from .forms import SignUpForm
+
+
+
 logger = logging.getLogger(__name__)
+
+
+
 
 
 def index(request):
@@ -50,6 +61,12 @@ def process_post_data(request):
                 response_data = {
                     'page':page,
                     'content':read_file('formtest.html'),
+                    'title': title,
+                }    
+            elif page == 'uploadtest':
+                response_data = {
+                    'page':page,
+                    'content':read_file('upload.html'),
                     'title': title,
                 }    
             elif page == 'form1':
@@ -317,6 +334,31 @@ def process_post_data(request):
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
+
+@csrf_exempt
+def upload_image(request):
+    if request.method == 'POST':
+        try:
+            #受信データの処理            
+            form = ImageForm(request.POST, request.FILES)
+            if form.is_valid():
+                image_instance = form.save()
+                response_data = {
+                    'msgtagid':'result',
+                    'imgtagid':'uploaded',
+                    'message':'アップロードが成功しました',
+                    'imgsrc':'media/' + image_instance.image.name,
+                }
+                return JsonResponse(response_data)
+            else:
+                return JsonResponse({'error': 'Invalid form data'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+
+
 #ファイルの存在チェック
 def is_file_exists(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -342,17 +384,7 @@ def read_file(filename):
     except Exception as e:
         return f"Error: {e}"
 
-from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
 
-@csrf_exempt
 @login_required
 def heartbeat(request):
-    if request.method == 'POST':
-        user = request.user
-        user.last_active = timezone.now()
-        user.is_online = True
-        user.save(update_fields=['last_active', 'is_online'])
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'}, status=400)
+    return JsonResponse({'status': 'logged_in'})

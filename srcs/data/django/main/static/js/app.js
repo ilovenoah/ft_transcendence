@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+  // 3分ごとにheartbeatを送信
+  setInterval(sendHeartbeat, 3 * 60 * 1000);
+  // ページ読み込み時に初回heartbeatを送信
+  sendHeartbeat();
 
   var postData = {};
   postData['page'] = 'top'; 
@@ -28,7 +32,41 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
   document.addEventListener('submit', function(event) {
-    if (event.target.matches('.ajax-form')) {
+    //ファイルをアップロードするときのform
+    if (event.target.matches('.ajax-upload'))
+    {
+        event.preventDefault();
+
+        var image = document.getElementById('image').files[0];
+
+        var maxSize = 5 * 1024 * 1024;  // 5MB
+        if (image.size > maxSize) {
+            document.getElementById('result').innerText = "ファイルサイズが5MBを超えています。";
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('image', image);
+        formData.append('imgtagid', 'uploaded');
+        formData.append('msgtagid', 'result');
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'upload/', true);
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText);
+                document.getElementById('result').innerText = response.message;
+                document.getElementById('uploaded').src = response.imgsrc;
+
+            } else {
+                document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
+            }
+        };
+        xhr.send(formData);
+
+    //textデータを送信するときのform
+    } else if (event.target.matches('.ajax-form')) {
       event.preventDefault();
       
       const form = event.target;
@@ -72,7 +110,13 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
- 
+// popstateイベントをリッスン
+window.addEventListener("popstate", function(event) {
+  if (event.state) {
+    // 状態オブジェクトが存在する場合、表示内容を更新
+    updateContent(event.state.data);
+  }
+});
   
 function updateContent(data) {
   // 表示内容をデータに基づいて更新する処理
@@ -96,7 +140,6 @@ function updateContent(data) {
   } else {
     document.title = '42tokyo';
   }
-
 
   if (typeof data.rawscripts !== 'undefined') {     
     //ここからheaderにscriptをいれる <data.rawscripts> 
@@ -131,14 +174,6 @@ function updateContent(data) {
   }
 }
 
-// popstateイベントをリッスン
-window.addEventListener("popstate", function(event) {
-  if (event.state) {
-    // 状態オブジェクトが存在する場合、表示内容を更新
-    updateContent(event.state.data);
-  }
-});
-
 function send_ajax(data)
 {
   // CSRFトークンをmetaタグから取得
@@ -165,7 +200,6 @@ function send_ajax(data)
   xhr.send(JSON.stringify(data));
 }
 
-
 // CSRFトークンを取得する関数
 function getCSRFToken() {
   return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -185,3 +219,26 @@ function updateCSRFToken(callback) {
   };
   xhr.send();
 }
+
+
+function sendHeartbeat() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'heartbeat/', true);
+  xhr.withCredentials = true;
+
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+              var response = JSON.parse(xhr.responseText);
+              console.log('User is:', response.status);
+              // ログイン状態に応じた処理
+          } else {
+              console.error('Error: ', xhr.status);
+              // ログアウト状態に応じた処理
+          }
+      }
+  };
+
+  xhr.send();
+}
+
