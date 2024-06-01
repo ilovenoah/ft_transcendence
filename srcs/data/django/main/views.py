@@ -84,22 +84,29 @@ def process_post_data(request):
 @csrf_exempt
 def upload_image(request):
     if request.method == 'POST':
-        form = ImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
+        try:
+            #受信データの処理
             
-            response_data = {
-                'page':page,
-                'content': 'testページ',
-                'title': 'test',
-                # 生のjavascriptを埋め込みたいとき
-                'rawscripts': 'console.log("test");',
-            }
-            return JsonResponse(response_data)
-        else:
-            return JsonResponse({'error': 'Invalid form data'}, status=400)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-    
+            form = ImageForm(request.POST, request.FILES)
+
+            if form.is_valid():
+                image_instance = form.save()
+                response_data = {
+                    'msgtagid':'result',
+                    'imgtagid':'uploaded',
+                    'message':'アップロードが成功しました',
+                    'imgsrc':'media/' + image_instance.image.name,
+                }
+                return JsonResponse(response_data)
+            else:
+                return JsonResponse({'error': 'Invalid form data'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+
+
 #ファイルの存在チェック
 def is_file_exists(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

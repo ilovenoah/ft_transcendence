@@ -36,8 +36,8 @@ document.addEventListener("DOMContentLoaded", function() {
         event.preventDefault();
 
         var image = document.getElementById('image').files[0];
-        var maxSize = 5 * 1024 * 1024;  // 5MB
 
+        var maxSize = 5 * 1024 * 1024;  // 5MB
         if (image.size > maxSize) {
             document.getElementById('result').innerText = "ファイルサイズが5MBを超えています。";
             return;
@@ -45,18 +45,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
         var formData = new FormData();
         formData.append('image', image);
+        formData.append('imgtagid', 'uploaded');
+        formData.append('msgtagid', 'result');
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'upload/', true);
 
         xhr.onload = function() {
             if (xhr.status === 200) {
-                document.getElementById('result').innerText = JSON.parse(xhr.responseText).message;
+              const response = JSON.parse(xhr.responseText);
+                document.getElementById('result').innerText = response.message;
+                document.getElementById('uploaded').src = response.imgsrc;
+
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
             }
         };
-
         xhr.send(formData);
 
     //textデータを送信するときのform
