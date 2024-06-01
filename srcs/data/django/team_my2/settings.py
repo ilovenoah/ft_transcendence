@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
 
      # 自作アプリケーション
     'main', 
@@ -80,7 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'team_my2.wsgi.application'
-
+ASGI_APPLICATION = 'team_my2.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -126,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'http://localhost']
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'http://localhost','https://127.0.0.1', 'http://127.0.0.1']
 
 LOGGING = {
     'version': 1,

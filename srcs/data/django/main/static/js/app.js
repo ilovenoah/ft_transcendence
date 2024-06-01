@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+  // 3分ごとにheartbeatを送信
+  setInterval(sendHeartbeat, 3 * 60 * 1000);
+  // ページ読み込み時に初回heartbeatを送信
+  sendHeartbeat();
+
 
   var postData = {};
   postData['page'] = 'top'; 
@@ -73,6 +78,15 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
  
+// popstateイベントをリッスン
+window.addEventListener("popstate", function(event) {
+  if (event.state) {
+    // 状態オブジェクトが存在する場合、表示内容を更新
+    updateContent(event.state.data);
+  }
+});
+
+
   
 function updateContent(data) {
   // 表示内容をデータに基づいて更新する処理
@@ -131,13 +145,29 @@ function updateContent(data) {
   }
 }
 
-// popstateイベントをリッスン
-window.addEventListener("popstate", function(event) {
-  if (event.state) {
-    // 状態オブジェクトが存在する場合、表示内容を更新
-    updateContent(event.state.data);
-  }
-});
+
+
+function sendHeartbeat() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'heartbeat/', true);
+  xhr.withCredentials = true;
+
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+              var response = JSON.parse(xhr.responseText);
+              console.log('User is:', response.status);
+              // ログイン状態に応じた処理
+          } else {
+              console.error('Error: ', xhr.status);
+              // ログアウト状態に応じた処理
+          }
+      }
+  };
+
+  xhr.send();
+}
+
 
 function send_ajax(data)
 {

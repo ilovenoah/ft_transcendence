@@ -12,15 +12,13 @@ from .forms import SignUpForm
 from django.contrib.auth import logout
 from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
 from .forms import CustomUserChangeForm #後で消す
-logger = logging.getLogger(__name__)
+from django.contrib.auth.decorators import login_required
 
+logger = logging.getLogger(__name__)
 
 def index(request):
     return render(request, 'index.html')
 
-def get_csrf_token(request):
-    token = get_token(request)
-    return JsonResponse({'csrfToken': token})
 
 def process_post_data(request):
     if request.method == 'POST':
@@ -64,7 +62,7 @@ def process_post_data(request):
                     'content':read_file('ponggame.html'),
                     'title': title,
                     # javascriptのファイルを指定するとき
-                    'scriptfiles': '/static/js/game.js',
+                    'scriptfiles': '/static/js/sspong.js',
                 }
             elif page == 'signup':
                 form = SignUpForm(data=post_data)
@@ -300,6 +298,17 @@ def process_post_data(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+
+@login_required
+def heartbeat(request):
+    return JsonResponse({'status': 'logged_in'})
+
+
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
+
 
 #ファイルの存在チェック
 def is_file_exists(filename):
