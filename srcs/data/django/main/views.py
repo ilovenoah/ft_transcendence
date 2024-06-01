@@ -85,6 +85,9 @@ def process_post_data(request):
                 form = AuthenticationForm(data=post_data)
                 if form.is_valid():
                     login(request, form.get_user())
+                    user = request.user
+                    user.is_online = True
+                    user.save(update_fields=['is_online'])
                     response_data = {
                         'page': page,
                         'content': 'Login successful',
@@ -113,12 +116,22 @@ def process_post_data(request):
                         'title': 'Login',
                     }
             elif page == 'logout':
-                logout(request)
-                response_data = {
-                    'page': page,
-                    'content': read_file('top.html'),
-                    'title': 'トラセントップ'
-                }
+                user = request.user
+                if user.is_authenticated:
+                    user.is_online = False
+                    user.save(update_fields=['is_online'])
+                    logout(request)
+                    response_data = {
+                        'page': page,
+                        'content': 'logged out',
+                        'title': 'Logout'
+                    }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': read_file('top.html'),
+                        'title': 'トラセントップ'
+                    }
             elif page == 'edit_profile':
                 user = request.user
                 if user.is_authenticated:
@@ -325,3 +338,18 @@ def read_file(filename):
         return "Error: File not found."
     except Exception as e:
         return f"Error: {e}"
+
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+
+@csrf_exempt
+@login_required
+def heartbeat(request):
+    if request.method == 'POST':
+        user = request.user
+        user.last_active = timezone.now()
+        user.is_online = True
+        user.save(update_fields=['last_active', 'is_online'])
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)

@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.user_activity.UpdateUserActivityMiddleware', #オンラインステータス
+    # 'middleware.user_activity.UpdateUserActivityMiddleware', #オンラインステータス
 ]
 
 ROOT_URLCONF = 'team_my2.urls'

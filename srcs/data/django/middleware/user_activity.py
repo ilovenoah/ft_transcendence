@@ -9,8 +9,15 @@ class UpdateUserActivityMiddleware:
         response = self.get_response(request)
         if request.user.is_authenticated:
             now = timezone.now()
-            if not request.user.last_active or (now - request.user.last_active > timedelta(minutes=1)): #最後にアクセスしてから1分以上経過している
-                request.user.last_active = now
+            # ユーザーの最後のアクティビティ時刻をチェック
+            if request.user.last_active and (now - request.user.last_active > timedelta(minutes=5)):
+                request.user.is_online = False
+            else:
                 request.user.is_online = True
-                request.user.save(update_fields=['last_active', 'is_online'])
+            
+            # 最後のアクティブ時刻を更新
+            request.user.last_active = now
+            request.user.save(update_fields=['last_active', 'is_online'])
+
         return response
+
