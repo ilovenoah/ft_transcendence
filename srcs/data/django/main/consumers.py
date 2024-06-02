@@ -16,14 +16,19 @@ class PongConsumer(WebsocketConsumer):
 
         if message == 'update_position':
             player1_y = text_data_json['player1_y']
+            player2_y = text_data_json['player2_y']
             # ロジックを実装してプレイヤー1の位置を更新
             # ここにプレイヤー2やボールの位置、スコアの更新などのロジックを追加
+            
+
+
+
 
             game_state = {
                 'player1_y': player1_y,
                 'player2_y': 100,  # サンプルデータ
                 'ball_x': 400,     # サンプルデータ
-                'ball_y': 300,     # サンプルデータ
+                'ball_y':   300,     # サンプルデータ
                 'score_player1': 0,  # サンプルデータ
                 'score_player2': 0   # サンプルデータ
             }

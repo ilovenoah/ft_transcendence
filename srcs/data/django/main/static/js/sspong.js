@@ -7,25 +7,45 @@ function init() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    wwidth = window.innerWidth;
+    wheight = window.innerHeight;
+    // console.log (wwidth);
+    // console.log(wheight);
+    if ( wwidth >= 2 * wheight)
+        wwidth = wheight * 2;
+    else if(wwidth < 2 * wheight)
+        wheight = wwidth * 0.5;        
+    renderer.setSize(wwidth, wheight);
+    //renderer.setSize(window.innerWidth, window.innerHeight);
+
     document.body.appendChild(renderer.domElement);
 
-    const geometry = new THREE.BoxGeometry(1, 4, 0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const geometry = new THREE.BoxGeometry(1, 3, 1);
+    const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    
     paddle1 = new THREE.Mesh(geometry, material);
+    paddle1.position.x = -10;
     scene.add(paddle1);
 
-    const material2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const material2 = new THREE.MeshPhongMaterial({ color: 0xff0000 });
     paddle2 = new THREE.Mesh(geometry, material2);
-    paddle2.position.x = 8;
+    paddle2.position.x = 10;
     scene.add(paddle2);
 
-    const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const ballGeometry = new THREE.SphereGeometry(0.5, 24, 24);
+    const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
     ball = new THREE.Mesh(ballGeometry, ballMaterial);
     scene.add(ball);
 
-    camera.position.z = 10;
+//    const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
+
+    //const light = new THREE.DirectionalLight(0xFFFFFF, 10);
+    const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
+    scene.add(light);
+
+
+    camera.position.z = 20;
 }
 
 function animate() {
@@ -34,6 +54,7 @@ function animate() {
     } else if (moveDown) {
         player1Y -= 0.1;
     }
+
     gameSocket.send(JSON.stringify({
         'message': 'update_position',
         'player1_y': player1Y * 100  // サーバーでのスケーリングを考慮
