@@ -83,6 +83,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'team_my2.wsgi.application'
 ASGI_APPLICATION = 'team_my2.asgi.application'
 
+# Redis Channel Layer Configuration
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis4242", 6379)],
+        },
+    },
+}
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

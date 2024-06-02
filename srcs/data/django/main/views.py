@@ -310,6 +310,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': token})
 
 
+
 #ファイルの存在チェック
 def is_file_exists(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -1,79 +1,93 @@
-const canvas = document.getElementById('pongCanvas');
-const context = canvas.getContext('2d');
-const socket = new WebSocket('wss://' + window.location.host + '/ws/pong/');
+let scene, camera, renderer, paddle1, paddle2, ball;
+let player1Y = 0;
+let moveUp = false;
+let moveDown = false;
 
-// Pongゲームの基本設定
-const paddleWidth = 10, paddleHeight = 100, ballSize = 10;
-let playerPaddle = { x: 10, y: canvas.height / 2 - paddleHeight / 2 };
-let aiPaddle = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2 };
-let ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 2, dy: 2 };
+function init() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-function drawRect(x, y, width, height, color) {
-    context.fillStyle = color;
-    context.fillRect(x, y, width, height);
+    const geometry = new THREE.BoxGeometry(1, 4, 0.1);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    paddle1 = new THREE.Mesh(geometry, material);
+    scene.add(paddle1);
+
+    const material2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    paddle2 = new THREE.Mesh(geometry, material2);
+    paddle2.position.x = 8;
+    scene.add(paddle2);
+
+    const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    ball = new THREE.Mesh(ballGeometry, ballMaterial);
+    scene.add(ball);
+
+    camera.position.z = 10;
 }
 
-function drawCircle(x, y, radius, color) {
-    context.fillStyle = color;
-    context.beginPath();
-    context.arc(x, y, radius, 0, Math.PI * 2, false);
-    context.closePath();
-    context.fill();
-}
-
-function render() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    drawRect(playerPaddle.x, playerPaddle.y, paddleWidth, paddleHeight, 'white');
-    drawRect(aiPaddle.x, aiPaddle.y, paddleWidth, paddleHeight, 'white');
-    drawCircle(ball.x, ball.y, ballSize, 'white');
-}
-
-function update() {
-    ball.x += ball.dx;
-    ball.y += ball.dy;
-
-    // 壁の衝突判定
-    if (ball.y + ball.dy > canvas.height || ball.y + ball.dy < 0) {
-        ball.dy = -ball.dy;
+function animate() {
+    if (moveUp) {
+        player1Y += 0.1;
+    } else if (moveDown) {
+        player1Y -= 0.1;
     }
+    gameSocket.send(JSON.stringify({
+        'message': 'update_position',
+        'player1_y': player1Y * 100  // サーバーでのスケーリングを考慮
+    }));
 
-    // パドルの衝突判定
-    if (ball.x + ball.dx < playerPaddle.x + paddleWidth) {
-        if (ball.y > playerPaddle.y && ball.y < playerPaddle.y + paddleHeight) {
-            ball.dx = -ball.dx;
-        } else {
-            // AIの勝ち
-        }
-    } else if (ball.x + ball.dx > aiPaddle.x) {
-        if (ball.y > aiPaddle.y && ball.y < aiPaddle.y + paddleHeight) {
-            ball.dx = -ball.dx;
-        } else {
-            // プレイヤーの勝ち
-        }
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+
+function updateGameState(data) {
+    paddle1.position.y = data.player1_y / 100;
+    paddle2.position.y = data.player2_y / 100;
+    ball.position.x = data.ball_x / 100;
+    ball.position.y = data.ball_y / 100;
+}
+
+function onKeyDown(e) {
+    if (e.key === 'ArrowUp') {
+        moveUp = true;
+    } else if (e.key === 'ArrowDown') {
+        moveDown = true;
     }
 }
 
-function gameLoop() {
-    update();
-    render();
-    requestAnimationFrame(gameLoop);
+function onKeyUp(e) {
+    if (e.key === 'ArrowUp') {
+        moveUp = false;
+    } else if (e.key === 'ArrowDown') {
+        moveDown = false;
+    }
 }
 
-gameLoop();
 
-socket.onmessage = function(e) {
+const gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/');
+
+
+
+gameSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    console.log(data.message);
+    updateGameState(data);
 };
 
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowUp' && playerPaddle.y > 0) {
-        playerPaddle.y -= 10;
-    } else if (e.key === 'ArrowDown' && playerPaddle.y < canvas.height - paddleHeight) {
-        playerPaddle.y += 10;
-    }
+gameSocket.onopen = function(e) {
+    console.log("WebSocket connection established");
 
-    socket.send(JSON.stringify({
-        'message': 'Player moved'
-    }));
-});
+    //ゲームが始まったらやればいい
+    animate();
+};
+
+gameSocket.onclose = function(e) {
+    console.log("WebSocket connection closed");
+};
+
+document.addEventListener('keydown', onKeyDown);
+document.addEventListener('keyup', onKeyUp);
+
+init();

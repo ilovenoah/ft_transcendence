@@ -1,8 +1,8 @@
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from django.urls import path
-from main import consumers
+from django.urls import re_path
+from . import consumers
 
 websocket_urlpatterns = [
-    path('ws/pong/', consumers.PongConsumer.as_asgi()),
+    re_path(r'ws/game/$', consumers.PongConsumer.as_asgi()),
 ]
