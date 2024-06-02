@@ -21,9 +21,6 @@ class PongConsumer(WebsocketConsumer):
             # ここにプレイヤー2やボールの位置、スコアの更新などのロジックを追加
             
 
-
-
-
             game_state = {
                 'player1_y': player1_y,
                 'player2_y': 100,  # サンプルデータ

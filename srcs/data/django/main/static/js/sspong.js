@@ -2,12 +2,10 @@ let scene, camera, renderer, paddle1, paddle2, ball;
 let player1Y = 0;
 let moveUp = false;
 let moveDown = false;
+let wrate = 0.0;
 
 function init() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer();
-    
+
     wwidth = window.innerWidth;
     wheight = window.innerHeight;
     // console.log (wwidth);
@@ -16,10 +14,39 @@ function init() {
         wwidth = wheight * 2;
     else if(wwidth < 2 * wheight)
         wheight = wwidth * 0.5;        
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
+    renderer = new THREE.WebGLRenderer();
+    
     renderer.setSize(wwidth, wheight);
-    //renderer.setSize(window.innerWidth, window.innerHeight);
+//    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    wrate = wwidth * 0.001;
+    wrate = 1;
 
     document.body.appendChild(renderer.domElement);
+
+    const wallgeometry = new THREE.BoxGeometry(60, 1, 20);
+    const wallmaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    
+    wallupper = new THREE.Mesh(wallgeometry, wallmaterial);
+    wallupper.position.y = 20;
+    scene.add(wallupper);
+
+    walllower = new THREE.Mesh(wallgeometry, wallmaterial);
+    walllower.position.y = -20;
+    scene.add(walllower);
+
+    const walllinegeometry = new THREE.BoxGeometry(60, 1.01, 1.01);
+    const walllinematerial = new THREE.MeshPhongMaterial({ color: 0x999999 });
+    walllineupper = new THREE.Mesh(walllinegeometry, walllinematerial);
+    walllineupper.position.y = 20;
+    scene.add(walllineupper);
+    walllinelower = new THREE.Mesh(walllinegeometry, walllinematerial);
+    walllinelower.position.y = -20;
+    scene.add(walllinelower);
+
 
     const geometry = new THREE.BoxGeometry(1, 3, 1);
     const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
@@ -44,8 +71,7 @@ function init() {
     const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
     scene.add(light);
 
-
-    camera.position.z = 20;
+    camera.position.z = 25.5;
 }
 
 function animate() {
@@ -91,11 +117,11 @@ function onKeyUp(e) {
 const gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/');
 
 
-
 gameSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
     updateGameState(data);
 };
+
 
 gameSocket.onopen = function(e) {
     console.log("WebSocket connection established");
@@ -104,9 +130,11 @@ gameSocket.onopen = function(e) {
     animate();
 };
 
+
 gameSocket.onclose = function(e) {
     console.log("WebSocket connection closed");
 };
+
 
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
