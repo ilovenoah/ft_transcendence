@@ -3,7 +3,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
 class PongConsumer(WebsocketConsumer):
-   def connect(self):
+    def connect(self):
         self.accept()
         async_to_sync(self.channel_layer.group_add)("main", self.channel_name)
 
