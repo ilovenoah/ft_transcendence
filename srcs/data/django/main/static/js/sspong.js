@@ -25,7 +25,8 @@ function init() {
     wrate = wwidth * 0.001;
     wrate = 1;
 
-    document.body.appendChild(renderer.domElement);
+//    document.body.appendChild(renderer.domElement);
+    document.getElementById('canvas').appendChild(renderer.domElement);
 
     const wallgeometry = new THREE.BoxGeometry(60, 1, 20);
     const wallmaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
@@ -48,7 +49,7 @@ function init() {
     scene.add(walllinelower);
 
 
-    const geometry = new THREE.BoxGeometry(1, 3, 1);
+    const geometry = new THREE.BoxGeometry(1, 4, 1);
     const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
     
     paddle1 = new THREE.Mesh(geometry, material);
@@ -60,7 +61,7 @@ function init() {
     paddle2.position.x = 10;
     scene.add(paddle2);
 
-    const ballGeometry = new THREE.SphereGeometry(0.5, 24, 24);
+    const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
     const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
     ball = new THREE.Mesh(ballGeometry, ballMaterial);
     scene.add(ball);
@@ -72,6 +73,42 @@ function init() {
     scene.add(light);
 
     camera.position.z = 25.5;
+
+//    scene.fog = new THREE.fog(0xFFFFFF, 100, 200);
+
+
+
+    // 形状データを作成
+    const SIZE = 1500;
+    // 配置する個数
+    const LENGTH = 1000;
+    // 頂点情報を格納する配列
+    const vertices = [];
+    for (let i = 0; i < LENGTH; i++) {
+        const x = SIZE * (Math.random() - 0.5);
+        const y = SIZE * (Math.random() - 0.5);
+        const z = SIZE * (Math.random() - 1.0);
+
+        vertices.push(x, y, z);
+    }
+
+// 形状データを作成
+const particlegeometry = new THREE.BufferGeometry();
+particlegeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+// マテリアルを作成
+const particlematerial = new THREE.PointsMaterial({
+  // 一つ一つのサイズ
+  size: 2,
+  // 色
+  color: 0xFFFFCC,
+});
+
+// 物体を作成
+const mesha = new THREE.Points(particlegeometry, particlematerial);
+scene.add(mesha); // シーンは任意の THREE.Scene インスタンス
+
+
 }
 
 function animate() {
