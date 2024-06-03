@@ -33,20 +33,32 @@ function init() {
     
     wallupper = new THREE.Mesh(wallgeometry, wallmaterial);
     wallupper.position.y = 20;
+    wallupper.position.z = -9;
     scene.add(wallupper);
 
     walllower = new THREE.Mesh(wallgeometry, wallmaterial);
     walllower.position.y = -20;
+    walllower.position.z = -9;
     scene.add(walllower);
 
-    const walllinegeometry = new THREE.BoxGeometry(60, 1.01, 1.01);
-    const walllinematerial = new THREE.MeshPhongMaterial({ color: 0x999999 });
-    walllineupper = new THREE.Mesh(walllinegeometry, walllinematerial);
-    walllineupper.position.y = 20;
-    scene.add(walllineupper);
-    walllinelower = new THREE.Mesh(walllinegeometry, walllinematerial);
-    walllinelower.position.y = -20;
-    scene.add(walllinelower);
+    const wallcentergeometry = new THREE.BoxGeometry(0.2, 50, 0.2);
+    const wallcentermaterial = new THREE.MeshPhongMaterial({ color: 0x999999 });
+    
+    wallcenter = new THREE.Mesh(wallcentergeometry, wallcentermaterial);
+    wallcenter.position.z = 0;
+    scene.add(wallcenter);
+
+
+
+
+    // const walllinegeometry = new THREE.BoxGeometry(60, 1.01, 1.01);
+    // const walllinematerial = new THREE.MeshPhongMaterial({ color: 0x999999 });
+    // walllineupper = new THREE.Mesh(walllinegeometry, walllinematerial);
+    // walllineupper.position.y = 20;
+    // scene.add(walllineupper);
+    // walllinelower = new THREE.Mesh(walllinegeometry, walllinematerial);
+    // walllinelower.position.y = -20;
+    // scene.add(walllinelower);
 
 
     const geometry = new THREE.BoxGeometry(1, 4, 1);
@@ -72,7 +84,7 @@ function init() {
     const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
     scene.add(light);
 
-    camera.position.z = 25.5;
+    camera.position.z = 30;
 
 //    scene.fog = new THREE.fog(0xFFFFFF, 100, 200);
 
