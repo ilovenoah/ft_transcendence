@@ -4,8 +4,8 @@ from django.utils import timezone
 from .validators import validate_file_size
 
 class CustomUser(AbstractUser):
-    avatar = models.ImageField(
-        upload_to='avatars/', 
+    avatar = models.CharField(
+        max_length=255, 
         null=True, 
         blank=True,
         default='avatars/default.png'  # デフォルト画像のパスを指定

@@ -56,9 +56,11 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.onload = function() {
             if (xhr.status === 200) {
               const response = JSON.parse(xhr.responseText);
-                document.getElementById('result').innerText = response.message;
-                document.getElementById('uploaded').src = response.imgsrc;
-
+              document.getElementById('result').innerText = response.message;
+              document.getElementById('uploaded').src = response.imgsrc;
+              if (typeof response.exec !== 'undefined') {     
+                eval(response.exec);
+              }
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
             }
@@ -140,6 +142,8 @@ function updateContent(data) {
   } else {
     document.title = '42tokyo';
   }
+
+
 
   if (typeof data.rawscripts !== 'undefined') {     
     //ここからheaderにscriptをいれる <data.rawscripts> 

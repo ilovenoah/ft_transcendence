@@ -109,7 +109,7 @@ def process_post_data(request):
                         'page': page,
                         'content': 'Login successful',
                         'title': 'Login Success'
-                    }
+                    }   
                 else:
                     response_data = {
                         'page': page,
@@ -119,10 +119,9 @@ def process_post_data(request):
             elif page == 'profile':
                 user = request.user
                 if user.is_authenticated:
-                    context = {'user': user}
                     response_data = {
                         'page': page,
-                        'content': render_to_string('profile.html', context),
+                        'content': render_to_string('profile.html', {'user': user}),
                         'title': 'Profile',
                     }
                 else:
@@ -249,10 +248,10 @@ def process_post_data(request):
                     form = CustomUserChangeForm(data=post_data, files=request.FILES, instance=user)
                     form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
-                    form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
+                    form_edit_avatar = AvatarForm(data=post_data,  instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_edit_avatar.is_valid():
-                        if 'avatar' in request.FILES: #新しいavatarがuploadされたか確認
+                        if 'avatar' : #新しいavatarがuploadされたか確認
                             user = form_edit_avatar.save()
                             response_data = {
                                 'page': page,
@@ -263,7 +262,8 @@ def process_post_data(request):
                             response_data = {
                                 'page': page,
                                 'content':render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}),
-                                'title': 'Edit Profile'
+                                'title': 'Edit Profile',
+                                'foot':'dangodddd',
                         }
                     else:
                         response_data = {
@@ -272,7 +272,8 @@ def process_post_data(request):
                                 render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
+                            'foot':'dango',
                         }
                 else:
                     form = AuthenticationForm()
@@ -280,6 +281,7 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
+                        'foot':'dangdddo',
                     }
             elif page == 'change_password':
                 user = request.user
@@ -346,8 +348,9 @@ def upload_image(request):
                 response_data = {
                     'msgtagid':'result',
                     'imgtagid':'uploaded',
-                    'message':'アップロードが成功しました',
+                    'message':'アップロードが成功しました\nこの画像を保存しますか',
                     'imgsrc':'media/' + image_instance.image.name,
+                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"'
                 }
                 return JsonResponse(response_data)
             else:

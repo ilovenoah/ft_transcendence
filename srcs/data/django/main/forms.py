@@ -66,9 +66,12 @@ class AvatarForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['avatar']
+        widgets = {
+            'avatar': forms.HiddenInput(),
+        }
     def __init__(self, *args, **kwargs):
         super(AvatarForm, self).__init__(*args, **kwargs)
-        self.fields['avatar'].required = True
+        self.fields['avatar'].required = True        
 
 class PasswordChangeForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())

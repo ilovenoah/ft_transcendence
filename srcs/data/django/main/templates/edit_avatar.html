@@ -1,7 +1,12 @@
 <h2>Edit Avatar</h2>
-
+<form id="uploadForm" class="ajax-upload" action="upload/">
+    <input type="file" id="image" name="image">
+    <button type="submit">アップロード</button>
+</form>
+<img id="uploaded" src="#" alt="">
+<div id="result"></div>
 <form class="ajax-form" action="process-post/" enctype="multipart/form-data">
-    <input type="hidden" name="page" value="edit_profile">
+    <input type="hidden" name="page" value="edit_avatar">
     {% csrf_token %}
     {{ form_edit_avatar.as_p }}
     <button type="submit">Save</button>
