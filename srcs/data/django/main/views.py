@@ -263,7 +263,6 @@ def process_post_data(request):
                                 'page': page,
                                 'content':render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}),
                                 'title': 'Edit Profile',
-                                'foot':'dangodddd',
                         }
                     else:
                         response_data = {
@@ -273,7 +272,6 @@ def process_post_data(request):
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile',
-                            'foot':'dango',
                         }
                 else:
                     form = AuthenticationForm()
@@ -281,7 +279,6 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                        'foot':'dangdddo',
                     }
             elif page == 'change_password':
                 user = request.user
@@ -350,7 +347,8 @@ def upload_image(request):
                     'imgtagid':'uploaded',
                     'message':'アップロードが成功しました\nこの画像を保存しますか',
                     'imgsrc':'media/' + image_instance.image.name,
-                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"'
+                    'descimage':'アップロード画像',
+                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"',
                 }
                 return JsonResponse(response_data)
             else:

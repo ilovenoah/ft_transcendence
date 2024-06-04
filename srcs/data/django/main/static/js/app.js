@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
               const response = JSON.parse(xhr.responseText);
               document.getElementById('result').innerText = response.message;
               document.getElementById('uploaded').src = response.imgsrc;
+              document.getElementById('descimage').innertext ="画像";
               if (typeof response.exec !== 'undefined') {     
                 eval(response.exec);
               }
