@@ -1,8 +1,8 @@
 import json
 import asyncio
-#from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import AsyncWebsocketConsumer
+#from channels.generic.websocket import AsyncWebsocketConsumer
 
 # グローバル変数としてボールの位置と速度を設定
 ball_x = 0
@@ -19,6 +19,7 @@ MAX_Y = 5
 MIN_Y = -5
 
 class PongConsumer(WebsocketConsumer):
+#class PongConsumer(AsyncWebsocketConsumer):
     def connect(self):
         self.accept()
         async_to_sync(self.channel_layer.group_add)("main", self.channel_name)

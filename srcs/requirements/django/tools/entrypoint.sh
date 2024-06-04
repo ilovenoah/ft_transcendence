@@ -4,6 +4,7 @@ set -e
 
 # エントリーポイントスクリプト (entrypoint.sh)
 # データベースマイグレーションの適用
+python manage.py makemigrations
 python manage.py migrate
 
 # 静的ファイルの収集
