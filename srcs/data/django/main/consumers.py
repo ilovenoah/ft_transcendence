@@ -1,8 +1,8 @@
 import json
 import asyncio
-from channels.generic.websocket import WebsocketConsumer
+#from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
-#from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 # グローバル変数としてボールの位置と速度を設定
 ball_x = 0
@@ -18,19 +18,22 @@ MIN_X = -10
 MAX_Y = 5
 MIN_Y = -5
 
-class PongConsumer(WebsocketConsumer):
-#class PongConsumer(AsyncWebsocketConsumer):
-    def connect(self):
-        self.accept()
-        async_to_sync(self.channel_layer.group_add)("main", self.channel_name)
+
+from channels.generic.websocket import AsyncWebsocketConsumer
+import json
+import asyncio
+
+class PongConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+        await self.channel_layer.group_add("main", self.channel_name)
         # ボールの位置を定期的に更新する非同期タスクを開始
         self.update_task = asyncio.create_task(self.update_ball_position())
 
-
-    def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)("main", self.channel_name)
-
-    def receive(self, text_data):
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard("main", self.channel_name)
+        
+    async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
@@ -39,6 +42,8 @@ class PongConsumer(WebsocketConsumer):
             player2_y = text_data_json['player2_y']
             # ロジックを実装してプレイヤー1の位置を更新
             # ここにプレイヤー2やボールの位置、スコアの更新などのロジックを追加            
+
+            console.log(player1_y)
 
             game_state = {
                 'player1_y': player1_y,
@@ -49,8 +54,8 @@ class PongConsumer(WebsocketConsumer):
                 'score_player2': 0   # サンプルデータ
             }
 
-            async_to_sync(self.channel_layer.group_send)(
-                "game",
+            await self.channel_layer.group_send(
+                "main",
                 {
                     "type": "game_update",
                     "game_state": game_state
@@ -88,9 +93,13 @@ class PongConsumer(WebsocketConsumer):
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
             await asyncio.sleep(0.1)
 
-    def game_update(self, event):
+    async def send_game_state(self, game_state):
+        await self.send(text_data=json.dumps(game_state))
+
+    async def game_update(self, event):
         game_state = event["game_state"]
-        self.send(text_data=json.dumps(game_state))
+        await self.send(text_data=json.dumps(game_state))
+
 
     # def game_start(self, event):
     #     //ここでゲームスタートの初期設定

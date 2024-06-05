@@ -4,6 +4,8 @@ let moveUp = false;
 let moveDown = false;
 let wrate = 0.0;
 
+let reconnectInterval = 100; // 再接続の間隔
+
 function init() {
 
     wwidth = window.innerWidth;
@@ -104,22 +106,21 @@ function init() {
         vertices.push(x, y, z);
     }
 
-// 形状データを作成
-const particlegeometry = new THREE.BufferGeometry();
-particlegeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    // 形状データを作成
+    const particlegeometry = new THREE.BufferGeometry();
+    particlegeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
-// マテリアルを作成
-const particlematerial = new THREE.PointsMaterial({
-  // 一つ一つのサイズ
-  size: 2,
-  // 色
-  color: 0xFFFFCC,
-});
+    // マテリアルを作成
+    const particlematerial = new THREE.PointsMaterial({
+    // 一つ一つのサイズ
+    size: 2,
+    // 色
+    color: 0xFFFFCC,
+    });
 
-// 物体を作成
-const mesha = new THREE.Points(particlegeometry, particlematerial);
-scene.add(mesha); // シーンは任意の THREE.Scene インスタンス
-
+    // 物体を作成
+    const mesha = new THREE.Points(particlegeometry, particlematerial);
+    scene.add(mesha); // シーンは任意の THREE.Scene インスタンス
 
 }
 
@@ -162,30 +163,34 @@ function onKeyUp(e) {
     }
 }
 
+function connect(){
 
-const gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/');
+    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/');
 
-
-gameSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    updateGameState(data);
-};
-
-
-gameSocket.onopen = function(e) {
-    console.log("WebSocket connection established");
-
-    //ゲームが始まったらやればいい
-    animate();
-};
+    gameSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        updateGameState(data);
+    };
 
 
-gameSocket.onclose = function(e) {
-    console.log("WebSocket connection closed");
-};
+    gameSocket.onopen = function(e) {
+        console.log("WebSocket connection established");
+
+        //ゲームが始まったらやればいい
+        animate();
+    };
+
+
+    gameSocket.onclose = function(e) {
+        console.log("WebSocket connection closed");
+        // 自動再接続
+        setTimeout(connect, reconnectInterval);
+    };
+}
 
 
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 
 init();
+connect();
