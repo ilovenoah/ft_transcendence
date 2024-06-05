@@ -104,7 +104,8 @@ def process_post_data(request):
                     login(request, form.get_user())
                     user = request.user
                     user.is_online = True
-                    user.save(update_fields=['is_online'])
+                    user.last_active = timezone.now()
+                    user.save(update_fields=['is_online', 'last_active'])
                     response_data = {
                         'page': page,
                         'content': 'Login successful',
@@ -388,4 +389,7 @@ def read_file(filename):
 
 @login_required
 def heartbeat(request):
+    user = request.user
+    user.last_active = timezone.now()
+    user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
