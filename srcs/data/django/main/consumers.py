@@ -7,16 +7,16 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 # グローバル変数としてボールの位置と速度を設定
 ball_x = 0
 ball_y = 0
-ball_speed_x = 1
-ball_speed_y = 1
+ball_speed_x = 100
+ball_speed_y = 100
 player1_y = 0
 player2_y = 0
 score_player1 = 0
 score_player2 = 0
-MAX_X = 10
-MIN_X = -10
-MAX_Y = 5
-MIN_Y = -5
+MAX_X = 4000
+MIN_X = -4000
+MAX_Y = 2000
+MIN_Y = -2000
 
 
 
@@ -45,10 +45,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             game_state = {
                 'player1_y': player1_y,
                 'player2_y': player2_y,
-#                'ball_x': 400,     # サンプルデータ
-#                'ball_y':   300,     # サンプルデータ
-                'score_player1': 0,  # サンプルデータ
-                'score_player2': 0   # サンプルデータ
+                'ball_x': ball_x,   
+                'ball_y': ball_y,   
+                'score_player1': 0,
+                'score_player2': 0,
             }
 
             await self.channel_layer.group_send(
@@ -58,6 +58,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     "game_state": game_state
                 }
             )
+ 
 
     async def update_ball_position(self):
         global ball_x, ball_y, ball_speed_x, ball_speed_y, player1_y, player2_y, score_player1, score_player2
@@ -76,19 +77,22 @@ class PongConsumer(AsyncWebsocketConsumer):
             if ball_x >= MAX_X or ball_x <= MIN_X:
                 ball_speed_x *= -1
 
-            # ゲームの状態をクライアントに送信
+
             game_state = {
-                'player1_y': player1_y,
-                'player2_y': player2_y,
                 'ball_x': ball_x,
                 'ball_y': ball_y,
-                'score_player1': score_player1,
-                'score_player2': score_player2
-            }
-            await self.send_game_state(game_state)
-
+            }            
+            # ゲームの状態をクライアントに送信
+            await self.channel_layer.group_send(         
+                "main",
+                {
+                    "type": "game_update",
+                    "game_state": game_state
+                }
+    #            await self.send_game_state(game_state)
+            )
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.3)
 
     async def send_game_state(self, game_state):
         await self.send(text_data=json.dumps(game_state))

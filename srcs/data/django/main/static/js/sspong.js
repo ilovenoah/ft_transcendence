@@ -142,6 +142,9 @@ function animate() {
         'message': 'update_position',
         'player1_y': player1Y * 100,  // サーバーでのスケーリングを考慮
         'player2_y': player2Y * 100,  // サーバーでのスケーリングを考慮
+        
+
+
     }));
 
     requestAnimationFrame(animate);
@@ -149,13 +152,14 @@ function animate() {
 }
 
 function updateGameState(data) {
-    console.log(data);
+   //#endregion console.log(data);
 
     paddle1.position.y = data.player1_y / 100;
     paddle2.position.y = data.player2_y / 100;
     ball.position.x = data.ball_x / 100;
     ball.position.y = data.ball_y / 100;
 }
+
 
 function onKeyDown(e) {
     if (e.key === 'ArrowUp') {
@@ -164,10 +168,8 @@ function onKeyDown(e) {
         moveDownX = true;
     } else if (e.key === 'a' || e.key === 'A') {
         moveUpY = true;
-        console.log("keydownA");
     } else if (e.key === 'z' || e.key === 'Z') {
         moveDownY = true;
-        console.log("keydownZ");
     }
 }
 
