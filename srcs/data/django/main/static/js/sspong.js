@@ -1,7 +1,10 @@
 let scene, camera, renderer, paddle1, paddle2, ball;
 let player1Y = 0;
-let moveUp = false;
-let moveDown = false;
+let player2Y = 0;
+let moveUpX = false;
+let moveDownX = false;
+let moveUpY = false;
+let moveDownY = false;
 let wrate = 0.0;
 
 let reconnectInterval = 100; // 再接続の間隔
@@ -67,12 +70,12 @@ function init() {
     const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
     
     paddle1 = new THREE.Mesh(geometry, material);
-    paddle1.position.x = -10;
+    paddle1.position.x = 30;
     scene.add(paddle1);
 
     const material2 = new THREE.MeshPhongMaterial({ color: 0xff0000 });
     paddle2 = new THREE.Mesh(geometry, material2);
-    paddle2.position.x = 10;
+    paddle2.position.x = -30;
     scene.add(paddle2);
 
     const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
@@ -125,15 +128,20 @@ function init() {
 }
 
 function animate() {
-    if (moveUp) {
+    if (moveUpX) {
         player1Y += 0.1;
-    } else if (moveDown) {
+    } else if (moveDownX) {
         player1Y -= 0.1;
+    } else if (moveUpY) {
+        player2Y += 0.1;
+    } else if (moveDownY) {
+        player2Y -= 0.1;
     }
 
     gameSocket.send(JSON.stringify({
         'message': 'update_position',
-        'player1_y': player1Y * 100  // サーバーでのスケーリングを考慮
+        'player1_y': player1Y * 100,  // サーバーでのスケーリングを考慮
+        'player2_y': player2Y * 100,  // サーバーでのスケーリングを考慮
     }));
 
     requestAnimationFrame(animate);
@@ -141,6 +149,8 @@ function animate() {
 }
 
 function updateGameState(data) {
+    console.log(data);
+
     paddle1.position.y = data.player1_y / 100;
     paddle2.position.y = data.player2_y / 100;
     ball.position.x = data.ball_x / 100;
@@ -149,17 +159,27 @@ function updateGameState(data) {
 
 function onKeyDown(e) {
     if (e.key === 'ArrowUp') {
-        moveUp = true;
+        moveUpX = true;
     } else if (e.key === 'ArrowDown') {
-        moveDown = true;
+        moveDownX = true;
+    } else if (e.key === 'a' || e.key === 'A') {
+        moveUpY = true;
+        console.log("keydownA");
+    } else if (e.key === 'z' || e.key === 'Z') {
+        moveDownY = true;
+        console.log("keydownZ");
     }
 }
 
 function onKeyUp(e) {
     if (e.key === 'ArrowUp') {
-        moveUp = false;
+        moveUpX = false;
     } else if (e.key === 'ArrowDown') {
-        moveDown = false;
+        moveDownX = false;
+    } else if (e.key === 'a' || e.key === 'A') {
+        moveUpY = false;
+    } else if (e.key === 'z' || e.key === 'Z') {
+        moveDownY = false;
     }
 }
 

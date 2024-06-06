@@ -19,16 +19,14 @@ MAX_Y = 5
 MIN_Y = -5
 
 
-from channels.generic.websocket import AsyncWebsocketConsumer
-import json
-import asyncio
 
 class PongConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        await self.accept()
         await self.channel_layer.group_add("main", self.channel_name)
+        await self.accept()
         # ボールの位置を定期的に更新する非同期タスクを開始
         self.update_task = asyncio.create_task(self.update_ball_position())
+
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("main", self.channel_name)
@@ -43,11 +41,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             # ロジックを実装してプレイヤー1の位置を更新
             # ここにプレイヤー2やボールの位置、スコアの更新などのロジックを追加            
 
-            console.log(player1_y)
 
             game_state = {
                 'player1_y': player1_y,
-                'player2_y': 100,  # サンプルデータ
+                'player2_y': player2_y,
 #                'ball_x': 400,     # サンプルデータ
 #                'ball_y':   300,     # サンプルデータ
                 'score_player1': 0,  # サンプルデータ
@@ -91,7 +88,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.send_game_state(game_state)
 
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
 
     async def send_game_state(self, game_state):
         await self.send(text_data=json.dumps(game_state))

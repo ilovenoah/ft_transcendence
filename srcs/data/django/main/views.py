@@ -16,14 +16,12 @@ from .forms import ImageForm
 from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
 from .forms import SignUpForm
 
-
-
 logger = logging.getLogger(__name__)
-
 
 
 def index(request):
     return render(request, 'index.html')
+
 
 
 def process_post_data(request):
