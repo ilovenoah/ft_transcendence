@@ -3,18 +3,24 @@ import os
 import json
 import logging
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
-from .forms import SignUpForm
-from django.contrib.auth import logout
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from .forms import ImageForm
 from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
-from .forms import CustomUserChangeForm #後で消す
-from django.contrib.auth.decorators import login_required
+from .forms import SignUpForm
+
+
 
 logger = logging.getLogger(__name__)
+
+
 
 def index(request):
     return render(request, 'index.html')
@@ -50,6 +56,12 @@ def process_post_data(request):
                     'content':read_file('formtest.html'),
                     'title': title,
                 }    
+            elif page == 'uploadtest':
+                response_data = {
+                    'page':page,
+                    'content':read_file('upload.html'),
+                    'title': title,
+                }    
             elif page == 'form1':
                 response_data = {
                     'page':page,
@@ -83,11 +95,15 @@ def process_post_data(request):
                 form = AuthenticationForm(data=post_data)
                 if form.is_valid():
                     login(request, form.get_user())
+                    user = request.user
+                    user.is_online = True
+                    user.last_active = timezone.now()
+                    user.save(update_fields=['is_online', 'last_active'])
                     response_data = {
                         'page': page,
                         'content': 'Login successful',
                         'title': 'Login Success'
-                    }
+                    }   
                 else:
                     response_data = {
                         'page': page,
@@ -97,10 +113,10 @@ def process_post_data(request):
             elif page == 'profile':
                 user = request.user
                 if user.is_authenticated:
-                    context = {'user': user}
+                    
                     response_data = {
                         'page': page,
-                        'content': render_to_string('profile.html', context),
+                        'content': render_to_string('profile.html', {'user': user}),
                         'title': 'Profile',
                     }
                 else:
@@ -111,36 +127,38 @@ def process_post_data(request):
                         'title': 'Login',
                     }
             elif page == 'logout':
-                logout(request)
-                response_data = {
-                    'page': page,
-                    'content': read_file('top.html'),
-                    'title': 'トラセントップ'
-                }
+                user = request.user
+                if user.is_authenticated:
+                    user.is_online = False
+                    user.last_active = timezone.now()
+                    user.save(update_fields=['last_active', 'is_online'])
+                    logout(request)
+                    response_data = {
+                        'page': page,
+                        'content': 'logged out',
+                        'title': 'Logout'
+                    }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': read_file('top.html'),
+                        'title': 'トラセントップ'
+                    }
             elif page == 'edit_profile':
                 user = request.user
                 if user.is_authenticated:
-                    form = CustomUserChangeForm(data=post_data, files=request.FILES, instance=user)
                     form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
-                    if form.is_valid():
-                        user = form.save()
-                        response_data = {
+                    response_data = {
                         'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved'
+                        'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
+                            render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                            render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
+                            render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
+                        'title': 'Edit Profile'
                     }
-                    else:
-                        response_data = {
-                            'page': page,
-                            'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
-                                render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
-                                render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
-                                render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
-                        }
                 else:
                     form = AuthenticationForm()
                     response_data = {
@@ -151,7 +169,6 @@ def process_post_data(request):
             elif page == 'edit_username':
                 user = request.user
                 if user.is_authenticated:
-                    form = CustomUserChangeForm(data=post_data, files=request.FILES, instance=user)
                     form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
@@ -182,7 +199,6 @@ def process_post_data(request):
             elif page == 'edit_email':
                 user = request.user
                 if user.is_authenticated:
-                    form = CustomUserChangeForm(data=post_data, files=request.FILES, instance=user)
                     form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
@@ -213,24 +229,16 @@ def process_post_data(request):
             elif page == 'edit_avatar':
                 user = request.user
                 if user.is_authenticated:
-                    form = CustomUserChangeForm(data=post_data, files=request.FILES, instance=user)
                     form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
-                    form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
+                    form_edit_avatar = AvatarForm(data=post_data,  instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_edit_avatar.is_valid():
-                        if 'avatar' in request.FILES: #新しいavatarがuploadされたか確認
-                            user = form_edit_avatar.save()
-                            response_data = {
-                                'page': page,
-                                'content': 'Saved',
-                                'title': 'Saved'
-                            }
-                        else:
-                            response_data = {
-                                'page': page,
-                                'content':render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}),
-                                'title': 'Edit Profile'
+                        user = form_edit_avatar.save()
+                        response_data = {
+                            'page': page,
+                            'content': 'Saved',
+                            'title': 'Saved'
                         }
                     else:
                         response_data = {
@@ -239,7 +247,7 @@ def process_post_data(request):
                                 render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
                         }
                 else:
                     form = AuthenticationForm()
@@ -251,7 +259,6 @@ def process_post_data(request):
             elif page == 'change_password':
                 user = request.user
                 if user.is_authenticated:
-                    form = CustomUserChangeForm(data=post_data, files=request.FILES, instance=user)
                     form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
@@ -259,10 +266,12 @@ def process_post_data(request):
                     if form_change_password.is_valid():
                         user = form_change_password.save()
                         response_data = {
-                        'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved'
-                    }
+                            'page': page,
+                            'content': 'Saved',
+                            'title': 'Saved'
+                        }
+                        user.is_online = False
+                        user.save(update_fields=['is_online'])
                     else:
                         response_data = {
                             'page': page,
@@ -302,12 +311,38 @@ def process_post_data(request):
 
 @login_required
 def heartbeat(request):
+    user = request.user
+    user.last_active = timezone.now()
+    user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
-
 
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({'csrfToken': token})
+
+@csrf_exempt
+def upload_image(request):
+    if request.method == 'POST':
+        try:
+            #受信データの処理            
+            form = ImageForm(request.POST, request.FILES)
+            if form.is_valid():
+                image_instance = form.save()
+                response_data = {
+                    'msgtagid':'result',
+                    'imgtagid':'uploaded',
+                    'message':'アップロードが成功しました\nこの画像を保存しますか',
+                    'imgsrc':'media/' + image_instance.image.name,
+                    'descimage':'アップロード画像',
+                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"',
+                }
+                return JsonResponse(response_data)
+            else:
+                return JsonResponse({'error': 'Invalid form data'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 
 
@@ -335,3 +370,4 @@ def read_file(filename):
         return "Error: File not found."
     except Exception as e:
         return f"Error: {e}"
+
