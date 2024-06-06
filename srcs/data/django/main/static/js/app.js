@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+  // 3分ごとにheartbeatを送信
+  setInterval(sendHeartbeat, 3 * 60 * 1000);
+  // ページ読み込み時に初回heartbeatを送信
+  sendHeartbeat();
 
   var postData = {};
   postData['page'] = 'top'; 
@@ -10,10 +14,8 @@ document.addEventListener("DOMContentLoaded", function() {
   var links = document.querySelectorAll(".post-link");
 
   // CSRFトークンをmetaタグから取得
-  var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  //const csrftoken = getCookie('csrftoken');
-
-
+  var csrfToken = getCSRFToken();
+  
   links.forEach(function(link) {
     link.addEventListener("click", function(event) {
       event.preventDefault();
@@ -23,8 +25,8 @@ document.addEventListener("DOMContentLoaded", function() {
         postData[attr.name] = attr.value;
       });
 
-      send_ajax(postData);
 
+      send_ajax(postData);
     });
   });
 
@@ -54,9 +56,12 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.onload = function() {
             if (xhr.status === 200) {
               const response = JSON.parse(xhr.responseText);
-                document.getElementById('result').innerText = response.message;
-                document.getElementById('uploaded').src = response.imgsrc;
-
+              document.getElementById('result').innerText = response.message;
+              document.getElementById('uploaded').src = response.imgsrc;
+              document.getElementById('descimage').innertext ="画像";
+              if (typeof response.exec !== 'undefined') {     
+                eval(response.exec);
+              }
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
             }
@@ -76,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
       xhr.open('POST', form.action, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
   
+      csrfToken = getCSRFToken();
       // CSRFトークンの変数が未定義でないことを確認
       if (typeof csrfToken !== 'undefined') {
         xhr.setRequestHeader('X-CSRFToken', csrfToken);
@@ -107,11 +113,21 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
- 
+// popstateイベントをリッスン
+window.addEventListener("popstate", function(event) {
+  if (event.state) {
+    // 状態オブジェクトが存在する場合、表示内容を更新
+    updateContent(event.state.data);
+  }
+});
   
 function updateContent(data) {
   // 表示内容をデータに基づいて更新する処理
   // ここに実際の更新ロジックを記述
+
+  //本来は失敗したときのことを記述したりすべき
+  updateCSRFToken()
+
   // ページのコンテンツを更新
   if (typeof data.content !== 'undefined') {     
     document.querySelector('#content').innerHTML = data.content;
@@ -127,6 +143,8 @@ function updateContent(data) {
   } else {
     document.title = '42tokyo';
   }
+
+
 
   if (typeof data.rawscripts !== 'undefined') {     
     //ここからheaderにscriptをいれる <data.rawscripts> 
@@ -161,18 +179,10 @@ function updateContent(data) {
   }
 }
 
-// popstateイベントをリッスン
-window.addEventListener("popstate", function(event) {
-  if (event.state) {
-    // 状態オブジェクトが存在する場合、表示内容を更新
-    updateContent(event.state.data);
-  }
-});
-
 function send_ajax(data)
 {
   // CSRFトークンをmetaタグから取得
-  var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  const csrfToken = getCSRFToken();
 
   var xhr = new XMLHttpRequest();
   xhr.open("POST", data.data_url, true);
@@ -193,5 +203,47 @@ function send_ajax(data)
     }
   };  
   xhr.send(JSON.stringify(data));
+}
+
+// CSRFトークンを取得する関数
+function getCSRFToken() {
+  return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}
+
+// CSRFトークンを更新する関数
+function updateCSRFToken(callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'get-csrf-token/', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrfToken);
+          if (callback) callback();
+      }
+  };
+  xhr.send();
+}
+
+
+function sendHeartbeat() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'heartbeat/', true);
+  xhr.withCredentials = true;
+
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+              var response = JSON.parse(xhr.responseText);
+              console.log('User is:', response.status);
+              // ログイン状態に応じた処理
+          } else {
+              console.error('Error: ', xhr.status);
+              // ログアウト状態に応じた処理
+          }
+      }
+  };
+
+  xhr.send();
 }
 

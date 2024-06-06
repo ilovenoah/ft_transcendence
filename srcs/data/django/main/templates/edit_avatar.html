@@ -1,0 +1,23 @@
+<head>
+    <style>
+        .errorlist {
+            display: none;
+        }
+    </style>
+</head>
+<h2>Edit Avatar</h2>
+<form id="uploadForm" class="ajax-upload" action="upload/">
+    <input type="file" id="image" name="image">
+    <button type="submit">アップロード</button>
+</form>
+<div id="descimage">現在の画像</div>
+<img id="uploaded" src="media/{{request.user.avatar}}" alt="">
+<div id="result"></div>
+<form class="ajax-form" action="process-post/" enctype="multipart/form-data">
+    <input type="hidden" name="page" value="edit_avatar">
+    {% csrf_token %}
+    {{ form_edit_avatar.as_p }}
+    <button type="submit">Save</button>
+</form>
+
+    

@@ -1,0 +1,11 @@
+<h2>Login</h2>
+<form class="ajax-form" action="process-post/">
+    <input type="hidden" name="page" value="login">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+</form>
+
+
+
+

@@ -175,13 +175,24 @@ STATICFILES_MIME_TYPE_MAPPING = {
     '.js': 'application/javascript',
 }
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/' # メディアファイルにアクセスするためのURL
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#セッション
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  #セッションデータを保存する方法
+SESSION_COOKIE_NAME = 'sessionid'  #クッキー名
+SESSION_COOKIE_AGE = 1209600  # 有効期限(秒): 14日
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  #ブラウザを閉じた時にセッションが終了するか
+SESSION_COOKIE_SECURE = True  # HTTPS 環境では True に設定
+SESSION_COOKIE_HTTPONLY = True  # Trueにすると、クライアントサイドスクリプトからセッションクッキーにアクセスできなくなる
+SESSION_SAVE_EVERY_REQUEST = False  # Trueにすると、リクエストが発生するたびにセッションが保存される
+
+# settings.py
+AUTH_USER_MODEL = 'main.CustomUser'
 
 
