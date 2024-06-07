@@ -7,12 +7,18 @@ let moveUpY = false;
 let moveDownY = false;
 let wrate = 0.0;
 
+let lastUpdateTime = Date.now();
+const updateInterval = 1000;  // 1秒
+const animationInterval = 100;  // 10ms
+
+
+
 let reconnectInterval = 100; // 再接続の間隔
 
 function init() {
 
-    wwidth = window.innerWidth;
-    wheight = window.innerHeight;
+    wwidth = window.innerWidth * 0.9;
+    wheight = window.innerHeight * 0.9;
     // console.log (wwidth);
     // console.log(wheight);
     if ( wwidth >= 2 * wheight)
@@ -83,10 +89,9 @@ function init() {
     ball = new THREE.Mesh(ballGeometry, ballMaterial);
     scene.add(ball);
 
-//    const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
-
+    //const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
     //const light = new THREE.DirectionalLight(0xFFFFFF, 10);
-    const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
+     const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
     scene.add(light);
 
     camera.position.z = 30;
@@ -95,35 +100,35 @@ function init() {
 
 
 
-    // 形状データを作成
-    const SIZE = 1500;
-    // 配置する個数
-    const LENGTH = 1000;
-    // 頂点情報を格納する配列
-    const vertices = [];
-    for (let i = 0; i < LENGTH; i++) {
-        const x = SIZE * (Math.random() - 0.5);
-        const y = SIZE * (Math.random() - 0.5);
-        const z = SIZE * (Math.random() - 1.0);
+    // // 形状データを作成
+    // const SIZE = 1500;
+    // // 配置する個数
+    // const LENGTH = 1000;
+    // // 頂点情報を格納する配列
+    // const vertices = [];
+    // for (let i = 0; i < LENGTH; i++) {
+    //     const x = SIZE * (Math.random() - 0.5);
+    //     const y = SIZE * (Math.random() - 0.5);
+    //     const z = SIZE * (Math.random() - 1.0);
 
-        vertices.push(x, y, z);
-    }
+    //     vertices.push(x, y, z);
+    // }
 
-    // 形状データを作成
-    const particlegeometry = new THREE.BufferGeometry();
-    particlegeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    // // 形状データを作成
+    // const particlegeometry = new THREE.BufferGeometry();
+    // particlegeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
-    // マテリアルを作成
-    const particlematerial = new THREE.PointsMaterial({
-    // 一つ一つのサイズ
-    size: 2,
-    // 色
-    color: 0xFFFFCC,
-    });
+    // // マテリアルを作成
+    // const particlematerial = new THREE.PointsMaterial({
+    // // 一つ一つのサイズ
+    // size: 2,
+    // // 色
+    // color: 0xFFFFCC,
+    // });
 
     // 物体を作成
-    const mesha = new THREE.Points(particlegeometry, particlematerial);
-    scene.add(mesha); // シーンは任意の THREE.Scene インスタンス
+    // const mesha = new THREE.Points(particlegeometry, particlematerial);
+    // scene.add(mesha); // シーンは任意の THREE.Scene インスタンス
 
 }
 
@@ -138,14 +143,20 @@ function animate() {
         player2Y -= 0.1;
     }
 
-    gameSocket.send(JSON.stringify({
-        'message': 'update_position',
-        'player1_y': player1Y * 100,  // サーバーでのスケーリングを考慮
-        'player2_y': player2Y * 100,  // サーバーでのスケーリングを考慮
+
+    const now = Date.now();
+    const deltaTime = (now - lastUpdateTime) / updateInterval;
+    if (deltaTime > 1) {
+        gameSocket.send(JSON.stringify({
+            'message': 'update_position',
+            'player1_y': player1Y * 100,  // サーバーでのスケーリングを考慮
+            'player2_y': player2Y * 100,  // サーバーでのスケーリングを考慮        
+        }));
         
-
-
-    }));
+    // } else {
+    //     ball.position.x = targetBallPosition.x;
+    //     ball.position.y = targetBallPosition.y;
+    }
 
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
@@ -158,6 +169,8 @@ function updateGameState(data) {
     paddle2.position.y = data.player2_y / 100;
     ball.position.x = data.ball_x / 100;
     ball.position.y = data.ball_y / 100;
+
+//    renderer.render(scene, camera);
 }
 
 

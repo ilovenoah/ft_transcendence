@@ -92,10 +92,10 @@ class PongConsumer(AsyncWebsocketConsumer):
     #            await self.send_game_state(game_state)
             )
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(1.0)
 
     async def send_game_state(self, game_state):
-        await self.send(text_data=json.dumps(game_state))
+        await self.send(text_data=json.dumps(game_state))   
 
     async def game_update(self, event):
         game_state = event["game_state"]
