@@ -15,6 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import ImageForm
 from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
 from .forms import SignUpForm
+from .forms import FriendRequestForm
+from .models import CustomUser
 
 
 
@@ -292,7 +294,32 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                    }                
+                    }    
+            elif page == 'friend_request':
+                user = request.user
+                if user.is_authenticated:
+                    form = FriendRequestForm(data=post_data, from_user=request.user)
+                    if form.is_valid():
+                        response_data = {
+                                'page': page,
+                                'content': 'Friend Request Sent',
+                                'title': 'Friend Request Sent'
+                            }
+                        to_user = form.cleaned_data['to_user']
+                        request.user.send_friend_request(to_user)
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                            'title': 'Friend Request',
+                        }  
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }   
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
