@@ -1,4 +1,4 @@
-let scene, camera, renderer, paddle1, paddle2, ball;
+let scene, camera, renderer, paddle1, paddle2, ball,score;
 let player1Y = 0;
 let player2Y = 0;
 let moveUpX = false;
@@ -6,6 +6,8 @@ let moveDownX = false;
 let moveUpY = false;
 let moveDownY = false;
 let wrate = 0.0;
+
+let speedrate = 5.0;
 
 let lastUpdateTime = Date.now();
 const updateInterval = 1000;  // 1秒
@@ -27,7 +29,8 @@ function init() {
         wheight = wwidth * 0.5;        
 
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
+    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 20, 60);
+//    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
     renderer = new THREE.WebGLRenderer();
     
     renderer.setSize(wwidth, wheight);
@@ -39,21 +42,21 @@ function init() {
 //    document.body.appendChild(renderer.domElement);
     document.getElementById('canvas').appendChild(renderer.domElement);
 
-    const wallgeometry = new THREE.BoxGeometry(60, 1, 20);
+    const wallgeometry = new THREE.BoxGeometry(80, 0.5, 0.5);
     const wallmaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     
     wallupper = new THREE.Mesh(wallgeometry, wallmaterial);
-    wallupper.position.y = 20;
-    wallupper.position.z = -9;
+    wallupper.position.y =  21
+    wallupper.position.z =  0;
     scene.add(wallupper);
 
     walllower = new THREE.Mesh(wallgeometry, wallmaterial);
-    walllower.position.y = -20;
-    walllower.position.z = -9;
+    walllower.position.y = -21;
+    walllower.position.z =  0;
     scene.add(walllower);
 
-    const wallcentergeometry = new THREE.BoxGeometry(0.2, 50, 0.2);
-    const wallcentermaterial = new THREE.MeshPhongMaterial({ color: 0x999999 });
+    const wallcentergeometry = new THREE.BoxGeometry(0.5, 42, 0.5);
+    const wallcentermaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     
     wallcenter = new THREE.Mesh(wallcentergeometry, wallcentermaterial);
     wallcenter.position.z = 0;
@@ -72,16 +75,16 @@ function init() {
     // scene.add(walllinelower);
 
 
-    const geometry = new THREE.BoxGeometry(1, 4, 1);
+    const geometry = new THREE.BoxGeometry(0.5, 6, 0.5);
     const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
     
     paddle1 = new THREE.Mesh(geometry, material);
-    paddle1.position.x = 30;
+    paddle1.position.x = 38;
     scene.add(paddle1);
 
     const material2 = new THREE.MeshPhongMaterial({ color: 0xff0000 });
     paddle2 = new THREE.Mesh(geometry, material2);
-    paddle2.position.x = -30;
+    paddle2.position.x = -38;
     scene.add(paddle2);
 
     const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
@@ -91,7 +94,7 @@ function init() {
 
     //const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
     //const light = new THREE.DirectionalLight(0xFFFFFF, 10);
-     const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
+    const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
     scene.add(light);
 
     camera.position.z = 30;
@@ -134,29 +137,25 @@ function init() {
 
 function animate() {
     if (moveUpX) {
-        player1Y += 0.1;
+        player1Y += 0.1 * speedrate;
     } else if (moveDownX) {
-        player1Y -= 0.1;
+        player1Y -= 0.1 * speedrate;
     } else if (moveUpY) {
-        player2Y += 0.1;
+        player2Y += 0.1 * speedrate;
     } else if (moveDownY) {
-        player2Y -= 0.1;
+        player2Y -= 0.1 * speedrate;
     }
 
 
-    const now = Date.now();
-    const deltaTime = (now - lastUpdateTime) / updateInterval;
-    if (deltaTime > 1) {
-        gameSocket.send(JSON.stringify({
-            'message': 'update_position',
-            'player1_y': player1Y * 100,  // サーバーでのスケーリングを考慮
-            'player2_y': player2Y * 100,  // サーバーでのスケーリングを考慮        
-        }));
+    gameSocket.send(JSON.stringify({
+        'message': 'update_position',
+        'player1_y': player1Y * 100,  // サーバーでのスケーリングを考慮
+        'player2_y': player2Y * 100,  // サーバーでのスケーリングを考慮        
+    }));
         
     // } else {
     //     ball.position.x = targetBallPosition.x;
     //     ball.position.y = targetBallPosition.y;
-    }
 
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
@@ -164,11 +163,23 @@ function animate() {
 
 function updateGameState(data) {
    //#endregion console.log(data);
-
-    paddle1.position.y = data.player1_y / 100;
-    paddle2.position.y = data.player2_y / 100;
-    ball.position.x = data.ball_x / 100;
-    ball.position.y = data.ball_y / 100;
+    if (data.info === 'paddle'){
+        paddle1.position.y = data.player1_y / 100;
+        paddle2.position.y = data.player2_y / 100;    
+    } else if (data.info === 'ball'){        
+        ball.position.x = data.ball_x / 100;
+        ball.position.y = data.ball_y / 100;
+    } else if (data.info === 'score'){        
+        score_player1 = data.score_player1;
+        score_player2 = data.score_player2;
+    } else {
+        paddle1.position.y = data.player1_y / 100;
+        paddle2.position.y = data.player2_y / 100;    
+        ball.position.x = data.ball_x / 100;
+        ball.position.y = data.ball_y / 100;
+        score_player1 = data.score_player1;
+        score_player2 = data.score_player2;
+    }
 
 //    renderer.render(scene, camera);
 }
@@ -210,7 +221,6 @@ function connect(){
 
     gameSocket.onopen = function(e) {
         console.log("WebSocket connection established");
-
         //ゲームが始まったらやればいい
         animate();
     };

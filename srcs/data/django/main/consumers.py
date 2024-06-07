@@ -7,8 +7,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 # グローバル変数としてボールの位置と速度を設定
 ball_x = 0
 ball_y = 0
-ball_speed_x = 100
-ball_speed_y = 100
+ball_speed_x = 50
+ball_speed_y = 50
 player1_y = 0
 player2_y = 0
 score_player1 = 0
@@ -32,6 +32,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard("main", self.channel_name)
         
     async def receive(self, text_data):
+        global ball_x, ball_y, ball_speed_x, ball_speed_y, player1_y, player2_y, score_player1, score_player2
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
@@ -41,23 +42,19 @@ class PongConsumer(AsyncWebsocketConsumer):
             # ロジックを実装してプレイヤー1の位置を更新
             # ここにプレイヤー2やボールの位置、スコアの更新などのロジックを追加            
 
+            # game_state = {
+            #     'info': "paddle",
+            #     'player1_y': player1_y,
+            #     'player2_y': player2_y,
+            # }
 
-            game_state = {
-                'player1_y': player1_y,
-                'player2_y': player2_y,
-                'ball_x': ball_x,   
-                'ball_y': ball_y,   
-                'score_player1': 0,
-                'score_player2': 0,
-            }
-
-            await self.channel_layer.group_send(
-                "main",
-                {
-                    "type": "game_update",
-                    "game_state": game_state
-                }
-            )
+            # await self.channel_layer.group_send(
+            #     "main",
+            #     {
+            #         "type": "game_update",
+            #         "game_state": game_state,
+            #     }
+            # )
  
 
     async def update_ball_position(self):
@@ -79,9 +76,14 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
             game_state = {
-                'ball_x': ball_x,
-                'ball_y': ball_y,
-            }            
+                'info':'all',
+                'player1_y': player1_y,
+                'player2_y': player2_y,
+                'ball_x': ball_x,   
+                'ball_y': ball_y,   
+                'score_player1': 0,
+                'score_player2': 0,
+            }
             # ゲームの状態をクライアントに送信
             await self.channel_layer.group_send(         
                 "main",
@@ -92,10 +94,11 @@ class PongConsumer(AsyncWebsocketConsumer):
     #            await self.send_game_state(game_state)
             )
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            await asyncio.sleep(1.0)
+            await asyncio.sleep(0.01)
+
 
     async def send_game_state(self, game_state):
-        await self.send(text_data=json.dumps(game_state))   
+        await self.send(text_data=json.dumps(game_state))
 
     async def game_update(self, event):
         game_state = event["game_state"]
