@@ -1,0 +1,33 @@
+<h1>Friend Requests</h1>
+<form class="ajax-form" action="process-post/">
+    <input type="hidden" name="page" value="friend_request_list">
+    {% csrf_token %}
+    {% for request_id, data in forms.items %}
+    <div>
+        <strong>{{ data.0.from_user.username }}</strong> からの友達申請
+        <form method="post" class="friend-request-form" data-request-id="{{ request_id }}">
+            {{ data.1 }}
+            <input type="hidden" name="request_id" value="{{ request_id }}">
+            <input type="hidden" name="prefix" value="{{ data.1.prefix }}">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    {% endfor %}
+</form>
+
+
+<!-- <h1>Friend Requests</h1>
+<form class="ajax-form" action="process-post/">
+    <input type="hidden" name="page" value="friend_request_list">
+    {% for request_id, form in forms.items %}
+    <div>
+        <form method="post" class="friend-request-form" data-request-id="{{ request_id }}">
+            {% csrf_token %}
+            {{ form }}
+            <input type="hidden" name="request_id" value="{{ request_id }}">
+            <input type="hidden" name="prefix" value="{{ form.prefix }}">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    {% endfor %}
+</form> -->

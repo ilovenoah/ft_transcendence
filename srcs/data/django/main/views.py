@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
@@ -17,6 +17,8 @@ from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
 from .forms import SignUpForm
 from .forms import FriendRequestForm
 from .models import CustomUser
+from .models import FriendRequest
+from .forms import FriendRequestActionForm
 
 
 
@@ -319,7 +321,45 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                    }   
+                    }
+            elif page == 'friend_request_list':
+                user = request.user
+                if user.is_authenticated:
+                    form = FriendRequestActionForm(data=post_data, prefix=post_data.get('prefix'))
+                    if form.is_valid():
+                        action = form.cleaned_data['action']
+                        request_id = post_data.get('request_id')
+                        friend_request = get_object_or_404(FriendRequest, id=request_id)
+                        if action == 'accept':
+                            friend_request.accept_request()
+                        elif action == 'decline':
+                            friend_request.decline_request()
+                        response_data = {
+                            'page': page,
+                            'content': 'Sent',
+                            'title': 'Sent',
+                        }
+                    else:
+                        friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                        forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
+                        # forms = {fr.id: FriendRequestActionForm(prefix=str(fr.id)) for fr in friend_requests}
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('friend_request_list.html', {
+                                'form': form, 
+                                'request': request, 
+                                'fr': friend_requests,
+                                'forms': forms,
+                            }),
+                            'title': 'Friend Request List',
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
