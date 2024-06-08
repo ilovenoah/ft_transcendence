@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from django.utils import timezone
+from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
 from .forms import ImageForm
 from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
@@ -20,6 +21,7 @@ from .models import CustomUser
 from .models import FriendRequest
 from .forms import FriendRequestActionForm
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 
@@ -361,6 +363,33 @@ def process_post_data(request):
                             }),
                             'title': 'Friend Request List',
                         }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'friends':
+                user = request.user
+                if user.is_authenticated:
+                    friends = CustomUser.objects.filter(
+                        Q(friend_requests_sent__to_user=user, friend_requests_sent__status='A') |
+                        Q(friend_requests_received__from_user=user, friend_requests_received__status='A')
+                    ).distinct()
+                    # 現在時刻から5分前の時刻を計算
+                    five_minutes_ago = timezone.now() - timedelta(minutes=5)
+                    # 各友達のオンラインステータスを設定
+                    for friend in friends:
+                        if friend.is_online and friend.last_active >= five_minutes_ago:
+                            friend.online_status = 'Online'
+                        else:
+                            friend.online_status = 'Offline'
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('friends.html', {'friends': friends}),
+                        'title': 'Login',
+                    }
                 else:
                     form = AuthenticationForm()
                     response_data = {
