@@ -19,6 +19,7 @@ from .forms import FriendRequestForm
 from .models import CustomUser
 from .models import FriendRequest
 from .forms import FriendRequestActionForm
+from django.core.exceptions import ValidationError
 
 
 
@@ -302,13 +303,21 @@ def process_post_data(request):
                 if user.is_authenticated:
                     form = FriendRequestForm(data=post_data, from_user=request.user)
                     if form.is_valid():
-                        response_data = {
-                                'page': page,
-                                'content': 'Friend Request Sent',
-                                'title': 'Friend Request Sent'
-                            }
                         to_user = form.cleaned_data['to_user']
-                        request.user.send_friend_request(to_user)
+                        try:
+                            response_data = {
+                                    'page': page,
+                                    'content': 'Friend Request Sent',
+                                    'title': 'Friend Request Sent'
+                                }
+                            request.user.send_friend_request(to_user)
+                        except ValidationError as e:
+                            form.add_error(None, e)  # エラーをフォームに追加
+                            response_data = {
+                                'page': page,
+                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                                'title': 'Friend Request',
+                            }
                     else:
                         response_data = {
                             'page': page,
@@ -342,7 +351,6 @@ def process_post_data(request):
                     else:
                         friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
                         forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
-                        # forms = {fr.id: FriendRequestActionForm(prefix=str(fr.id)) for fr in friend_requests}
                         response_data = {
                             'page': page,
                             'content': render_to_string('friend_request_list.html', {

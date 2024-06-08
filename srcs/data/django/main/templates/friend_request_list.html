@@ -15,19 +15,3 @@
     {% endfor %}
 </form>
 
-
-<!-- <h1>Friend Requests</h1>
-<form class="ajax-form" action="process-post/">
-    <input type="hidden" name="page" value="friend_request_list">
-    {% for request_id, form in forms.items %}
-    <div>
-        <form method="post" class="friend-request-form" data-request-id="{{ request_id }}">
-            {% csrf_token %}
-            {{ form }}
-            <input type="hidden" name="request_id" value="{{ request_id }}">
-            <input type="hidden" name="prefix" value="{{ form.prefix }}">
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-    {% endfor %}
-</form> -->
