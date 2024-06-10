@@ -72,3 +72,14 @@ class ImageForm(forms.ModelForm):
         model = Image
         fields = ['image']
 
+class FriendRequestForm(forms.Form):
+    to_user = forms.ModelChoiceField(queryset=User.objects.all(), label="Select User to Send Request")
+
+    def __init__(self, *args, **kwargs):
+        self.from_user = kwargs.pop('from_user', None)
+        super().__init__(*args, **kwargs)
+        if self.from_user:
+            self.fields['to_user'].queryset = User.objects.exclude(id=self.from_user.id)
+
+class FriendRequestActionForm(forms.Form):
+    action = forms.ChoiceField(choices=[('accept', 'Accept'), ('decline', 'Decline')])

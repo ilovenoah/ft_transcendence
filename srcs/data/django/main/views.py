@@ -6,15 +6,22 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from django.utils import timezone
+from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
 from .forms import ImageForm
 from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
 from .forms import SignUpForm
+from .forms import FriendRequestForm
+from .models import CustomUser
+from .models import FriendRequest
+from .forms import FriendRequestActionForm
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 
@@ -292,7 +299,104 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                    }                
+                    }    
+            elif page == 'friend_request':
+                user = request.user
+                if user.is_authenticated:
+                    form = FriendRequestForm(data=post_data, from_user=request.user)
+                    if form.is_valid():
+                        to_user = form.cleaned_data['to_user']
+                        try:
+                            response_data = {
+                                    'page': page,
+                                    'content': 'Friend Request Sent',
+                                    'title': 'Friend Request Sent'
+                                }
+                            request.user.send_friend_request(to_user)
+                        except ValidationError as e:
+                            form.add_error(None, e)  # エラーをフォームに追加
+                            response_data = {
+                                'page': page,
+                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                                'title': 'Friend Request',
+                            }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                            'title': 'Friend Request',
+                        }  
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'friend_request_list':
+                user = request.user
+                if user.is_authenticated:
+                    form = FriendRequestActionForm(data=post_data, prefix=post_data.get('prefix'))
+                    if form.is_valid():
+                        action = form.cleaned_data['action']
+                        request_id = post_data.get('request_id')
+                        friend_request = get_object_or_404(FriendRequest, id=request_id)
+                        if action == 'accept':
+                            friend_request.accept_request()
+                        elif action == 'decline':
+                            friend_request.decline_request()
+                        response_data = {
+                            'page': page,
+                            'content': 'Sent',
+                            'title': 'Sent',
+                        }
+                    else:
+                        friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                        forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('friend_request_list.html', {
+                                'form': form, 
+                                'request': request, 
+                                'fr': friend_requests,
+                                'forms': forms,
+                            }),
+                            'title': 'Friend Request List',
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'friends':
+                user = request.user
+                if user.is_authenticated:
+                    friends = CustomUser.objects.filter(
+                        Q(friend_requests_sent__to_user=user, friend_requests_sent__status='A') |
+                        Q(friend_requests_received__from_user=user, friend_requests_received__status='A')
+                    ).distinct()
+                    # 現在時刻から5分前の時刻を計算
+                    five_minutes_ago = timezone.now() - timedelta(minutes=5)
+                    # 各友達のオンラインステータスを設定
+                    for friend in friends:
+                        if friend.is_online and friend.last_active >= five_minutes_ago:
+                            friend.online_status = 'Online'
+                        else:
+                            friend.online_status = 'Offline'
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('friends.html', {'friends': friends}),
+                        'title': 'Login',
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
