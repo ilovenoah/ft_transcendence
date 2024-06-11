@@ -22,7 +22,7 @@ from .models import FriendRequest
 from .forms import FriendRequestActionForm
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-
+from .models import Matchmaking
 
 
 logger = logging.getLogger(__name__)
@@ -400,11 +400,39 @@ def process_post_data(request):
             elif page == 'lobby':
                 user = request.user
                 if user.is_authenticated:
+                    current_user = user
+                    current_time = timezone.now()
+                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
+                    if existing_match and existing_match.user2:
+                        response_data = {
+                            'page':page,
+                            'content':read_file('ponggame.html'),
+                            'title': title,
+                            'scriptfiles': '/static/js/game.js',
+                        }
+                        return JsonResponse(response_data)   
+                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
+                    if existing_match: #current_userがuser1と同じ
+                        existing_match.timestamp = current_time
+                        existing_match.save()
+                    else: #current_userがuser1と異なる
+                        potential_match = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=current_time - timezone.timedelta(seconds=30)).exclude(user1=current_user).first()
+                        if potential_match: #user1が存在してtimestampが30秒以内
+                            potential_match.user2 = current_user
+                            potential_match.save()
+                            response_data = {
+                                'page':page,
+                                'content':read_file('ponggame.html'),
+                                'title': title,
+                                'scriptfiles': '/static/js/game.js',
+                            }
+                            return JsonResponse(response_data)   
+                        Matchmaking.objects.create(user1=current_user)
                     response_data = {
                         'page': page,
                         'content': read_file('lobby.html'),
                         'title': 'Lobby',
-                        'exec': 'setTimeout(reloadAjax, 5000);'
+                        'exec': 'setTimeout(reloadAjax, 10000);'
                     }
                 else:
                     form = AuthenticationForm()
