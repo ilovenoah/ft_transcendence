@@ -138,6 +138,9 @@ function updateContent(data) {
   if (typeof data.foot !== 'undefined') {     
     document.querySelector('#foot').innerHTML = data.foot;
   }
+  if (typeof data.exec !== 'undefined'){
+      eval(data.exec);
+  }
   if (typeof data.title !== 'undefined') {     
     document.title = data.title;
   } else {

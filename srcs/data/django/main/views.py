@@ -397,6 +397,22 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'lobby':
+                user = request.user
+                if user.is_authenticated:
+                    response_data = {
+                        'page': page,
+                        'content': read_file('lobby.html'),
+                        'title': 'Lobby',
+                        'exec': '$(document).ready(function(){setInterval(function(){$("#content").load(lobby.html);}, 5000);});'
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
