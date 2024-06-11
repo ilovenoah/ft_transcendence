@@ -404,7 +404,7 @@ def process_post_data(request):
                         'page': page,
                         'content': read_file('lobby.html'),
                         'title': 'Lobby',
-                        'exec': '$(document).ready(function(){setInterval(function(){$("#content").load(lobby.html);}, 5000);});'
+                        'exec': 'setTimeout(reloadAjax, 5000);'
                     }
                 else:
                     form = AuthenticationForm()

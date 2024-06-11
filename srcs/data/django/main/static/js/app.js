@@ -250,3 +250,12 @@ function sendHeartbeat() {
   xhr.send();
 }
 
+
+function reloadAjax() {
+  var postData = {};
+  postData['page'] = 'lobby'; 
+  postData['data_url']= 'process-post/';
+  send_ajax(postData);
+}
+
+
