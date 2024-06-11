@@ -92,9 +92,9 @@ class PongConsumer(AsyncWebsocketConsumer):
             elif ball_x <= MIN_X:
                 ball_speed_x *= -1
             
-            if ball_x >= player1_x and ball_x <= plyaer1_x + 10 and ball_y > player1_y - player1_length / 2 and ball_y < player1_y + player1_length / 2:
+            if ball_x == player1_x and ball_y > player1_y - player1_length / 2 and ball_y < player1_y + player1_length / 2:
                 ball_speed_x *= -1
-            elif ball_x <= player2_x and ball_x >= player2_x - 10 and ball_y > player2_y - player2_length / 2 and ball_y < player2_y + player2_length / 2:
+            elif ball_x == player2_x and ball_y > player2_y - player2_length / 2 and ball_y < player2_y + player2_length / 2:
                 ball_speed_x *= -1
 
             # ボールの位置を更新
