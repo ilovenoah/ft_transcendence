@@ -138,8 +138,11 @@ function updateContent(data) {
   if (typeof data.foot !== 'undefined') {     
     document.querySelector('#foot').innerHTML = data.foot;
   }
+  if (typeof response.exec !== 'undefined') {     
+    eval(data.exec);
+  }
   if (typeof data.title !== 'undefined') {     
-    document.title = data.title;
+    document.title = data.title
   } else {
     document.title = '42tokyo';
   }

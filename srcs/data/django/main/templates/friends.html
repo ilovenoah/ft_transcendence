@@ -1,0 +1,6 @@
+<h1>Friends</h1>
+<ul>
+  {% for friend in friends %}
+  <li>{{ friend.username }} - {{ friend.online_status }}</li>
+  {% endfor %}
+</ul>

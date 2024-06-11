@@ -1,6 +1,8 @@
 let scene, camera, renderer, paddle1, paddle2, ball,score;
 let player1Y = 0;
 let player2Y = 0;
+let paddle1length = 6;
+let paddle2length = 6  ;
 let moveUpX = false;
 let moveDownX = false;
 let moveUpY = false;
@@ -18,6 +20,7 @@ const animationInterval = 100;  // 10ms
 let reconnectInterval = 100; // 再接続の間隔
 
 function init() {
+
 
     wwidth = window.innerWidth * 0.9;
     wheight = window.innerHeight * 0.9;
@@ -42,20 +45,20 @@ function init() {
 //    document.body.appendChild(renderer.domElement);
     document.getElementById('canvas').appendChild(renderer.domElement);
 
-    const wallgeometry = new THREE.BoxGeometry(80, 0.5, 0.5);
+    const wallgeometry = new THREE.BoxGeometry(75, 0.5, 0.5);
     const wallmaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     
     wallupper = new THREE.Mesh(wallgeometry, wallmaterial);
-    wallupper.position.y =  21
+    wallupper.position.y =  20.25
     wallupper.position.z =  0;
     scene.add(wallupper);
 
     walllower = new THREE.Mesh(wallgeometry, wallmaterial);
-    walllower.position.y = -21;
+    walllower.position.y = -20.25;
     walllower.position.z =  0;
     scene.add(walllower);
 
-    const wallcentergeometry = new THREE.BoxGeometry(0.5, 42, 0.5);
+    const wallcentergeometry = new THREE.BoxGeometry(0.5, 40.5, 0.5);
     const wallcentermaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     
     wallcenter = new THREE.Mesh(wallcentergeometry, wallcentermaterial);
@@ -75,16 +78,17 @@ function init() {
     // scene.add(walllinelower);
 
 
-    const geometry = new THREE.BoxGeometry(0.5, 6, 0.5);
-    const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    const paddle1Geometry = new THREE.BoxGeometry(0.5, paddle1length, 0.5);
+    const paddle1Material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
     
-    paddle1 = new THREE.Mesh(geometry, material);
-    paddle1.position.x = 38;
+    paddle1 = new THREE.Mesh(paddle1Geometry, paddle1Material);
+    paddle1.position.x = 38.25;
     scene.add(paddle1);
 
-    const material2 = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-    paddle2 = new THREE.Mesh(geometry, material2);
-    paddle2.position.x = -38;
+    const paddle2Geometry = new THREE.BoxGeometry(0.5, paddle2length, 0.5);
+    const paddle2Material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+    paddle2 = new THREE.Mesh(paddle2Geometry, paddle2Material);
+    paddle2.position.x = -38.25;
     scene.add(paddle2);
 
     const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
@@ -137,20 +141,21 @@ function init() {
 
 function animate() {
     if (moveUpX) {
-        player1Y += 0.1 * speedrate;
+        paddle1.position.y += 0.1 * speedrate;
     } else if (moveDownX) {
-        player1Y -= 0.1 * speedrate;
+        paddle1.position.y -= 0.1 * speedrate;
     } else if (moveUpY) {
-        player2Y += 0.1 * speedrate;
+        paddle2.position.y += 0.1 * speedrate;
     } else if (moveDownY) {
-        player2Y -= 0.1 * speedrate;
+        paddle2.position.y -= 0.1 * speedrate;
     }
+
 
 
     gameSocket.send(JSON.stringify({
         'message': 'update_position',
-        'player1_y': player1Y * 100,  // サーバーでのスケーリングを考慮
-        'player2_y': player2Y * 100,  // サーバーでのスケーリングを考慮        
+        'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
+        'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
     }));
         
     // } else {
