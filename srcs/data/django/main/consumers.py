@@ -92,6 +92,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             # ボールが上下の壁に当たった場合、Y方向の速度を反転
             if ball_y >= MAX_Y or ball_y <= MIN_Y:
                 ball_angle = -1 * ball_angle
+
             # ボールが左右の壁に当たった場合、ゲームオーバーとして適切な処理を行うか、
             # 速度を反転して反射させる
             if ball_x >= MAX_X:
@@ -121,9 +122,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 ball_angle = math.pi / 3 * 5
             elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y < player2_y + player2_length / 2 and ball_y > player2_y - player2_length / 2:
                 ball_angle = math.pi - ball_angle
-
-
-
 
             game_state = {
                 'info':'all',
