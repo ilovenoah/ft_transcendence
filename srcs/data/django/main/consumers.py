@@ -100,27 +100,27 @@ class PongConsumer(AsyncWebsocketConsumer):
             elif ball_x <= MIN_X:
                 ball_angle = math.pi - ball_angle
             
-            if ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y > player1_y + player1_length / 5 * 2 and ball_y <= player1_y + player1_length / 2:
+            if ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y > player1_y + player1_length / 5 * 2 and ball_y <= player1_y + player1_length / 2:
                 ball_angle = math.pi / 3 * 2
-            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y > player1_y + player1_length / 5 and ball_y < player1_y + player1_length / 5 * 2:
+            elif ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y > player1_y + player1_length / 5 and ball_y < player1_y + player1_length / 5 * 2:
                 ball_angle = math.pi / 4 * 3
-            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y < player1_y - player1_length / 5 and ball_y > player1_y - player1_length / 5 * 2:
+            elif ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y < player1_y - player1_length / 5 and ball_y > player1_y - player1_length / 5 * 2:
                 ball_angle = math.pi / 4 * 5
-            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y < player1_y - player1_length / 5 * 2 and ball_y > player1_y - player1_length / 2:
+            elif ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y < player1_y - player1_length / 5 * 2 and ball_y > player1_y - player1_length / 2:
                 ball_angle = math.pi / 3 * 4
-            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y < player1_y + player1_length / 2 and ball_y > player1_y - player1_length / 2:
+            elif ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y < player1_y + player1_length / 2 and ball_y > player1_y - player1_length / 2:
                 ball_angle = math.pi - ball_angle
 
                 
-            if ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y > player2_y + player2_length / 5 * 2 and ball_y <= player2_y + player2_length / 2:
+            if ball_x <= player2_x and ball_x >= player2_x - 100 and ball_y > player2_y + player2_length / 5 * 2 and ball_y <= player2_y + player2_length / 2:
                 ball_angle = math.pi / 3 
-            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y > player2_y + player2_length / 5 and ball_y < player2_y + player2_length / 5 * 2:
+            elif ball_x <= player2_x and ball_x >= player2_x - 100 and ball_y > player2_y + player2_length / 5 and ball_y < player2_y + player2_length / 5 * 2:
                 ball_angle = math.pi / 4 
-            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y < player2_y - player2_length / 5 and ball_y > player2_y - player2_length / 5 * 2:
+            elif ball_x <= player2_x and ball_x >= player2_x - 100 and ball_y < player2_y - player2_length / 5 and ball_y > player2_y - player2_length / 5 * 2:
                 ball_angle = math.pi / 4 * 7
-            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y < player2_y - player2_length / 5 * 2 and ball_y > player2_y - player2_length / 2:
+            elif ball_x <= player2_x and ball_x >= player2_x - 100 and ball_y < player2_y - player2_length / 5 * 2 and ball_y > player2_y - player2_length / 2:
                 ball_angle = math.pi / 3 * 5
-            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y < player2_y + player2_length / 2 and ball_y > player2_y - player2_length / 2:
+            elif ball_x <= player2_x and ball_x >= player2_x - 100 and ball_y < player2_y + player2_length / 2 and ball_y > player2_y - player2_length / 2:
                 ball_angle = math.pi - ball_angle
 
             game_state = {
