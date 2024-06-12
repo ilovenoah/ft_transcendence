@@ -9,6 +9,9 @@ let moveUpY = false;
 let moveDownY = false;
 let wrate = 0.0;
 
+let score_player1 = 0;
+let score_player2 = 0;
+
 let speedrate = 5.0;
 
 let lastUpdateTime = Date.now();
@@ -175,18 +178,53 @@ function updateGameState(data) {
         ball.position.x = data.ball_x / 100;
         ball.position.y = data.ball_y / 100;
     } else if (data.info === 'score'){        
-        score_player1 = data.score_player1;
-        score_player2 = data.score_player2;
+        if (score_player1 != data.score_player1){
+            score_player1 = data.score_player1;
+            displayScore(score_player1,score_player2);
+        }
+        if (score_player2 != data.score_player2){
+            score_player2 = data.score_player2;
+            displayScore(score_player1,score_player2);
+        }
     } else {
         paddle1.position.y = data.player1_y / 100;
         paddle2.position.y = data.player2_y / 100;    
         ball.position.x = data.ball_x / 100;
         ball.position.y = data.ball_y / 100;
-        score_player1 = data.score_player1;
-        score_player2 = data.score_player2;
+        if (score_player1 != data.score_player1){
+            score_player1 = data.score_player1;
+            displayScore(score_player1,score_player2);
+        }
+        if (score_player2 != data.score_player2){
+            score_player2 = data.score_player2;
+            displayScore(score_player1,score_player2);
+        }
     }
 
+
+
+
+
 //    renderer.render(scene, camera);
+}
+
+function displayScore(score1, score2){
+
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // テキストの設定
+    const text = "こんにちは、Canvas!";
+    const x = 50; // テキストの描画位置（x座標）
+    const y = 100; // テキストの描画位置（y座標）
+
+    // フォントとスタイルを設定
+    context.font = '30px Arial';
+    context.fillStyle = 'black';
+
+    // テキストを描画
+
+    context.fillText(text, x, y);
 }
 
 

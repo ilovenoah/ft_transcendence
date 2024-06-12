@@ -84,7 +84,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         global ball_angle, ball_speed, ball_x, ball_y, player1_y, player2_y, score_player1, score_player2
 
         while True:
-
+            waitflag = 0
             # ボールの位置を更新            
             ball_x += ball_speed * math.cos(ball_angle)
             ball_y += ball_speed * math.sin(ball_angle)
@@ -96,11 +96,18 @@ class PongConsumer(AsyncWebsocketConsumer):
             # ボールが左右の壁に当たった場合、ゲームオーバーとして適切な処理を行うか、
             # 速度を反転して反射させる
             if ball_x >= MAX_X:
-                ball_angle = math.pi - ball_angle
+#                ball_angle = math.pi - ball_angle
+                score_player2 += 1
+                waitflag = 1
+                ball_x = 0
+                ball_y = 0
             elif ball_x <= MIN_X:
-                ball_angle = math.pi - ball_angle
-            
-            if ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y > player1_y + player1_length / 5 * 2 and ball_y <= player1_y + player1_length / 2:
+#                ball_angle = math.pi - ball_angle
+                score_player1 += 1
+                waitflag = 1
+                ball_x = 0
+                ball_y = 0
+            elif ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y > player1_y + player1_length / 5 * 2 and ball_y <= player1_y + player1_length / 2:
                 ball_angle = math.pi / 3 * 2
             elif ball_x >= player1_x and ball_x <= player1_x + 100 and ball_y > player1_y + player1_length / 5 and ball_y < player1_y + player1_length / 5 * 2:
                 ball_angle = math.pi / 4 * 3
@@ -129,8 +136,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'player2_y': player2_y,
                 'ball_x': ball_x,   
                 'ball_y': ball_y,   
-                'score_player1': 0,
-                'score_player2': 0,
+                'score_player1': score_player1,
+                'score_player2': score_player2,
             }
 
             # ゲームの状態をクライアントに送信
@@ -143,7 +150,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             #    await self.send_game_state(game_state)
             )
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            await asyncio.sleep(0.033)
+            if waitflag == 1 :
+                await asyncio.sleep(5.0)
+            else :
+                await asyncio.sleep(0.033)
 
     async def send_game_state(self, game_state):
         await self.send(text_data=json.dumps(game_state))
