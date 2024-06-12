@@ -397,7 +397,7 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
-            elif page == 'lobby':
+            elif page == 'room':
                 user = request.user
                 if user.is_authenticated:
                     current_user = user
@@ -430,8 +430,8 @@ def process_post_data(request):
                         Matchmaking.objects.create(user1=current_user)
                     response_data = {
                         'page': page,
-                        'content': read_file('lobby.html'),
-                        'title': 'Lobby',
+                        'content': read_file('room.html'),
+                        'title': 'Room',
                         'exec': 'setTimeout(reloadAjax, 10000);'
                     }
                 else:
