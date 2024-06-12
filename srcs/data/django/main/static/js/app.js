@@ -1,3 +1,5 @@
+currentPage = '';
+
 document.addEventListener("DOMContentLoaded", function() {
 
   // 3分ごとにheartbeatを送信
@@ -127,6 +129,8 @@ function updateContent(data) {
 
   //本来は失敗したときのことを記述したりすべき
   updateCSRFToken()
+
+  currentPage = data.page;
 
   // ページのコンテンツを更新
   if (typeof data.content !== 'undefined') {     
@@ -265,11 +269,14 @@ function sendHeartbeat() {
 }
 
 
-function reloadAjax() {
-  var postData = {};
-  postData['page'] = 'room'; 
-  postData['data_url']= 'process-post/';
-  send_ajax(postData);
-}
+function reloadAjax(page) {
 
+  if (currentPage == page)
+  {
+    var postData = {};
+    postData['page'] = page; 
+    postData['data_url']= 'process-post/';
+    send_ajax(postData);
+  }
+}
 

@@ -448,7 +448,7 @@ def process_post_data(request):
                         'page': page,
                         'content': read_file('room.html'),
                         'title': 'Room',
-                        'exec': 'setTimeout(reloadAjax, 10000);'
+                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
                     }
                 else:
                     form = AuthenticationForm()
