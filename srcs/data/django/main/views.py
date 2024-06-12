@@ -397,6 +397,22 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'lobby':
+                user = request.user
+                if user.is_authenticated:
+                    rooms = get_available_rooms()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('lobby.html', {'rooms': rooms}),
+                        'title': 'Lobby'
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
             elif page == 'room':
                 user = request.user
                 if user.is_authenticated:
@@ -520,3 +536,13 @@ def heartbeat(request):
     user.last_active = timezone.now()
     user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
+
+#user2が不在でtimestampから30秒以内のroomを取得
+def get_available_rooms():
+    current_time = timezone.now()
+    thirty_seconds_ago = current_time - timedelta(seconds=30)
+    available_rooms = Matchmaking.objects.filter(
+        user2__isnull=True,
+        timestamp__gte=thirty_seconds_ago
+    )
+    return available_rooms
