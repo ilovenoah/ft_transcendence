@@ -3,6 +3,6 @@
 <h1>Room List</h1>
 <ul>
     {% for room in rooms %}
-        <li>Room created by {{ room.user1 }} at {{ room.timestamp }}</li>
+        <li>{{ room.id }} Room created by {{ room.user1 }} at {{ room.timestamp }}</li>
     {% endfor %}
 </ul>

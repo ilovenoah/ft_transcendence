@@ -180,6 +180,20 @@ function updateContent(data) {
       foot.appendChild(arrayScript);
     }
   }
+  
+  // イベントデリゲーションを使用してaタグのクリックイベントを処理
+  document.getElementById('content').addEventListener('click', function(event) {
+    var link = event.target;
+    if (link.tagName === 'A') {
+        event.preventDefault();
+      // 属性を取得し、オブジェクトに変換
+    var postData = {};
+    Array.from(link.attributes).forEach(function(attr) {
+      postData[attr.name] = attr.value;
+    });
+    send_ajax(postData);
+    }
+  });
 }
 
 function send_ajax(data)
