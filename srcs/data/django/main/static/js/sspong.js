@@ -45,16 +45,16 @@ function init() {
 //    document.body.appendChild(renderer.domElement);
     document.getElementById('canvas').appendChild(renderer.domElement);
 
-    const wallgeometry = new THREE.BoxGeometry(75, 0.5, 0.5);
+    const wallgeometry = new THREE.BoxGeometry(77, 0.5, 0.5);
     const wallmaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     
     wallupper = new THREE.Mesh(wallgeometry, wallmaterial);
-    wallupper.position.y =  20.25
+    wallupper.position.y =  20.5
     wallupper.position.z =  0;
     scene.add(wallupper);
 
     walllower = new THREE.Mesh(wallgeometry, wallmaterial);
-    walllower.position.y = -20.25;
+    walllower.position.y = -20.5;
     walllower.position.z =  0;
     scene.add(walllower);
 
@@ -82,13 +82,13 @@ function init() {
     const paddle1Material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
     
     paddle1 = new THREE.Mesh(paddle1Geometry, paddle1Material);
-    paddle1.position.x = 38.25;
+    paddle1.position.x = 38.75;
     scene.add(paddle1);
 
     const paddle2Geometry = new THREE.BoxGeometry(0.5, paddle2length, 0.5);
     const paddle2Material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
     paddle2 = new THREE.Mesh(paddle2Geometry, paddle2Material);
-    paddle2.position.x = -38.25;
+    paddle2.position.x = -38.75;
     scene.add(paddle2);
 
     const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);

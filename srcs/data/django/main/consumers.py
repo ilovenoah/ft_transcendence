@@ -1,4 +1,5 @@
 import json
+import math
 import asyncio
 #from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
@@ -7,8 +8,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 # グローバル変数としてボールの位置と速度を設定
 ball_x = 0
 ball_y = 0
-ball_speed_x = 40
-ball_speed_y = 40
+
+ball_speed = 50 #// ボールの速度の大きさ
+ball_angle = math.pi / 4 # // ボールの進行方向の角度（ラジアン）
+
 player1_x = 3800
 player1_y = 0
 player2_x = -3800
@@ -37,7 +40,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard("main", self.channel_name)
         
     async def receive(self, text_data):
-        global ball_x, ball_y, ball_speed_x, ball_speed_y, player1_y, player2_y, score_player1, score_player2
+        global ball_x, ball_y, ball_angle, ball_speed, player1_y, player2_y, score_player1, score_player2
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
@@ -78,28 +81,49 @@ class PongConsumer(AsyncWebsocketConsumer):
  
 
     async def update_ball_position(self):
-        global ball_x, ball_y, ball_speed_x, ball_speed_y, player1_y, player2_y, score_player1, score_player2
+        global ball_angle, ball_speed, ball_x, ball_y, player1_y, player2_y, score_player1, score_player2
 
         while True:
+
+            # ボールの位置を更新            
+            ball_x += ball_speed * math.cos(ball_angle)
+            ball_y += ball_speed * math.sin(ball_angle)
+
             # ボールが上下の壁に当たった場合、Y方向の速度を反転
             if ball_y >= MAX_Y or ball_y <= MIN_Y:
-                ball_speed_y *= -1
-
+                ball_angle = -1 * ball_angle
             # ボールが左右の壁に当たった場合、ゲームオーバーとして適切な処理を行うか、
             # 速度を反転して反射させる
             if ball_x >= MAX_X:
-                ball_speed_x *= -1
+                ball_angle = math.pi - ball_angle
             elif ball_x <= MIN_X:
-                ball_speed_x *= -1
+                ball_angle = math.pi - ball_angle
             
-            if ball_x == player1_x and ball_y > player1_y - player1_length / 2 and ball_y < player1_y + player1_length / 2:
-                ball_speed_x *= -1
-            elif ball_x == player2_x and ball_y > player2_y - player2_length / 2 and ball_y < player2_y + player2_length / 2:
-                ball_speed_x *= -1
+            if ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y > player1_y + player1_length / 5 * 2 and ball_y <= player1_y + player1_length / 2:
+                ball_angle = math.pi / 3 * 2
+            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y > player1_y + player1_length / 5 and ball_y < player1_y + player1_length / 5 * 2:
+                ball_angle = math.pi / 4 * 3
+            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y < player1_y - player1_length / 5 and ball_y > player1_y - player1_length / 5 * 2:
+                ball_angle = math.pi / 4 * 5
+            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y < player1_y - player1_length / 5 * 2 and ball_y > player1_y - player1_length / 2:
+                ball_angle = math.pi / 3 * 4
+            elif ball_x >= player1_x and ball_x <= player1_x + 1 and ball_y < player1_y + player1_length / 2 and ball_y > player1_y - player1_length / 2:
+                ball_angle = math.pi - ball_angle
 
-            # ボールの位置を更新
-            ball_x += ball_speed_x
-            ball_y += ball_speed_y
+                
+            if ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y > player2_y + player2_length / 5 * 2 and ball_y <= player2_y + player2_length / 2:
+                ball_angle = math.pi / 3 
+            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y > player2_y + player2_length / 5 and ball_y < player2_y + player2_length / 5 * 2:
+                ball_angle = math.pi / 4 
+            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y < player2_y - player2_length / 5 and ball_y > player2_y - player2_length / 5 * 2:
+                ball_angle = math.pi / 4 * 7
+            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y < player2_y - player2_length / 5 * 2 and ball_y > player2_y - player2_length / 2:
+                ball_angle = math.pi / 3 * 5
+            elif ball_x <= player2_x and ball_x <= player2_x - 1 and ball_y < player2_y + player2_length / 2 and ball_y > player2_y - player2_length / 2:
+                ball_angle = math.pi - ball_angle
+
+
+
 
             game_state = {
                 'info':'all',
