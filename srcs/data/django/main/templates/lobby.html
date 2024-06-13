@@ -1,8 +1,10 @@
-<a href="#" class="post-link" data_url="process-post/" page="room" title="Create Room">Creat Room</a>
+<h1>New Room</h1>
+<a href="#" class="post-link" data_url="process-post/" page="room" title="Create Room">Create Room</a>
 
 <h1>Room List</h1>
 <ul>
     {% for room in rooms %}
         <li>{{ room.id }} Room created by {{ room.user1 }} at {{ room.timestamp }}</li>
+        <a href="#" class="post-link" data_url="process-post/" page="enter_room" room_id="{{ room.id }}">Enter Room</a>
     {% endfor %}
 </ul>

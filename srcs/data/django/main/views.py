@@ -125,7 +125,6 @@ def process_post_data(request):
             elif page == 'profile':
                 user = request.user
                 if user.is_authenticated:
-                    
                     response_data = {
                         'page': page,
                         'content': render_to_string('profile.html', {'user': user}),
@@ -412,6 +411,25 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
+                    }
+            elif page == 'enter_room':
+                room_id = post_data.get('room_id')
+                room = Matchmaking.objects.filter(id=room_id, user2__isnull=True).first()
+                if room:
+                    room.user2 = request.user
+                    room.save()
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    rooms = get_available_rooms()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('lobby.html', {'rooms': rooms}),
+                        'title': 'Lobby',
                     }
             elif page == 'room':
                 user = request.user
