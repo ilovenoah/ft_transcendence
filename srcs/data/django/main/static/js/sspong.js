@@ -37,16 +37,28 @@ function init() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 20, 60);
 //    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
-    renderer = new THREE.WebGLRenderer();
-    
+
+    const webglCanvas = document.getElementById('webglCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas: webglCanvas });
     renderer.setSize(wwidth, wheight);
-//    renderer.setSize(window.innerWidth, window.innerHeight);
+
+
+
+
+    //    renderer.setSize(window.innerWidth, window.innerHeight);
 
     wrate = wwidth * 0.001;
     wrate = 1;
 
 //    document.body.appendChild(renderer.domElement);
-    document.getElementById('canvas').appendChild(renderer.domElement);
+//    document.getElementById('canvas').appendChild(renderer.domElement);
+
+    // オーバーレイCanvasを作成
+    const overlayCanvas = document.createElement('canvas');
+    overlayCanvas.id = 'overlayCanvas';
+    overlayCanvas.width = window.innerWidth;
+    overlayCanvas.height = window.innerHeight;
+    document.body.appendChild(overlayCanvas);
 
     const wallgeometry = new THREE.BoxGeometry(77, 0.5, 0.5);
     const wallmaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
@@ -210,9 +222,12 @@ function updateGameState(data) {
 
 function displayScore(score1, score2){
 
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    overlayCanvas.width = window.innerWidth;
+    overlayCanvas.height = window.innerHeight;
+    const context = overlayCanvas.getContext('2d');
 
+    
     // テキストの設定
     const text = "こんにちは、Canvas!";
     const x = 50; // テキストの描画位置（x座標）
