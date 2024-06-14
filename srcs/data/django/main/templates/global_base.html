@@ -9,6 +9,11 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
     <title>{% block title %}Default Title{% endblock %}</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #webglCanvas, #overlayCanvas { display: block; }
+        #overlayCanvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+    </style>
 </head>
 
 <body>

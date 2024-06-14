@@ -18,12 +18,9 @@ let lastUpdateTime = Date.now();
 const updateInterval = 1000;  // 1秒
 const animationInterval = 100;  // 10ms
 
-
-
 let reconnectInterval = 100; // 再接続の間隔
 
 function init() {
-
 
     wwidth = window.innerWidth * 0.9;
     wheight = window.innerHeight * 0.9;
@@ -41,9 +38,6 @@ function init() {
     const webglCanvas = document.getElementById('webglCanvas');
     const renderer = new THREE.WebGLRenderer({ canvas: webglCanvas });
     renderer.setSize(wwidth, wheight);
-
-
-
 
     //    renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -79,8 +73,6 @@ function init() {
     wallcenter = new THREE.Mesh(wallcentergeometry, wallcentermaterial);
     wallcenter.position.z = 0;
     scene.add(wallcenter);
-
-
 
 
     // const walllinegeometry = new THREE.BoxGeometry(60, 1.01, 1.01);
@@ -165,8 +157,6 @@ function animate() {
         paddle2.position.y -= 0.1 * speedrate;
     }
 
-
-
     gameSocket.send(JSON.stringify({
         'message': 'update_position',
         'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
@@ -213,15 +203,10 @@ function updateGameState(data) {
         }
     }
 
-
-
-
-
 //    renderer.render(scene, camera);
 }
 
 function displayScore(score1, score2){
-
     const overlayCanvas = document.getElementById('overlayCanvas');
     overlayCanvas.width = window.innerWidth;
     overlayCanvas.height = window.innerHeight;
@@ -241,7 +226,6 @@ function displayScore(score1, score2){
 
     context.fillText(text, x, y);
 }
-
 
 function onKeyDown(e) {
     if (e.key === 'ArrowUp') {
@@ -268,29 +252,22 @@ function onKeyUp(e) {
 }
 
 function connect(){
-
     gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/');
-
     gameSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         updateGameState(data);
     };
-
-
     gameSocket.onopen = function(e) {
         console.log("WebSocket connection established");
         //ゲームが始まったらやればいい
         animate();
     };
-
-
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
         // 自動再接続
         setTimeout(connect, reconnectInterval);
     };
 }
-
 
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
