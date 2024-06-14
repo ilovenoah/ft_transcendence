@@ -12,26 +12,43 @@ document.addEventListener("DOMContentLoaded", function() {
   postData['data_url']= 'process-post/';
   send_ajax(postData);
 
-
-  var links = document.querySelectorAll(".post-link");
-
   // CSRFトークンをmetaタグから取得
   var csrfToken = getCSRFToken();
   
-  links.forEach(function(link) {
-    link.addEventListener("click", function(event) {
+  // var links = document.querySelectorAll(".post-link");
+  // links.forEach(function(link) {
+  //   link.addEventListener("click", function(event) {
+  //     event.preventDefault();
+  // // 属性を取得し、オブジェクトに変換
+  //     var postData = {};
+  //     Array.from(link.attributes).forEach(function(attr) {
+  //       postData[attr.name] = attr.value;
+  //     });
+
+
+  //     send_ajax(postData);
+  //   });
+  // });
+
+  // イベントデリゲーションを使用してaタグのクリックイベントを処理
+  document.addEventListener('click', function(event) {
+    var link = event.target;
+    // 子要素がクリックされた場合も考慮
+    while (link && link.tagName !== 'A') {
+      link = link.parentElement;
+    }
+    if (link.tagName === 'A') {
       event.preventDefault();
-  // 属性を取得し、オブジェクトに変換
+      // 属性を取得し、オブジェクトに変換
       var postData = {};
       Array.from(link.attributes).forEach(function(attr) {
         postData[attr.name] = attr.value;
       });
-
-
-      send_ajax(postData);
-    });
+      if (postData['class'] === 'post-link'){
+        send_ajax(postData);
+      }
+    }
   });
-
 
   document.addEventListener('submit', function(event) {
     //ファイルをアップロードするときのform
@@ -185,37 +202,17 @@ function updateContent(data) {
     }
   }
   
-
-
-  var links = document.getElementById('content').querySelectorAll(".post-link");  
-  links.forEach(function(link) {
-    link.addEventListener("click", function(event) {
-      event.preventDefault();
-  // 属性を取得し、オブジェクトに変換
-      var postData = {};
-      Array.from(link.attributes).forEach(function(attr) {
-        postData[attr.name] = attr.value;
-      });
-      send_ajax(postData);
-    });
-  });
-
-  // イベントデリゲーションを使用してaタグのクリックイベントを処理
-  // document.getElementById('content').addEventListener('click', function(event) {
-  //   var link = event.target;
-  //   // 子要素がクリックされた場合も考慮
-  //   while (link && link.tagName !== 'A') {
-  //     link = link.parentElement;
-  //   }
-  //   if (link.tagName === 'A') {
+  // var links = document.getElementById('content').querySelectorAll(".post-link");  
+  // links.forEach(function(link) {
+  //   link.addEventListener("click", function(event) {
   //     event.preventDefault();
-  //     // 属性を取得し、オブジェクトに変換
+  // // 属性を取得し、オブジェクトに変換
   //     var postData = {};
   //     Array.from(link.attributes).forEach(function(attr) {
   //       postData[attr.name] = attr.value;
   //     });
   //     send_ajax(postData);
-  //   }
+  //   });
   // });
 }
 
