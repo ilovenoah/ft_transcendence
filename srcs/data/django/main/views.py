@@ -431,13 +431,13 @@ def process_post_data(request):
                         'content': render_to_string('lobby.html', {'rooms': rooms}),
                         'title': 'Lobby',
                     }
-            elif page == 'room':
+            elif page == 'create_room':
                 user = request.user
                 if user.is_authenticated:
                     current_user = user
                     current_time = timezone.now()
                     existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
-                    if existing_match and existing_match.user2:
+                    if existing_match and existing_match.user2: #user1とuser2が存在していてtimestampから30秒以内=マッチ->ゲームに移動
                         response_data = {
                             'page':page,
                             'content':read_file('ponggame.html'),
@@ -446,21 +446,10 @@ def process_post_data(request):
                         }
                         return JsonResponse(response_data)   
                     existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
-                    if existing_match: #current_userがuser1と同じ
+                    if existing_match: #current_userがuser1と同じ->timestampを更新
                         existing_match.timestamp = current_time
                         existing_match.save()
-                    else: #current_userがuser1と異なる
-                        potential_match = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=current_time - timezone.timedelta(seconds=30)).exclude(user1=current_user).first()
-                        if potential_match: #user1が存在してtimestampが30秒以内
-                            potential_match.user2 = current_user
-                            potential_match.save()
-                            response_data = {
-                                'page':page,
-                                'content':read_file('ponggame.html'),
-                                'title': title,
-                                'scriptfiles': '/static/js/game.js',
-                            }
-                            return JsonResponse(response_data)   
+                    else: #user1が存在しない->ルームを作成
                         Matchmaking.objects.create(user1=current_user)
                     response_data = {
                         'page': page,
