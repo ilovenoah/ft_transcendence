@@ -35,24 +35,12 @@ function init() {
     camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 20, 60);
 //    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
 
-    const webglCanvas = document.getElementById('webglCanvas');
-    const renderer = new THREE.WebGLRenderer({canvas: document.querySelector('#webglCanvas') });
+    renderer = new THREE.WebGLRenderer();
     renderer.setSize(wwidth, wheight);
-
-    //    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('gameCanvas').appendChild(renderer.domElement);
 
     wrate = wwidth * 0.001;
     wrate = 1;
-
-//    document.body.appendChild(renderer.domElement);
-//    document.getElementById('canvas').appendChild(renderer.domElement);
-
-    // オーバーレイCanvasを作成
-    const overlayCanvas = document.createElement('canvas');
-    overlayCanvas.id = 'overlayCanvas';
-    overlayCanvas.width = window.innerWidth;
-    overlayCanvas.height = window.innerHeight;
-    document.body.appendChild(overlayCanvas);
 
     const wallgeometry = new THREE.BoxGeometry(77, 0.5, 0.5);
     const wallmaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
@@ -207,24 +195,34 @@ function updateGameState(data) {
 }
 
 function displayScore(score1, score2){
-    const overlayCanvas = document.getElementById('overlayCanvas');
-    overlayCanvas.width = window.innerWidth;
-    overlayCanvas.height = window.innerHeight;
+    // オーバーレイCanvasを作成
+    const overlayCanvas = document.createElement('canvas');
+    overlayCanvas.id = 'overlayCanvas';
+    overlayCanvas.width = wwidth;
+    overlayCanvas.height = wheight;
+    document.getElementById('gameCanvas').appendChild(overlayCanvas);
+    
+    // オーバーレイCanvasの2Dコンテキストを取得
     const context = overlayCanvas.getContext('2d');
 
-    
     // テキストの設定
-    const text = "こんにちは、Canvas!";
-    const x = 50; // テキストの描画位置（x座標）
-    const y = 100; // テキストの描画位置（y座標）
+    const text1 = score1;
+    const x1 = 10; // テキストの描画位置（x座標）
+    const y1 = 180; // テキストの描画位置（y座標）
+    const text2 = score2;
+    const x2 = 750; // テキストの描画位置（x座標）
+    const y2 = 180; // テキストの描画位置（y座標）
+
 
     // フォントとスタイルを設定
     context.font = '30px Arial';
-    context.fillStyle = 'black';
+    context.fillStyle = 'white';
 
     // テキストを描画
+    context.fillText(text2, x2, y2);
+    context.fillText(text1, x1, y1);
 
-    context.fillText(text, x, y);
+
 }
 
 function onKeyDown(e) {
