@@ -40,7 +40,6 @@ def process_post_data(request):
             title = post_data.get('title') 
             content = post_data.get('content') 
 
-
             #送信データの作成
             if page == 'top':
                 response_data = {

@@ -85,7 +85,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         while True:
             waitflag = 0
-            # ボールの位置を更新            
+            # ボールの位置を更新
             ball_x += ball_speed * math.cos(ball_angle)
             ball_y += ball_speed * math.sin(ball_angle)
 

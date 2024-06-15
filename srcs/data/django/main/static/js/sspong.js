@@ -1,4 +1,4 @@
-let scene, camera, renderer, paddle1, paddle2, ball,score;
+let scene, camera, renderer, overlayCanvas, paddle1, paddle2, ball, score;
 let player1Y = 0;
 let player2Y = 0;
 let paddle1length = 6;
@@ -39,6 +39,15 @@ function init() {
     renderer.setSize(wwidth, wheight);
     document.getElementById('gameCanvas').appendChild(renderer.domElement);
 
+
+    // オーバーレイCanvasを作成
+    overlayCanvas = document.createElement('canvas');
+    overlayCanvas.id = 'overlayCanvas';
+    overlayCanvas.width = wwidth;
+    overlayCanvas.height = wheight;
+    document.getElementById('gameCanvas').appendChild(overlayCanvas);    
+
+        
     wrate = wwidth * 0.001;
     wrate = 1;
 
@@ -195,34 +204,31 @@ function updateGameState(data) {
 }
 
 function displayScore(score1, score2){
-    // オーバーレイCanvasを作成
-    const overlayCanvas = document.createElement('canvas');
-    overlayCanvas.id = 'overlayCanvas';
-    overlayCanvas.width = wwidth;
-    overlayCanvas.height = wheight;
-    document.getElementById('gameCanvas').appendChild(overlayCanvas);
-    
     // オーバーレイCanvasの2Dコンテキストを取得
     const context = overlayCanvas.getContext('2d');
 
     // テキストの設定
-    const text1 = score1;
-    const x1 = 10; // テキストの描画位置（x座標）
-    const y1 = 180; // テキストの描画位置（y座標）
-    const text2 = score2;
-    const x2 = 750; // テキストの描画位置（x座標）
-    const y2 = 180; // テキストの描画位置（y座標）
-
+    const txt_score1 = score1;
+    const txt_score1_x = 10; // テキストの描画位置（x座標）
+    const txt_score1_y = 180; // テキストの描画位置（y座標）
+    const txt_score2 = score2;
+    const txt_score2_x = 750; // テキストの描画位置（x座標）
+    const txt_score2_y = 180; // テキストの描画位置（y座標）
 
     // フォントとスタイルを設定
     context.font = '30px Arial';
     context.fillStyle = 'white';
 
     // テキストを描画
-    context.fillText(text2, x2, y2);
-    context.fillText(text1, x1, y1);
+    context.fillText(txt_score2, txt_score2_x, txt_score2_y);
+    context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
 
-
+        // 一定時間後にテキストを消去
+    setTimeout(() => {
+        // テキストを消去するために背景色で上書き
+        context.clearRect(txt_score2_x, txt_score2_y - 30, context.measureText(text).width, 40);
+        context.clearRect(txt_score1_x, txt_score1_y - 30, context.measureText(text).width, 40);
+    }, 3000); // 3秒後に消去
 }
 
 function onKeyDown(e) {
