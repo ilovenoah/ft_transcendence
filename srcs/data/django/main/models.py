@@ -42,9 +42,22 @@ class FriendRequest(models.Model):
         self.status = 'D'
         self.save()
 
-User = get_user_model()
+class Tournament(models.Model):
+    size = models.IntegerField(default=4)
+    count = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now=True)
+
+class TournamentUser(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_complete = models.BooleanField(default=False)
 
 class Matchmaking(models.Model):
-    user1 = models.ForeignKey(User, related_name='matchmaking_user1', on_delete=models.CASCADE)
-    user2 = models.ForeignKey(User, related_name='matchmaking_user2', on_delete=models.CASCADE, null=True, blank=True)
+    user1 = models.ForeignKey(CustomUser, related_name='matchmaking_user1', on_delete=models.CASCADE)
+    user2 = models.ForeignKey(CustomUser, related_name='matchmaking_user2', on_delete=models.CASCADE, null=True, blank=True)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True, blank=True)  # トーナメントID
     timestamp = models.DateTimeField(auto_now=True)
+
+
+

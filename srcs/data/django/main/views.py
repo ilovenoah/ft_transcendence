@@ -4,8 +4,7 @@ import json
 import logging
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -13,16 +12,12 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
-from .forms import ImageForm
-from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
-from .forms import SignUpForm
-from .forms import FriendRequestForm
-from .models import CustomUser
-from .models import FriendRequest
-from .forms import FriendRequestActionForm
+from .forms import SignUpForm, UsernameForm, EmailForm, AvatarForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestForm
+from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from .models import Matchmaking
+from django.db import models
+
 
 
 logger = logging.getLogger(__name__)
@@ -400,9 +395,10 @@ def process_post_data(request):
                 user = request.user
                 if user.is_authenticated:
                     rooms = get_available_rooms()
+                    tournaments = get_available_tournaments()
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
                         'title': 'Lobby'
                     }
                 else:
@@ -426,9 +422,10 @@ def process_post_data(request):
                     }
                 else:
                     rooms = get_available_rooms()
+                    tournaments = get_available_tournaments()
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
                         'title': 'Lobby',
                     }
             elif page == 'create_room':
@@ -463,6 +460,90 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
+                    }
+            elif page == 'create_tournament':
+                user = request.user
+                if user.is_authenticated:
+                    size = post_data.get('size')
+                    tournament = Tournament.objects.create(size=size, count=1)
+                    TournamentUser.objects.create(tournament=tournament, user=user)
+                    page = 'tournament'
+                    response_data = {
+                        'page': page,
+                        'content': read_file('tournament.html'),
+                        'title': 'tournament',
+                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'tournament':
+                user = request.user
+                thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
+                tournament_user = TournamentUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago).first()
+                tournament_user.timestamp = timezone.now()
+                tournament_user.save()
+                tournament = tournament_user.tournament
+                count = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count() #トーナメントが同じでtimestampが30秒以内のuserの数
+                tournament.count = count
+                tournament.save()
+                if count == tournament.size:
+                    tournament_user.is_complete = True
+                    tournament_user.save()
+                    room = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=thirty_seconds_ago, tournament=tournament).first()
+                    if room: #tournamentが同じでuser2が不在でtimestampから30秒以内のroom
+                        room.user2 = user
+                        room.save()
+                    else:
+                        Matchmaking.objects.create(user1=user, tournament=tournament)
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': read_file('tournament.html'),
+                        'title': 'tournament',
+                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
+                    }
+            elif page == 'join_tournament':
+                user = request.user
+                tournament_id = post_data.get('tournament_id')
+                tournament = Tournament.objects.filter(id=tournament_id).first()
+                tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
+                thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
+                count = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
+                tournament.count = count 
+                tournament.save()
+                if count == tournament.size:
+                    tournament_user.is_complete = True
+                    tournament_user.save()
+                    room = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=thirty_seconds_ago, tournament=tournament).first()
+                    if room: #tournamentが同じでuser2が不在でtimestampから30秒以内のroom
+                        room.user2 = user
+                        room.save()
+                    else:
+                        Matchmaking.objects.create(user1=user, tournament=tournament)
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    page = 'tournament'
+                    response_data = {
+                        'page': page,
+                        'content': read_file('tournament.html'),
+                        'title': 'tournament',
+                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
                     }
             else:
                 if is_file_exists(page + '.html') :
@@ -553,3 +634,13 @@ def get_available_rooms():
         timestamp__gte=thirty_seconds_ago
     )
     return available_rooms
+
+#countがsizeより小さくtimestampから30秒以内のtournamentを取得
+def get_available_tournaments():
+    current_time = timezone.now()
+    thirty_seconds_ago = current_time - timedelta(seconds=30)
+    available_tournaments = Tournament.objects.filter(
+        count__lt=models.F('size'), 
+        timestamp__gte=thirty_seconds_ago
+    )
+    return available_tournaments
