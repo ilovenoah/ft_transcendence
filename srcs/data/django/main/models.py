@@ -4,6 +4,8 @@ from django.utils import timezone
 from .validators import validate_file_size
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+
 
 class CustomUser(AbstractUser):
     avatar = models.CharField(
@@ -39,3 +41,10 @@ class FriendRequest(models.Model):
     def decline_request(self):
         self.status = 'D'
         self.save()
+
+User = get_user_model()
+
+class Matchmaking(models.Model):
+    user1 = models.ForeignKey(User, related_name='matchmaking_user1', on_delete=models.CASCADE)
+    user2 = models.ForeignKey(User, related_name='matchmaking_user2', on_delete=models.CASCADE, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now=True)

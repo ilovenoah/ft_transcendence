@@ -22,7 +22,7 @@ from .models import FriendRequest
 from .forms import FriendRequestActionForm
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-
+from .models import Matchmaking
 
 
 logger = logging.getLogger(__name__)
@@ -125,7 +125,6 @@ def process_post_data(request):
             elif page == 'profile':
                 user = request.user
                 if user.is_authenticated:
-                    
                     response_data = {
                         'page': page,
                         'content': render_to_string('profile.html', {'user': user}),
@@ -397,6 +396,74 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'lobby':
+                user = request.user
+                if user.is_authenticated:
+                    rooms = get_available_rooms()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('lobby.html', {'rooms': rooms}),
+                        'title': 'Lobby'
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'enter_room':
+                room_id = post_data.get('room_id')
+                room = Matchmaking.objects.filter(id=room_id, user2__isnull=True).first()
+                if room:
+                    room.user2 = request.user
+                    room.save()
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    rooms = get_available_rooms()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('lobby.html', {'rooms': rooms}),
+                        'title': 'Lobby',
+                    }
+            elif page == 'create_room':
+                user = request.user
+                if user.is_authenticated:
+                    current_user = user
+                    current_time = timezone.now()
+                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
+                    if existing_match and existing_match.user2: #user1とuser2が存在していてtimestampから30秒以内=マッチ->ゲームに移動
+                        response_data = {
+                            'page':page,
+                            'content':read_file('ponggame.html'),
+                            'title': title,
+                            'scriptfiles': '/static/js/game.js',
+                        }
+                        return JsonResponse(response_data)   
+                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
+                    if existing_match: #current_userがuser1と同じ->timestampを更新
+                        existing_match.timestamp = current_time
+                        existing_match.save()
+                    else: #user1が存在しない->ルームを作成
+                        Matchmaking.objects.create(user1=current_user)
+                    response_data = {
+                        'page': page,
+                        'content': read_file('room.html'),
+                        'title': 'Room',
+                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
@@ -476,3 +543,13 @@ def heartbeat(request):
     user.last_active = timezone.now()
     user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
+
+#user2が不在でtimestampから30秒以内のroomを取得
+def get_available_rooms():
+    current_time = timezone.now()
+    thirty_seconds_ago = current_time - timedelta(seconds=30)
+    available_rooms = Matchmaking.objects.filter(
+        user2__isnull=True,
+        timestamp__gte=thirty_seconds_ago
+    )
+    return available_rooms
