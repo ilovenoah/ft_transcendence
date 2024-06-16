@@ -97,13 +97,13 @@ class PongConsumer(AsyncWebsocketConsumer):
             # 速度を反転して反射させる
             if ball_x >= MAX_X:
 #                ball_angle = math.pi - ball_angle
-                score_player2 += 1
+                score_player1 += 1
                 waitflag = 1
                 ball_x = 0
                 ball_y = 0
             elif ball_x <= MIN_X:
 #                ball_angle = math.pi - ball_angle
-                score_player1 += 1
+                score_player2 += 1
                 waitflag = 1
                 ball_x = 0
                 ball_y = 0
@@ -149,8 +149,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }
             #    await self.send_game_state(game_state)
             )
+            
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            if waitflag == 1 :
+            if waitflag > 0 :
                 await asyncio.sleep(5.0)
             else :
                 await asyncio.sleep(0.033)

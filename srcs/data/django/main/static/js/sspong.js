@@ -226,9 +226,9 @@ function displayScore(score1, score2){
         // 一定時間後にテキストを消去
     setTimeout(() => {
         // テキストを消去するために背景色で上書き
-        context.clearRect(txt_score2_x, txt_score2_y - 30, context.measureText(text).width, 40);
-        context.clearRect(txt_score1_x, txt_score1_y - 30, context.measureText(text).width, 40);
-    }, 3000); // 3秒後に消去
+        context.clearRect(txt_score2_x, txt_score2_y - 10, context.measureText(txt_score2.width), 40);
+        context.clearRect(txt_score1_x, txt_score1_y - 10, context.measureText(txt_score1.width), 40);
+    }, 100); // 3秒後に消去
 }
 
 function onKeyDown(e) {
