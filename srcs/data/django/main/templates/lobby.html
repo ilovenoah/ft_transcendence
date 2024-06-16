@@ -1,0 +1,30 @@
+<h1>New Room</h1>
+<a href="#" class="post-link" data_url="process-post/" page="create_room" title="Create Room">Create Room</a>
+
+<h1>Room List</h1>
+<ul>
+    {% if rooms %}
+        {% for room in rooms %}
+            <li>{{ room.id }} Room created by {{ room.user1 }} at {{ room.timestamp }}</li>
+            <a href="#" class="post-link" data_url="process-post/" page="enter_room" room_id="{{ room.id }}">Enter Room</a>
+        {% endfor %}
+    {% else %}
+        <li>No rooms available</li>
+    {% endif %}
+</ul>
+
+<h1>New Tournament</h1>
+<li><a href="#" class="post-link" data_url="process-post/" page="create_tournament" title="Create Tournament" size="4">Create Tournament for 4 Players</a></li>
+<li><a href="#" class="post-link" data_url="process-post/" page="create_tournament" title="Create Tournament" size="8">Create Tournament for 8 Players</a></li>
+<li><a href="#" class="post-link" data_url="process-post/" page="create_tournament" title="Create Tournament" size="16">Create Tournament for 16 Players</a></li>
+<h1>Tournament List</h1>
+<ul>
+    {% if tournaments %}
+        {% for tournament in tournaments %}
+            <li>{{ tournament.id }} Tournament for {{ tournament.size }} at {{ tournament.timestamp }}</li>
+            <a href="#" class="post-link" data_url="process-post/" page="join_tournament" tournament_id="{{ tournament.id }}">Join Tournament</a>
+        {% endfor %}
+    {% else %}
+        <li>No tournaments available</li>
+    {% endif %}
+</ul>

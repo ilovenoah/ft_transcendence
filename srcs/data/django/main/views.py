@@ -4,8 +4,7 @@ import json
 import logging
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -13,15 +12,11 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
-from .forms import ImageForm
-from .forms import UsernameForm, EmailForm, AvatarForm, PasswordChangeForm
-from .forms import SignUpForm
-from .forms import FriendRequestForm
-from .models import CustomUser
-from .models import FriendRequest
-from .forms import FriendRequestActionForm
+from .forms import SignUpForm, UsernameForm, EmailForm, AvatarForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestForm
+from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db import models
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +113,6 @@ def process_post_data(request):
             elif page == 'profile':
                 user = request.user
                 if user.is_authenticated:
-                    
                     response_data = {
                         'page': page,
                         'content': render_to_string('profile.html', {'user': user}),
@@ -390,6 +384,168 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'lobby':
+                user = request.user
+                if user.is_authenticated:
+                    rooms = get_available_rooms()
+                    tournaments = get_available_tournaments()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
+                        'title': 'Lobby'
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'enter_room':
+                room_id = post_data.get('room_id')
+                room = Matchmaking.objects.filter(id=room_id, user2__isnull=True).first()
+                if room:
+                    room.user2 = request.user
+                    room.save()
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    rooms = get_available_rooms()
+                    tournaments = get_available_tournaments()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
+                        'title': 'Lobby',
+                    }
+            elif page == 'create_room':
+                user = request.user
+                if user.is_authenticated:
+                    current_user = user
+                    current_time = timezone.now()
+                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
+                    if existing_match and existing_match.user2: #user1とuser2が存在していてtimestampから30秒以内=マッチ->ゲームに移動
+                        response_data = {
+                            'page':page,
+                            'content':read_file('ponggame.html'),
+                            'title': title,
+                            'scriptfiles': '/static/js/game.js',
+                        }
+                        return JsonResponse(response_data)   
+                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
+                    if existing_match: #current_userがuser1と同じ->timestampを更新
+                        existing_match.timestamp = current_time
+                        existing_match.save()
+                    else: #user1が存在しない->ルームを作成
+                        Matchmaking.objects.create(user1=current_user)
+                    response_data = {
+                        'page': page,
+                        'content': read_file('room.html'),
+                        'title': 'Room',
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
+                   }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'create_tournament':
+                user = request.user
+                if user.is_authenticated:
+                    size = post_data.get('size')
+                    tournament = Tournament.objects.create(size=size, count=1)
+                    TournamentUser.objects.create(tournament=tournament, user=user)
+                    page = 'tournament'
+                    response_data = {
+                        'page': page,
+                        'content': read_file('tournament.html'),
+                        'title': 'tournament',
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
+                    }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'tournament':
+                user = request.user
+                thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
+                tournament_user = TournamentUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago).first()
+                tournament_user.timestamp = timezone.now()
+                tournament_user.save()
+                tournament = tournament_user.tournament
+                count = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count() #トーナメントが同じでtimestampが30秒以内のuserの数
+                tournament.count = count
+                tournament.save()
+                if count == tournament.size:
+                    tournament_user.is_complete = True
+                    tournament_user.save()
+                    room = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=thirty_seconds_ago, tournament=tournament).first()
+                    if room: #tournamentが同じでuser2が不在でtimestampから30秒以内のroom
+                        room.user2 = user
+                        room.save()
+                    else:
+                        Matchmaking.objects.create(user1=user, tournament=tournament)
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': read_file('tournament.html'),
+                        'title': 'tournament',
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
+                    }
+            elif page == 'join_tournament':
+                user = request.user
+                tournament_id = post_data.get('tournament_id')
+                tournament = Tournament.objects.filter(id=tournament_id).first()
+                tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
+                thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
+                count = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
+                tournament.count = count 
+                tournament.save()
+                if count == tournament.size:
+                    tournament_user.is_complete = True
+                    tournament_user.save()
+                    room = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=thirty_seconds_ago, tournament=tournament).first()
+                    if room: #tournamentが同じでuser2が不在でtimestampから30秒以内のroom
+                        room.user2 = user
+                        room.save()
+                    else:
+                        Matchmaking.objects.create(user1=user, tournament=tournament)
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    page = 'tournament'
+                    response_data = {
+                        'page': page,
+                        'content': read_file('tournament.html'),
+                        'title': 'tournament',
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
+                    }
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
@@ -436,7 +592,9 @@ def upload_image(request):
                     'message':'アップロードが成功しました\nこの画像を保存しますか',
                     'imgsrc':'media/' + image_instance.image.name,
                     'descimage':'アップロード画像',
-                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"',
+                    'setid': 'id_avatar',
+                    'setvalue': image_instance.image.name,
+#                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"',
                 }
                 return JsonResponse(response_data)
             else:
@@ -473,3 +631,30 @@ def read_file(filename):
     except Exception as e:
         return f"Error: {e}"
 
+
+@login_required
+def heartbeat(request):
+    user = request.user
+    user.last_active = timezone.now()
+    user.save(update_fields=['last_active'])
+    return JsonResponse({'status': 'logged_in'})
+
+#user2が不在でtimestampから30秒以内のroomを取得
+def get_available_rooms():
+    current_time = timezone.now()
+    thirty_seconds_ago = current_time - timedelta(seconds=30)
+    available_rooms = Matchmaking.objects.filter(
+        user2__isnull=True,
+        timestamp__gte=thirty_seconds_ago
+    )
+    return available_rooms
+
+#countがsizeより小さくtimestampから30秒以内のtournamentを取得
+def get_available_tournaments():
+    current_time = timezone.now()
+    thirty_seconds_ago = current_time - timedelta(seconds=30)
+    available_tournaments = Tournament.objects.filter(
+        count__lt=models.F('size'), 
+        timestamp__gte=thirty_seconds_ago
+    )
+    return available_tournaments

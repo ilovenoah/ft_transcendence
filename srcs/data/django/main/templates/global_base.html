@@ -14,6 +14,21 @@
         canvas { display: block; }
         #overlayCanvas { position: absolute; top: 0; left: 0; pointer-events: none; }
 
+        #custom-alert {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #83ffb9;
+            color: #192ffd;
+            border: 1px solid #158eff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
     </style>
 </head>
 
@@ -38,6 +53,7 @@
                 <a href="#" class="post-link" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
                 <a href="#" class="post-link" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
                 <a href="#" class="post-link" data_url="process-post/" page="friends" title="Friends">Friends</a>
+                <a href="#" class="post-link" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
             </nav>
         </div>
     </nav>
@@ -50,7 +66,11 @@
     </main>
     <footer id="foot">
         {% block foot %}{% endblock %}
-    </footer>
+    </footer>   
+
+
+    <div id="custom-alert">これはカスタムアラートです！</div>
+
     <script src="{% static 'js/app.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
 </body>

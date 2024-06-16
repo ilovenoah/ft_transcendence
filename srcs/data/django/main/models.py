@@ -4,6 +4,8 @@ from django.utils import timezone
 from .validators import validate_file_size
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+
 
 class CustomUser(AbstractUser):
     avatar = models.CharField(
@@ -39,3 +41,23 @@ class FriendRequest(models.Model):
     def decline_request(self):
         self.status = 'D'
         self.save()
+
+class Tournament(models.Model):
+    size = models.IntegerField(default=4)
+    count = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now=True)
+
+class TournamentUser(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_complete = models.BooleanField(default=False)
+
+class Matchmaking(models.Model):
+    user1 = models.ForeignKey(CustomUser, related_name='matchmaking_user1', on_delete=models.CASCADE)
+    user2 = models.ForeignKey(CustomUser, related_name='matchmaking_user2', on_delete=models.CASCADE, null=True, blank=True)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True, blank=True)  # トーナメントID
+    timestamp = models.DateTimeField(auto_now=True)
+
+
+
