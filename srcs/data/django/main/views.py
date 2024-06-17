@@ -18,20 +18,13 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db import models
 
-
-
 logger = logging.getLogger(__name__)
-
 
 
 
 
 def index(request):
     return render(request, 'index.html')
-
-def get_csrf_token(request):
-    token = get_token(request)
-    return JsonResponse({'csrfToken': token})
 
 def process_post_data(request):
     if request.method == 'POST':
@@ -452,8 +445,10 @@ def process_post_data(request):
                         'page': page,
                         'content': read_file('room.html'),
                         'title': 'Room',
-                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
-                    }
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
+                   }
                 else:
                     form = AuthenticationForm()
                     response_data = {
@@ -472,7 +467,9 @@ def process_post_data(request):
                         'page': page,
                         'content': read_file('tournament.html'),
                         'title': 'tournament',
-                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
                     }
                 else:
                     form = AuthenticationForm()
@@ -511,7 +508,9 @@ def process_post_data(request):
                         'page': page,
                         'content': read_file('tournament.html'),
                         'title': 'tournament',
-                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
                     }
             elif page == 'join_tournament':
                 user = request.user
@@ -543,7 +542,9 @@ def process_post_data(request):
                         'page': page,
                         'content': read_file('tournament.html'),
                         'title': 'tournament',
-                        'exec': 'setTimeout(reloadAjax, 10000, "' + page + '" );'
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': 'Please, wait a moment.',
                     }
             else:
                 if is_file_exists(page + '.html') :
@@ -566,6 +567,17 @@ def process_post_data(request):
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 
+@login_required
+def heartbeat(request):
+    user = request.user
+    user.last_active = timezone.now()
+    user.save(update_fields=['last_active'])
+    return JsonResponse({'status': 'logged_in'})
+
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
+
 @csrf_exempt
 def upload_image(request):
     if request.method == 'POST':
@@ -580,7 +592,9 @@ def upload_image(request):
                     'message':'アップロードが成功しました\nこの画像を保存しますか',
                     'imgsrc':'media/' + image_instance.image.name,
                     'descimage':'アップロード画像',
-                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"',
+                    'setid': 'id_avatar',
+                    'setvalue': image_instance.image.name,
+#                    'exec':'document.getElementById(\'id_avatar\').value = "' + image_instance.image.name + '"',
                 }
                 return JsonResponse(response_data)
             else:
