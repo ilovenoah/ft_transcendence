@@ -78,8 +78,8 @@ document.addEventListener("DOMContentLoaded", function() {
               document.getElementById('result').innerText = response.message;
               document.getElementById('uploaded').src = response.imgsrc;
               document.getElementById('descimage').innertext ="画像";
-              if (typeof response.exec !== 'undefined') {     
-                eval(response.exec);
+              if (typeof response.setid !== 'undefined') {     
+                setIdValue(response.setid, response.setvalue);
               }
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
@@ -159,8 +159,17 @@ function updateContent(data) {
   if (typeof data.foot !== 'undefined') {     
     document.querySelector('#foot').innerHTML = data.foot;
   }
-  if (typeof data.exec !== 'undefined'){
-      eval(data.exec);
+  // if (typeof data.exec !== 'undefined') {     
+  //   eval(data.exec);
+  // }
+  if (typeof data.alert !== 'undefined') {     
+    displayAlert(data.alert);
+  }
+  if (typeof data.setid !== 'undefined') {     
+    setIdValue(data.setid, data.setvalue);
+  }
+  if (typeof data.reload !== 'undefined') {
+    reloadAjax(data.reload, data.timeout);
   }
   if (typeof data.title !== 'undefined') {     
     document.title = data.title;
@@ -216,6 +225,29 @@ function updateContent(data) {
   // });
 }
 
+
+
+function sendHeartbeat() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'heartbeat/', true);
+  xhr.withCredentials = true;
+
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+              var response = JSON.parse(xhr.responseText);
+              console.log('User is:', response.status);
+              // ログイン状態に応じた処理
+          } else {
+              console.error('Error: ', xhr.status);
+              // ログアウト状態に応じた処理
+          }
+      }
+  };
+
+  xhr.send();
+}
+
 function send_ajax(data)
 {
   // CSRFトークンをmetaタグから取得
@@ -262,7 +294,6 @@ function updateCSRFToken(callback) {
   xhr.send();
 }
 
-
 function sendHeartbeat() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'heartbeat/', true);
@@ -284,15 +315,29 @@ function sendHeartbeat() {
   xhr.send();
 }
 
+function reloadAjax(page, timeout) {
+  setTimeout(() => {
+    if (currentPage == page)
+      {
+        var postData = {};
+        postData['page'] = page; 
+        postData['data_url']= 'process-post/';
+        send_ajax(postData);
+      } 
+  }, timeout)
+}
 
-function reloadAjax(page) {
+function displayAlert(mesg) {
+  alertBox = document.getElementById('custom-alert');
+  alertBox.innerText = mesg;
+  alertBox.style.display = 'block';
+  setTimeout(() => {
+      alertBox.style.display = 'none';
+  }, 2000);
+}
 
-  if (currentPage == page)
-  {
-    var postData = {};
-    postData['page'] = page; 
-    postData['data_url']= 'process-post/';
-    send_ajax(postData);
-  }
+
+function setIdValue(id, setvalue) {
+  document.getElementById(id).value = setvalue;
 }
 
