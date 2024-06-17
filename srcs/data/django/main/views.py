@@ -74,7 +74,7 @@ def process_post_data(request):
                     'content':read_file('ponggame.html'),
                     'title': title,
                     # javascriptのファイルを指定するとき
-                    'scriptfiles': '/static/js/sspong.js',
+                    'scriptfiles': '/static/js/game.js',
                 }
             elif page == 'signup':
                 form = SignUpForm(data=post_data)
