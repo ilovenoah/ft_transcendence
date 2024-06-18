@@ -209,21 +209,17 @@ function displayScore(score1, score2){
 
     // テキストの設定
     const txt_score1 = score1;
-    const txt_score1_x = Math.trunc(context.canvas.width / 50.0); // テキストの描画位置（x座標）
+    const txt_score1_x = Math.trunc(context.canvas.width / 50.0 * 2); // テキストの描画位置（x座標）
     const txt_score1_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
     const txt_score2 = score2;
-    const txt_score2_x = Math.trunc(context.canvas.width / 50.0 * 49); // テキストの描画位置（x座標）
+    const txt_score2_x = Math.trunc(context.canvas.width / 50.0 * 47); // テキストの描画位置（x座標）
     const txt_score2_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
 
-    console.log(txt_score1_x);
-    console.log(txt_score1_y);
-    
-
     // フォントとスタイルを設定
-    context.font = '30px Arial';
+    context.font = context.canvas.width / 20 + 'px Arial';
     context.fillStyle = 'white';
     
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+//    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 // テキストを描画
     context.fillText(txt_score2, txt_score2_x, txt_score2_y);
     context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
@@ -231,9 +227,9 @@ function displayScore(score1, score2){
         // 一定時間後にテキストを消去
     setTimeout(() => {
         // テキストを消去するために背景色で上書き
-        context.clearRect(txt_score2_x, txt_score2_y - 10, context.measureText(txt_score2.width), 40);
-        context.clearRect(txt_score1_x, txt_score1_y - 10, context.measureText(txt_score1.width), 40);
-    }, 100); // 3秒後に消去
+        context.clearRect(txt_score2_x, txt_score2_y - 30, 50, 40);
+        context.clearRect(txt_score1_x, txt_score1_y - 30, 50, 40);
+    }, 3000); // 3秒後に消去
 }
 
 function onKeyDown(e) {

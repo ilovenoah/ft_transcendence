@@ -141,6 +141,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                 elif ball_x <= player2_x and ball_x >= player2_x - 100 and ball_y < player2_y + player2_length / 2 and ball_y > player2_y - player2_length / 2:
                     ball_angle = math.pi - ball_angle
 
+
+
+
                 
             game_state = {
                 'info':'all',
@@ -163,7 +166,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             )
             
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            await asyncio.sleep(interval)
+            if score_player1 >= 10 or score_player2 >= 10:
+                await asyncio.sleep(3600)
+            else:
+                await asyncio.sleep(interval)
 
     async def send_game_state(self, game_state):
         await self.send(text_data=json.dumps(game_state))
