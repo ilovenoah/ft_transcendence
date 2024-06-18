@@ -30,7 +30,14 @@ class EmailForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
-        del self.fields['password']
+
+class DisplayNameForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ['display_name']
+    def __init__(self, *args, **kwargs):
+        super(DisplayNameForm, self).__init__(*args, **kwargs)
+        self.fields['display_name'].required = True
 
 class AvatarForm(forms.ModelForm):
     class Meta:

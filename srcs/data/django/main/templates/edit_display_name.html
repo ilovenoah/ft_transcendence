@@ -1,0 +1,10 @@
+<h2>Edit Display Name</h2>
+<form class="ajax-form" action="process-post/">
+    <input type="hidden" name="page" value="edit_display_name">
+    {% csrf_token %}
+    <div>
+        <label for="id_display_name">display_name:</label>
+        <input type="text" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
+    </div>
+    <button type="submit">Save</button>
+</form>
