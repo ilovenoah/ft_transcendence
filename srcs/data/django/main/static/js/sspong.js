@@ -219,17 +219,17 @@ function displayScore(score1, score2){
     context.font = context.canvas.width / 20 + 'px Arial';
     context.fillStyle = 'white';
     
-//    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-// テキストを描画
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    // テキストを描画
     context.fillText(txt_score2, txt_score2_x, txt_score2_y);
     context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
 
-        // 一定時間後にテキストを消去
-    setTimeout(() => {
-        // テキストを消去するために背景色で上書き
-        context.clearRect(txt_score2_x, txt_score2_y - 30, 50, 40);
-        context.clearRect(txt_score1_x, txt_score1_y - 30, 50, 40);
-    }, 3000); // 3秒後に消去
+    // 一定時間後にテキストを消去
+    // setTimeout(() => {
+    //     // テキストを消去するために背景色で上書き
+    //     context.clearRect(txt_score2_x, txt_score2_y - 30, 50, 40);
+    //     context.clearRect(txt_score1_x, txt_score1_y - 30, 50, 40);
+    // }, 3000); // 3秒後に消去
 }
 
 function onKeyDown(e) {
