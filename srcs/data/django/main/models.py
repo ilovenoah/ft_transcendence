@@ -18,6 +18,7 @@ class CustomUser(AbstractUser):
     last_active = models.DateTimeField(default=timezone.now)  # 最後にアクティブだった時間
     display_name = models.CharField(max_length=255, blank=True, unique=True)
     is_first = models.BooleanField(default=True) #最初のログイン
+    email = models.EmailField(unique=True)
 
     def save(self, *args, **kwargs):
         if not self.display_name:  # display_nameが設定されていない場合
