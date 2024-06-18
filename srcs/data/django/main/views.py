@@ -36,6 +36,24 @@ def process_post_data(request):
             content = post_data.get('content') 
 
             #送信データの作成
+            user = request.user
+            if user.is_authenticated:
+                if not user.display_name:
+                    form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
+                    if form_edit_display_name.is_valid():
+                        user = form_edit_display_name.save()
+                        response_data = {
+                            'page': page,
+                            'content': 'Saved',
+                            'title': 'Saved'
+                        }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
+                            'title': 'Edit Display Name'
+                        }
+                    return JsonResponse(response_data)
             if page == 'top':
                 response_data = {
                     'page':page,
@@ -99,21 +117,11 @@ def process_post_data(request):
                     user.is_online = True
                     user.last_active = timezone.now()
                     user.save(update_fields=['is_online', 'last_active'])
-                    if user.is_first == True:
-                        user.is_first = False
-                        user.save(update_fields=['is_first'])
-                        form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
-                        response_data = {
-                            'page': page,
-                            'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
-                            'title': 'Edit Display Name'
-                        }
-                    else:
-                        response_data = {
-                            'page': page,
-                            'content': 'Login successful',
-                            'title': 'Login Success'
-                        }   
+                    response_data = {
+                        'page': page,
+                        'content': 'Login successful',
+                        'title': 'Login Success'
+                    }   
                 else:
                     response_data = {
                         'page': page,
