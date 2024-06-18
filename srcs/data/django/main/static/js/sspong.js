@@ -219,7 +219,11 @@ function displayScore(score1, score2){
     context.font = '30px Arial';
     context.fillStyle = 'white';
 
-    context.clearRect(0, 160, 1000, 50);
+    console.log(context.canvas.width);
+    console.log(context.canvas.height);
+    
+
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 // テキストを描画
     context.fillText(txt_score2, txt_score2_x, txt_score2_y);
     context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
