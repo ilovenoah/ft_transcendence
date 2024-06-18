@@ -209,20 +209,20 @@ function displayScore(score1, score2){
 
     // テキストの設定
     const txt_score1 = score1;
-    const txt_score1_x = 10; // テキストの描画位置（x座標）
-    const txt_score1_y = 180; // テキストの描画位置（y座標）
+    const txt_score1_x = Math.trunc(context.canvas.width / 50.0); // テキストの描画位置（x座標）
+    const txt_score1_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
     const txt_score2 = score2;
-    const txt_score2_x = 750; // テキストの描画位置（x座標）
-    const txt_score2_y = 180; // テキストの描画位置（y座標）
+    const txt_score2_x = Math.trunc(context.canvas.width / 50.0 * 49); // テキストの描画位置（x座標）
+    const txt_score2_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
+
+    console.log(txt_score1_x);
+    console.log(txt_score1_y);
+    
 
     // フォントとスタイルを設定
     context.font = '30px Arial';
     context.fillStyle = 'white';
-
-    console.log(context.canvas.width);
-    console.log(context.canvas.height);
     
-
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 // テキストを描画
     context.fillText(txt_score2, txt_score2_x, txt_score2_y);
