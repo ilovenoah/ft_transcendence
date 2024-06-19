@@ -421,16 +421,25 @@ def process_post_data(request):
                     }
             elif page == 'enter_room':
                 room_id = post_data.get('room_id')
-                room = Matchmaking.objects.filter(id=room_id, user2__isnull=True).first()
+                room = Matchmaking.objects.filter(id=room_id, user2__isnull=True, timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
                 if room:
-                    room.user2 = request.user
-                    room.save()
-                    response_data = {
-                        'page':page,
-                        'content':read_file('ponggame.html'),
-                        'title': title,
-                        'scriptfiles': '/static/js/game.js',
-                    }
+                    if room.user1 == request.user: #user1とuser2が同一
+                        rooms = get_available_rooms()
+                        tournaments = get_available_tournaments()
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
+                            'title': 'Lobby',
+                        }
+                    else:
+                        room.user2 = request.user
+                        room.save()
+                        response_data = {
+                            'page':page,
+                            'content':read_file('ponggame.html'),
+                            'title': title,
+                            'scriptfiles': '/static/js/game.js',
+                        }
                 else:
                     rooms = get_available_rooms()
                     tournaments = get_available_tournaments()
@@ -442,23 +451,8 @@ def process_post_data(request):
             elif page == 'create_room':
                 user = request.user
                 if user.is_authenticated:
-                    current_user = user
-                    current_time = timezone.now()
-                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
-                    if existing_match and existing_match.user2: #user1とuser2が存在していてtimestampから30秒以内=マッチ->ゲームに移動
-                        response_data = {
-                            'page':page,
-                            'content':read_file('ponggame.html'),
-                            'title': title,
-                            'scriptfiles': '/static/js/game.js',
-                        }
-                        return JsonResponse(response_data)   
-                    existing_match = Matchmaking.objects.filter(user1=current_user, timestamp__gte=current_time - timezone.timedelta(seconds=30)).first()
-                    if existing_match: #current_userがuser1と同じ->timestampを更新
-                        existing_match.timestamp = current_time
-                        existing_match.save()
-                    else: #user1が存在しない->ルームを作成
-                        Matchmaking.objects.create(user1=current_user)
+                    Matchmaking.objects.create(user1=user)
+                    page = 'room'
                     response_data = {
                         'page': page,
                         'content': read_file('room.html'),
@@ -474,6 +468,29 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'room':
+                user = request.user
+                room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
+                if room: 
+                    if not room.user2:
+                        room.timestamp = timezone.now()
+                        room.save()
+                        page = 'room'
+                        response_data = {
+                            'page': page,
+                            'content': read_file('room.html'),
+                            'title': 'Room',
+                            'reload': page,
+                            'timeout' : '10000',
+                            'alert': 'Please, wait a moment.',
+                    }
+                    else:
+                        response_data = {
+                            'page':page,
+                            'content':read_file('ponggame.html'),
+                            'title': title,
+                            'scriptfiles': '/static/js/game.js',
+                        }
             elif page == 'create_tournament':
                 user = request.user
                 if user.is_authenticated:
