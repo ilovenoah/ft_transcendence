@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
-from .forms import SignUpForm, UsernameForm, EmailForm, AvatarForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestForm
+from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -36,6 +36,24 @@ def process_post_data(request):
             content = post_data.get('content') 
 
             #送信データの作成
+            user = request.user
+            if user.is_authenticated:
+                if not user.display_name:
+                    form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
+                    if form_edit_display_name.is_valid():
+                        user = form_edit_display_name.save()
+                        response_data = {
+                            'page': page,
+                            'content': 'Saved',
+                            'title': 'Saved'
+                        }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
+                            'title': 'Edit Display Name'
+                        }
+                    return JsonResponse(response_data)
             if page == 'top':
                 response_data = {
                     'page':page,
@@ -146,14 +164,14 @@ def process_post_data(request):
             elif page == 'edit_profile':
                 user = request.user
                 if user.is_authenticated:
-                    form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
+                    form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     response_data = {
                         'page': page,
-                        'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
-                            render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                        'content': render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                            render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                             render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                             render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                         'title': 'Edit Profile'
@@ -165,41 +183,11 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
-            elif page == 'edit_username':
-                user = request.user
-                if user.is_authenticated:
-                    form_edit_username = UsernameForm(data=post_data, instance=user)
-                    form_edit_email = EmailForm(data=post_data, instance=user)
-                    form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
-                    form_change_password = PasswordChangeForm(data=post_data, instance=user)
-                    if form_edit_username.is_valid():
-                        user = form_edit_username.save()
-                        response_data = {
-                        'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved'
-                    }
-                    else:
-                        response_data = {
-                            'page': page,
-                            'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
-                                render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
-                                render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
-                                render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
-                        }
-                else:
-                    form = AuthenticationForm()
-                    response_data = {
-                        'page': page,
-                        'content': render_to_string('login.html', {'form': form, 'request': request}),
-                        'title': 'Login',
-                    }
             elif page == 'edit_email':
                 user = request.user
                 if user.is_authenticated:
-                    form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
+                    form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_edit_email.is_valid():
@@ -212,8 +200,38 @@ def process_post_data(request):
                     else:
                         response_data = {
                             'page': page,
-                            'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
-                                render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                            'content': render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                                render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
+                                render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
+                                render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
+                            'title': 'Edit Profile'
+                        }
+                else:
+                    form = AuthenticationForm()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                    }
+            elif page == 'edit_display_name':
+                user = request.user
+                if user.is_authenticated:
+                    form_edit_email = EmailForm(data=post_data, instance=user)
+                    form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
+                    form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
+                    form_change_password = PasswordChangeForm(data=post_data, instance=user)
+                    if form_edit_display_name.is_valid():
+                        user = form_edit_display_name.save()
+                        response_data = {
+                        'page': page,
+                        'content': 'Saved',
+                        'title': 'Saved'
+                    }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                                render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile'
@@ -228,8 +246,8 @@ def process_post_data(request):
             elif page == 'edit_avatar':
                 user = request.user
                 if user.is_authenticated:
-                    form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
+                    form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data,  instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_edit_avatar.is_valid():
@@ -242,8 +260,8 @@ def process_post_data(request):
                     else:
                         response_data = {
                             'page': page,
-                            'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
-                                render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                            'content': render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                                render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile',
@@ -258,8 +276,8 @@ def process_post_data(request):
             elif page == 'change_password':
                 user = request.user
                 if user.is_authenticated:
-                    form_edit_username = UsernameForm(data=post_data, instance=user)
                     form_edit_email = EmailForm(data=post_data, instance=user)
+                    form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                     form_edit_avatar = AvatarForm(data=post_data, files=request.FILES, instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_change_password.is_valid():
@@ -274,8 +292,8 @@ def process_post_data(request):
                     else:
                         response_data = {
                             'page': page,
-                            'content':render_to_string('edit_username.html', context={'form_edit_username': form_edit_username, 'request': request}) +
-                                render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                            'content': render_to_string('edit_email.html', context={'form_edit_email': form_edit_email, 'request': request}) +
+                                render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile'
