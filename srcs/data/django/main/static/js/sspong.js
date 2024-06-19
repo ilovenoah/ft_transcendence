@@ -209,10 +209,10 @@ function displayScore(score1, score2){
 
     // テキストの設定
     const txt_score1 = score1;
-    const txt_score1_x = Math.trunc(context.canvas.width / 50.0 * 2); // テキストの描画位置（x座標）
+    const txt_score1_x = Math.trunc(context.canvas.width / 50.0 * 47); // テキストの描画位置（x座標）
     const txt_score1_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
     const txt_score2 = score2;
-    const txt_score2_x = Math.trunc(context.canvas.width / 50.0 * 47); // テキストの描画位置（x座標）
+    const txt_score2_x = Math.trunc(context.canvas.width / 50.0 * 2); // テキストの描画位置（x座標）
     const txt_score2_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
 
     // フォントとスタイルを設定

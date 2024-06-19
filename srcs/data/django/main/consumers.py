@@ -21,6 +21,7 @@ player1_length = 600
 player2_length = 600
 score_player1 = 0
 score_player2 = 0
+score_match = 10
 MAX_X = 4000
 MIN_X = -4000
 MAX_Y = 2000
@@ -55,6 +56,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def server_disconnect(self):
         await self.close()
+
+    async def disconnect_after_delay(consumer):
+        await asyncio.sleep(5)
+        await consumer.server_disconnect()
 
     async def receive(self, text_data):
         global ball_x, ball_y, ball_angle, ball_speed, player1_y, player2_y, score_player1, score_player2
@@ -98,7 +103,7 @@ class PongConsumer(AsyncWebsocketConsumer):
  
 
     async def update_ball_position(self):
-        global ball_angle, ball_speed, ball_x, ball_y, player1_y, player2_y, score_player1, score_player2, count_sleep, sleep_sec, interval
+        global ball_angle, ball_speed, ball_x, ball_y, player1_y, player2_y, score_player1, score_player2, score_match, count_sleep, sleep_sec, interval
 
         while True:
             if count_sleep > 0 :
@@ -118,13 +123,13 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # 速度を反転して反射させる
                 if ball_x >= MAX_X:
 #                    ball_angle = math.pi - ball_angle
-                    score_player1 += 1
+                    score_player2 += 1
                     count_sleep = sleep_sec
                     ball_x = 0
                     ball_y = 0
                 elif ball_x <= MIN_X:
     #                ball_angle = math.pi - ball_angle
-                    score_player2 += 1
+                    score_player1 += 1
                     count_sleep = sleep_sec
                     ball_x = 0
                     ball_y = 0
@@ -175,9 +180,13 @@ class PongConsumer(AsyncWebsocketConsumer):
             #    await self.send_game_state(game_state)
             )
             
+            if score_player1 == (score_match - 1) and score_player2 == (score_match - 1) :
+                score_match += 1
+
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
-            if score_player1 >= 10 or score_player2 >= 10:
-                await asyncio.sleep(3600)
+            if score_player1 >= score_match or score_player2 >= score_match:
+                asyncio.create_task(disconnect_after_delay(self))
+                # await asyncio.sleep(3600)
             else:
                 await asyncio.sleep(interval)
 
