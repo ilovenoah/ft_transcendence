@@ -16,6 +16,8 @@ class CustomUser(AbstractUser):
     )
     is_online = models.BooleanField(default=False) #オンラインステータス
     last_active = models.DateTimeField(default=timezone.now)  # 最後にアクティブだった時間
+    display_name = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(unique=True)
 
     def send_friend_request(self, to_user):
         if self == to_user:
