@@ -17,6 +17,7 @@ from .models import CustomUser, FriendRequest, Matchmaking, Tournament, Tourname
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db import models
+from math import log2, ceil
 
 logger = logging.getLogger(__name__)
 
@@ -495,7 +496,7 @@ def process_post_data(request):
                 user = request.user
                 if user.is_authenticated:
                     size = post_data.get('size')
-                    tournament = Tournament.objects.create(size=size, count=1)
+                    tournament = Tournament.objects.create(size=size, num_users=1)
                     TournamentUser.objects.create(tournament=tournament, user=user)
                     page = 'tournament'
                     response_data = {
@@ -520,18 +521,20 @@ def process_post_data(request):
                 tournament_user.timestamp = timezone.now()
                 tournament_user.save()
                 tournament = tournament_user.tournament
-                count = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count() #トーナメントが同じでtimestampが30秒以内のuserの数
-                tournament.count = count
+                num_users = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count() #トーナメントが同じでtimestampが30秒以内のuserの数
+                tournament.num_users = num_users
                 tournament.save()
-                if count == tournament.size:
+                if num_users == tournament.size:
                     tournament_user.is_complete = True
                     tournament_user.save()
-                    room = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=thirty_seconds_ago, tournament=tournament).first()
-                    if room: #tournamentが同じでuser2が不在でtimestampから30秒以内のroom
+                    room = Matchmaking.objects.filter(user1__isnull=True, user2__isnull=True, tournament=tournament, level=1).first()
+                    if room: #tournamentとlevelが同じでuser1が不在のroom
+                        room.user1 = user
+                        room.save()
+                    else: #tournamentとlevelが同じでuser1が存在しuser2が不在のroom
+                        room = Matchmaking.objects.filter(user1__isnull=False, user2__isnull=True, tournament=tournament, level=1).first()
                         room.user2 = user
                         room.save()
-                    else:
-                        Matchmaking.objects.create(user1=user, tournament=tournament)
                     response_data = {
                         'page':page,
                         'content':read_file('ponggame.html'),
@@ -550,21 +553,39 @@ def process_post_data(request):
             elif page == 'join_tournament':
                 user = request.user
                 tournament_id = post_data.get('tournament_id')
-                tournament = Tournament.objects.filter(id=tournament_id).first()
-                tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
-                count = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
-                tournament.count = count 
+                tournament = Tournament.objects.filter(id=tournament_id, timestamp__gte=thirty_seconds_ago).first()
+                if tournament:
+                    tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user)
+                    if tournament_user: #トーナメント内に同一のユーザーがいる
+                        rooms = get_available_rooms()
+                        tournaments = get_available_tournaments()
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
+                            'title': 'Lobby'
+                        }
+                        return JsonResponse(response_data)
+                else: #存在しないはずのトーナメント
+                    rooms = get_available_rooms()
+                    tournaments = get_available_tournaments()
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
+                        'title': 'Lobby'
+                    }
+                    return JsonResponse(response_data)
+                tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
+                num_users = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
+                tournament.num_users = num_users 
                 tournament.save()
-                if count == tournament.size:
+                if num_users == tournament.size:
                     tournament_user.is_complete = True
                     tournament_user.save()
-                    room = Matchmaking.objects.filter(user2__isnull=True, timestamp__gte=thirty_seconds_ago, tournament=tournament).first()
-                    if room: #tournamentが同じでuser2が不在でtimestampから30秒以内のroom
-                        room.user2 = user
-                        room.save()
-                    else:
-                        Matchmaking.objects.create(user1=user, tournament=tournament)
+                    make_tournament_matches(tournament)
+                    room = Matchmaking.objects.filter(tournament=tournament, level=1).first()
+                    room.user1 = user
+                    room.save()
                     response_data = {
                         'page':page,
                         'content':read_file('ponggame.html'),
@@ -684,12 +705,29 @@ def get_available_rooms():
     )
     return available_rooms
 
-#countがsizeより小さくtimestampから30秒以内のtournamentを取得
+#num_usersがsizeより小さくtimestampから30秒以内のtournamentを取得
 def get_available_tournaments():
     current_time = timezone.now()
     thirty_seconds_ago = current_time - timedelta(seconds=30)
     available_tournaments = Tournament.objects.filter(
-        count__lt=models.F('size'), 
+        num_users__lt=models.F('size'), 
         timestamp__gte=thirty_seconds_ago
     )
     return available_tournaments
+    
+def make_tournament_matches(tournament):
+    num_levels = ceil(log2(tournament.size))  # level数を計算(決勝戦はlog2(tournament.size)、初戦は1)、cielは切上
+    level = num_levels
+    final_match = Matchmaking.objects.create(tournament=tournament, user1=None, user2=None, level=level) #決勝戦
+    current_matches = []
+    current_matches.append(final_match)
+    next_matches = []
+    for _ in range(num_levels - 1): # 各ラウンドでのマッチを生成
+        level -= 1
+        while current_matches:
+            parent = current_matches.pop(0)
+            for _ in range(2):# 親に対して2つのマッチを生成
+                match = Matchmaking.objects.create(tournament=tournament, parent=parent, user1=None, user2=None, level=level)
+                next_matches.append(match)
+        current_matches = next_matches
+        next_matches = []
