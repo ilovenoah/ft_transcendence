@@ -205,7 +205,8 @@ function updateContent(data) {
       // 新しいスクリプトタグを作成してコードを追加
       let arrayScript = document.createElement('script');
       //キャッシュされたjsファイルが利用されないようにtimestampを付加する
-      arrayScript.src = scriptFiles[i].trim() + "?ts=" + new Date().getTime();
+      // arrayScript.src = scriptFiles[i].trim() + "?ts=" + new Date().getTime();
+      arrayScript.src = scriptFiles[i].trim();
       // <foot> タグに新しいスクリプトタグを挿入
       foot.appendChild(arrayScript);
     }

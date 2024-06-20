@@ -278,4 +278,9 @@ document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 
 init();
+
+//これでidがとれる
+console.log("Search:", document.currentScript);
+
+
 connect();

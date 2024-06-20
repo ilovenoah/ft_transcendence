@@ -14,7 +14,7 @@ urlpatterns = [
     path('get-csrf-token/', views.get_csrf_token, name='get_csrf_token'),
     path('upload/', upload_image, name='upload_image'),    
     path('heartbeat/', heartbeat, name='heartbeat'),
-]
+    ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

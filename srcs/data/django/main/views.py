@@ -34,6 +34,7 @@ def process_post_data(request):
             page = post_data.get('page')   
             title = post_data.get('title') 
             content = post_data.get('content') 
+            gameid = post_data.get('gameid') 
 
             #送信データの作成
             user = request.user
@@ -91,8 +92,15 @@ def process_post_data(request):
                     'page':page,
                     'content':read_file('ponggame.html'),
                     'title': title,
+                    'gameid': gameid, 
                     # javascriptのファイルを指定するとき
-                    'scriptfiles': '/static/js/sspong.js',
+                    'scriptfiles': '/static/js/sspong.js?gameid=' + gameid,
+                }
+            elif page == 'gamelist':
+                response_data = {
+                    'page':page,
+                    'content':read_file('gamelist.html'),
+                    'title': title,
                 }
             elif page == 'signup':
                 form = SignUpForm(data=post_data)
