@@ -527,14 +527,13 @@ def process_post_data(request):
                 if num_users == tournament.size:
                     tournament_user.is_complete = True
                     tournament_user.save()
-                    room = Matchmaking.objects.filter(user1__isnull=True, user2__isnull=True, tournament=tournament, level=1).first()
+                    room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
                     if room: #tournamentとlevelが同じでuser1が不在のroom
                         room.user1 = user
-                        room.save()
                     else: #tournamentとlevelが同じでuser1が存在しuser2が不在のroom
-                        room = Matchmaking.objects.filter(user1__isnull=False, user2__isnull=True, tournament=tournament, level=1).first()
+                        room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
                         room.user2 = user
-                        room.save()
+                    room.save()
                     response_data = {
                         'page':page,
                         'content':read_file('ponggame.html'),
@@ -583,8 +582,12 @@ def process_post_data(request):
                     tournament_user.is_complete = True
                     tournament_user.save()
                     make_tournament_matches(tournament)
-                    room = Matchmaking.objects.filter(tournament=tournament, level=1).first()
-                    room.user1 = user
+                    room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
+                    if room:
+                        room.user1 = user
+                    else:
+                        room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
+                        room.user2 = user
                     room.save()
                     response_data = {
                         'page':page,
