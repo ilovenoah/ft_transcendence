@@ -45,8 +45,8 @@ class FriendRequest(models.Model):
         self.save()
 
 class Tournament(models.Model):
-    size = models.IntegerField(default=4)
-    count = models.IntegerField(default=0)
+    size = models.IntegerField(default=0)
+    num_users = models.IntegerField(default=-1)
     timestamp = models.DateTimeField(auto_now=True)
 
 class TournamentUser(models.Model):
@@ -56,10 +56,11 @@ class TournamentUser(models.Model):
     is_complete = models.BooleanField(default=False)
 
 class Matchmaking(models.Model):
-    user1 = models.ForeignKey(CustomUser, related_name='matchmaking_user1', on_delete=models.CASCADE)
+    user1 = models.ForeignKey(CustomUser, related_name='matchmaking_user1', on_delete=models.CASCADE, null=True, blank=True)
     user2 = models.ForeignKey(CustomUser, related_name='matchmaking_user2', on_delete=models.CASCADE, null=True, blank=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True, blank=True)  # トーナメントID
     timestamp = models.DateTimeField(auto_now=True)
-
-
-
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    level = models.IntegerField(default=-1)
+    def __str__(self):
+        return f'Matchmaking ID {self.id} (Tournament: {self.tournament_id})'
