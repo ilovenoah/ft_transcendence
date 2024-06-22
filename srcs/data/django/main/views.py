@@ -37,6 +37,25 @@ def process_post_data(request):
             content = post_data.get('content') 
 
             #送信データの作成
+            if page == 'logout':
+                user = request.user
+                if user.is_authenticated:
+                    user.is_online = False
+                    user.last_active = timezone.now()
+                    user.save(update_fields=['last_active', 'is_online'])
+                    logout(request)
+                    response_data = {
+                        'page': page,
+                        'content': 'logged out',
+                        'title': 'Logout'
+                    }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': read_file('top.html'),
+                        'title': 'トラセントップ'
+                    }
+                return JsonResponse(response_data)
             user = request.user
             if user.is_authenticated:
                 if not user.display_name:
@@ -143,24 +162,6 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                    }
-            elif page == 'logout':
-                user = request.user
-                if user.is_authenticated:
-                    user.is_online = False
-                    user.last_active = timezone.now()
-                    user.save(update_fields=['last_active', 'is_online'])
-                    logout(request)
-                    response_data = {
-                        'page': page,
-                        'content': 'logged out',
-                        'title': 'Logout'
-                    }
-                else:
-                    response_data = {
-                        'page': page,
-                        'content': read_file('top.html'),
-                        'title': 'トラセントップ'
                     }
             elif page == 'edit_profile':
                 user = request.user
