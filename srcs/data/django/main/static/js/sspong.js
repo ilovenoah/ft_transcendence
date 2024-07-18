@@ -257,7 +257,7 @@ function onKeyUp(e) {
 }
 
 function connect(){
-    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/');
+    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/' + gameid);
     gameSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         updateGameState(data);
@@ -280,7 +280,15 @@ document.addEventListener('keyup', onKeyUp);
 init();
 
 //これでidがとれる
-console.log("Search:", document.currentScript);
+
+
+let regexp = /\?gameid=(\d+)/
+let match = document.currentScript.src.match(regexp);
+let gameid = match[1];
+
+console.log("match", gameid);
+
+
 
 
 connect();
