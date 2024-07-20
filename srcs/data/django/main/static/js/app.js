@@ -171,6 +171,9 @@ function updateContent(data) {
   if (typeof data.reload !== 'undefined') {
     reloadAjax(data.reload, data.timeout);
   }
+  if (typeof data.login !== 'undefined') {
+    toggleVisibility(data.login)
+  }
   if (typeof data.title !== 'undefined') {     
     document.title = data.title;
   } else {
@@ -341,3 +344,25 @@ function setIdValue(id, setvalue) {
   document.getElementById(id).value = setvalue;
 }
 
+function toggleVisibility(login) {
+  const nav = document.getElementById('nav')
+  nav.innerHTML = '';
+  if (login === 'false') {
+    nav.innerHTML = `
+      <a href="#" id="top" class="post-link" data_url="process-post/" page="top" title="トラセントップ"> Top </a>
+      <a href="#" class="post-link" data_url="process-post/" page="signup" title="signup">Signup</a>
+      <a href="#" class="post-link" data_url="process-post/" page="login" title="login">Login</a>
+      `;
+  } else {
+    nav.innerHTML = `
+      <a href="#" id="top" class="post-link" data_url="process-post/" page="top" title="トラセントップ"> Top </a>
+      <a href="#" class="post-link" data_url="process-post/" page="profile" title="Profile">Profile</a>
+      <a href="#" class="post-link" data_url="process-post/" page="logout" title="Logout">Logout</a>
+      <a href="#" class="post-link" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
+      <a href="#" class="post-link" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
+      <a href="#" class="post-link" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
+      <a href="#" class="post-link" data_url="process-post/" page="friends" title="Friends">Friends</a>
+      <a href="#" class="post-link" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
+    `;
+  }
+}

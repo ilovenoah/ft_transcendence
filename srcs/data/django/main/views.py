@@ -47,7 +47,8 @@ def process_post_data(request):
                     response_data = {
                         'page': page,
                         'content': 'logged out',
-                        'title': 'Logout'
+                        'title': 'Logout',
+                        'login': 'false'
                     }
                 else:
                     response_data = {
@@ -140,7 +141,8 @@ def process_post_data(request):
                     response_data = {
                         'page': page,
                         'content': 'Login successful',
-                        'title': 'Login Success'
+                        'title': 'Login Success',
+                        'login': 'true'
                     }   
                 else:
                     response_data = {
