@@ -29,7 +29,6 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-        
     </style>
 </head>
 
@@ -41,34 +40,30 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
+                {% if user.is_authenticated %}
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="logout" title="Logout">Logout</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="profile" title="Profile">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friends" title="Friends">Friends</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
-                    </li>
-                    {% endif %}
                 </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">Profile</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">Friends</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="lobby" title="Lobby">Lobby</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div id="username" style="display:none;">{{ user.username }}</div>
+                {% endif %}
                 <ul class="navbar-nav ms-auto"> 
                     {% if not user.is_authenticated %}
                     <li class="nav-item">
