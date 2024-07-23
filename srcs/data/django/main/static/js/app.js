@@ -353,7 +353,7 @@ function toggleVisibility(login) {
   nav.innerHTML = '';
   if (login === 'false') {
     nav.innerHTML = `
-      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+      <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
         </li>
