@@ -29,6 +29,7 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
+
     </style>
 </head>
 
@@ -51,7 +52,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {{ user.username }}
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">Profile</a></li>
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
@@ -63,16 +64,16 @@
                     </li>
                 </ul>
                 {% endif %}
+                {% if not user.is_authenticated %}
                 <ul class="navbar-nav ms-auto"> 
-                    {% if not user.is_authenticated %}
                     <li class="nav-item">
                         <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
                     </li>
-                    {% endif %}
                 </ul>
+                {% endif %}
             </div>
         </div>
     </nav>
