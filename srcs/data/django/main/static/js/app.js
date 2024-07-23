@@ -176,7 +176,7 @@ function updateContent(data) {
     reloadAjax(data.reload, data.timeout);
   }
   if (typeof data.login !== 'undefined') {
-    toggleVisibility(data.login)
+    toggleVisibility(data.login, data.username)
   }
   if (typeof data.title !== 'undefined') {     
     document.title = data.title;
@@ -348,10 +348,9 @@ function setIdValue(id, setvalue) {
   document.getElementById(id).value = setvalue;
 }
 
-function toggleVisibility(login) {
+function toggleVisibility(login, username) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
-  const username = document.getElementById('username');
   if (login === 'false') {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto">

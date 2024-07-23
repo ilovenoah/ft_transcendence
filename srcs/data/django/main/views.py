@@ -142,7 +142,8 @@ def process_post_data(request):
                         'page': page,
                         'content': 'Login successful',
                         'title': 'Login Success',
-                        'login': 'true'
+                        'login': 'true',
+                        'username' : user.username
                     }   
                 else:
                     response_data = {
