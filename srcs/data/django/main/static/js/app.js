@@ -349,24 +349,47 @@ function setIdValue(id, setvalue) {
 }
 
 function toggleVisibility(login) {
-  const nav = document.getElementById('nav')
+  const nav = document.getElementById('navbarCollapse')
   nav.innerHTML = '';
   if (login === 'false') {
     nav.innerHTML = `
-      <a href="#" id="top" class="post-link" data_url="process-post/" page="top" title="トラセントップ"> Top </a>
-      <a href="#" class="post-link" data_url="process-post/" page="signup" title="signup">Signup</a>
-      <a href="#" class="post-link" data_url="process-post/" page="login" title="login">Login</a>
-      `;
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
+        </li>
+      </ul>
+    `;
   } else {
     nav.innerHTML = `
-      <a href="#" id="top" class="post-link" data_url="process-post/" page="top" title="トラセントップ"> Top </a>
-      <a href="#" class="post-link" data_url="process-post/" page="profile" title="Profile">Profile</a>
-      <a href="#" class="post-link" data_url="process-post/" page="logout" title="Logout">Logout</a>
-      <a href="#" class="post-link" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
-      <a href="#" class="post-link" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
-      <a href="#" class="post-link" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
-      <a href="#" class="post-link" data_url="process-post/" page="friends" title="Friends">Friends</a>
-      <a href="#" class="post-link" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="logout" title="Logout">Logout</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="profile" title="Profile">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friends" title="Friends">Friends</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
+        </li>
+      </ul>
     `;
   }
 }
