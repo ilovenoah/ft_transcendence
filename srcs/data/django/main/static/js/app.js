@@ -44,9 +44,13 @@ document.addEventListener("DOMContentLoaded", function() {
       Array.from(link.attributes).forEach(function(attr) {
         postData[attr.name] = attr.value;
       });
-      if (postData['class'] === 'post-link'){
+      var classes = postData['class'] ? postData['class'].split(' ') : [];
+      if (classes.includes('post-link')) {
         send_ajax(postData);
       }
+      // if (postData['class'] === 'post-link'){
+      //   send_ajax(postData);
+      // }
     }
   });
 
