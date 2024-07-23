@@ -42,65 +42,44 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                  </li>
-                  {% if not user.is_authenticated %}
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
-                  </li>
-                  {% endif %}
-                  {% if user.is_authenticated %}
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="logout" title="Logout">Logout</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="profile" title="Profile">Profile</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friends" title="Friends">Friends</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
-                  </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="logout" title="Logout">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="profile" title="Profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="friends" title="Friends">Friends</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto"> 
+                    {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
-            <!-- ここはナビゲーションバー -->
-            <!-- <a href="#" class="post-link" data_url="process-post/" page="page1" title="title page1">Page 1</a>
-            <a href="#" class="post-link" data_url="process-post/" page="page2" title="title page2">Page 2</a>
-            <a href="#" class="post-link" data_url="process-post/" page="test" title="test">Test</a>
-            <a href="#" class="post-link" data_url="process-post/" page="ponggame" title="Pong Game">Ponggame</a>
-            <a href="#" class="post-link" data_url="process-post/" page="uploadtest" title="uploadのテスト">uploadテスト</a>テスト</a>
-            <a href="#" class="post-link" data_url="process-post/" page="formtest" title="formのテスト">フォームテスト</a> -->
-            <!-- {% if not user.is_authenticated %}
-            <a href="#" class="post-link" data_url="process-post/" page="signup" title="signup">Signup</a>
-            <a href="#" class="post-link" data_url="process-post/" page="login" title="login">Login</a>
-            {% endif %}
-            {% if user.is_authenticated %}
-            <a href="#" class="post-link" data_url="process-post/" page="profile" title="Profile">Profile</a>
-            <a href="#" class="post-link" data_url="process-post/" page="logout" title="Logout">Logout</a>
-            <a href="#" class="post-link" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
-            <a href="#" class="post-link" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
-            <a href="#" class="post-link" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
-            <a href="#" class="post-link" data_url="process-post/" page="friends" title="Friends">Friends</a>
-            <a href="#" class="post-link" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
-            {% endif %} -->
         </div>
     </nav>
     <header id="head" style="margin-top: 70px;">
