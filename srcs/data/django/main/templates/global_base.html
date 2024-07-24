@@ -30,6 +30,10 @@
             z-index: 1000;
         }
 
+        .navbar-nav.mx-auto {
+            flex-grow: 1;  /* フレックスアイテムがコンテナ内の余剰スペースを埋めるように設定 */
+            justify-content: center; /* アイテムを中央に配置 */
+        }
     </style>
 </head>
 
@@ -42,6 +46,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 {% if user.is_authenticated %}
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="lobby">Pong Lobby</a>
+                    </li>
+                </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -53,7 +62,6 @@
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a></li>
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a></li>
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">Friends</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="lobby" title="Lobby">Lobby</a></li>
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">Logout</a></li>
                         </ul>
                     </li>

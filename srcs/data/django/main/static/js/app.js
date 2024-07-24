@@ -364,6 +364,11 @@ function toggleVisibility(login, username) {
     `;
   } else {
     nav.innerHTML = `
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="lobby">Pong Lobby</a>
+        </li>
+      </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -375,7 +380,6 @@ function toggleVisibility(login, username) {
                 <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a></li>
                 <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a></li>
                 <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">Friends</a></li>
-                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="lobby" title="Lobby">Lobby</a></li>
                 <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">Logout</a></li>
             </ul>
         </li>
