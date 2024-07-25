@@ -256,7 +256,9 @@ def process_post_data(request):
                     form_edit_avatar = AvatarForm(data=post_data,  instance=user)
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_edit_avatar.is_valid():
-                        user = form_edit_avatar.save()
+                        avatar = request.FILES.get('avatar')
+                        if avatar:
+                            user = form_edit_avatar.save()
                         response_data = {
                             'page': page,
                             'content': 'Saved',
