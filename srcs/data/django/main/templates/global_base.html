@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     {% load static %}
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/navbar-top.css"> -->
     <title>{% block title %}Default Title{% endblock %}</title>
     <style>
         body { margin: 0; }
@@ -28,36 +29,58 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-        
+
+        .navbar-nav.mx-auto {
+            flex-grow: 1;  /* フレックスアイテムがコンテナ内の余剰スペースを埋めるように設定 */
+            justify-content: center; /* アイテムを中央に配置 */
+        }
     </style>
 </head>
 
 <body>
-    <nav>
-        <!-- Navigation content -->
-        <div id="nav">
-            <nav>
-                <a href="#" id="top" class="post-link" data_url="process-post/" page="top" title="トラセントップ"> Top </a>
-                ここはナビゲーションバー
-                <a href="#" class="post-link" data_url="process-post/" page="page1" title="title page1">Page 1</a>
-                <a href="#" class="post-link" data_url="process-post/" page="page2" title="title page2">Page 2</a>
-                <a href="#" class="post-link" data_url="process-post/" page="test" title="test">Test</a>
-                <a href="#" class="post-link" data_url="process-post/" page="ponggame" title="Pong Game">Ponggame</a>
-                <a href="#" class="post-link" data_url="process-post/" page="uploadtest" title="uploadのテスト">uploadテスト</a>テスト</a>
-                <a href="#" class="post-link" data_url="process-post/" page="formtest" title="formのテスト">フォームテスト</a>
-                <a href="#" class="post-link" data_url="process-post/" page="signup" title="signup">Signup</a>
-                <a href="#" class="post-link" data_url="process-post/" page="login" title="login">Login</a>
-                <a href="#" class="post-link" data_url="process-post/" page="profile" title="Profile">Profile</a>
-                <a href="#" class="post-link" data_url="process-post/" page="logout" title="Logout">Logout</a>
-                <a href="#" class="post-link" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a>
-                <a href="#" class="post-link" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a>
-                <a href="#" class="post-link" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a>
-                <a href="#" class="post-link" data_url="process-post/" page="friends" title="Friends">Friends</a>
-                <a href="#" class="post-link" data_url="process-post/" page="lobby" title="Lobby">Lobby</a>
-            </nav>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav">
+        <div class="container-fluid">
+            <a href="#" id="top" class="post-link navbar-brand" data_url="process-post/" page="top" title="トラセントップ"> Top </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="lobby">Pong Lobby</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">Profile</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">Friends</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% endif %}
+                {% if not user.is_authenticated %}
+                <ul class="navbar-nav ms-auto"> 
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
         </div>
     </nav>
-    <header id="head">
+    <header id="head" style="margin-top: 70px;">
         {% block head %}{% endblock %}
     </header>
 

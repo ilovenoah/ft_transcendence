@@ -44,9 +44,13 @@ document.addEventListener("DOMContentLoaded", function() {
       Array.from(link.attributes).forEach(function(attr) {
         postData[attr.name] = attr.value;
       });
-      if (postData['class'] === 'post-link'){
+      var classes = postData['class'] ? postData['class'].split(' ') : [];
+      if (classes.includes('post-link')) {
         send_ajax(postData);
       }
+      // if (postData['class'] === 'post-link'){
+      //   send_ajax(postData);
+      // }
     }
   });
 
@@ -170,6 +174,9 @@ function updateContent(data) {
   }
   if (typeof data.reload !== 'undefined') {
     reloadAjax(data.reload, data.timeout);
+  }
+  if (typeof data.login !== 'undefined') {
+    toggleVisibility(data.login, data.username)
   }
   if (typeof data.title !== 'undefined') {     
     document.title = data.title;
@@ -341,3 +348,42 @@ function setIdValue(id, setvalue) {
   document.getElementById(id).value = setvalue;
 }
 
+function toggleVisibility(login, username) {
+  const nav = document.getElementById('navbarCollapse');
+  nav.innerHTML = '';
+  if (login === 'false') {
+    nav.innerHTML = `
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
+        </li>
+      </ul>
+    `;
+  } else {
+    nav.innerHTML = `
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="lobby">Pong Lobby</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              ${username}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">Profile</a></li>
+                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
+                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a></li>
+                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a></li>
+                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">Friends</a></li>
+                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">Logout</a></li>
+            </ul>
+        </li>
+      </ul>
+    `;
+  }
+}
