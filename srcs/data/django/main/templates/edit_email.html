@@ -6,6 +6,6 @@
         <label for="id_email">Email:</label>
         <input type="text" name="email" id="id_email" value="{{ form_edit_email.email.value|default_if_none:'' }}">
     </div>
-    <button type="submit">Save</button>
+    <button type="submit" class="btn btn-secondary">Save</button>
     <!-- {{ form_edit_email.as_p }} -->
 </form>

@@ -3,13 +3,24 @@
         .errorlist {
             display: none;
         }
+
+        .custom-file-input {
+            visibility: hidden;
+            width: 1px;
+            height: 1px;
+        }
     </style>
 </head>
 <h2>Edit Avatar</h2>
-<form id="uploadForm" class="ajax-upload" action="upload/">
-    <input type="file" id="image" name="image">
-    <button type="submit">アップロード</button>
+<form id="uploadForm" class="ajax-upload" action="upload/" enctype="multipart/form-data">
+    <label for="image" class="btn btn-secondary">ファイルを選択</label>
+    <input type="file" id="image" name="image" class="custom-file-input">
+    <button type="submit" class="btn btn-secondary">アップロード</button>
 </form>
+<!-- <form id="uploadForm" class="ajax-upload" action="upload/">
+    <input type="file" id="image" name="image">
+    <button type="submit" class="btn btn-secondary">アップロード</button>
+</form> -->
 <div id="descimage">現在の画像</div>
 <img id="uploaded" src="media/{{request.user.avatar}}" alt="">
 <div id="result"></div>
@@ -17,7 +28,7 @@
     <input type="hidden" name="page" value="edit_avatar">
     {% csrf_token %}
     {{ form_edit_avatar.as_p }}
-    <button type="submit">Save</button>
+    <button type="submit" class="btn btn-secondary">Save</button>
 </form>
 
     
