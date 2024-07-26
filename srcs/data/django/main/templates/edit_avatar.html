@@ -11,7 +11,7 @@
         }
     </style>
 </head>
-<div class="mb-3">
+<div class="mb-3 px-5">
     <form id="uploadForm" class="ajax-upload" action="upload/" enctype="multipart/form-data">
         <div>
             <label for="id_email" class="form-label">Avatar</label>
@@ -19,6 +19,9 @@
         <label for="image" class="btn btn-outline-secondary">ファイルを選択</label>
         <input type="file" id="image" name="image" class="custom-file-input">
         <button type="submit" class="btn btn-outline-secondary">アップロード</button>
+        <div id="avatarHelpBlock" class="form-text">
+            画像ファイルを選択して、Uploadボタンを押してください
+        </div>
     </form>
     <!-- <form id="uploadForm" class="ajax-upload" action="upload/">
         <input type="file" id="image" name="image">
@@ -31,8 +34,12 @@
         <input type="hidden" name="page" value="edit_avatar">
         {% csrf_token %}
         {{ form_edit_avatar.as_p }}
+        <div id="avatarHelpBlock" class="form-text">
+            変更を確定するには、Saveボタンを押してください
+        </div>
         <button type="submit" class="btn btn-secondary">Save</button>
     </form>
 </div>
+<hr></hr>
 
     

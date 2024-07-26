@@ -1,9 +1,13 @@
-<form class="ajax-form" action="process-post/">
+<form class="ajax-form px-5" action="process-post/">
     <input type="hidden" name="page" value="edit_display_name">
     {% csrf_token %}
     <div class="mb-3">
         <label for="id_display_name" class="form-label">Display name</label>
         <input type="text" class="form-control" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
     </div>
+    <div id="displayNameHelpBlock" class="form-text">
+        Display name を入力してください
+    </div>
     <button type="submit" class="btn btn-secondary">Save</button>
 </form>
+<hr></hr>
