@@ -39,8 +39,8 @@ count_sleep = 0.0
 class PongConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-//        self.room_name = "main"
-        self.room_name = id
+        self.room_name = "main"
+        # self.room_name = id
         await self.channel_layer.group_add(
             self.room_name,
             self.channel_name
