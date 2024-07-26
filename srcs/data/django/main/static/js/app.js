@@ -178,6 +178,10 @@ function updateContent(data) {
   if (typeof data.login !== 'undefined') {
     toggleVisibility(data.login, data.username)
   }
+  if (typeof data.isValid !== 'undefined') {
+    console.log('defined')
+    displayAlert(data.elem)
+  }
   if (typeof data.title !== 'undefined') {     
     document.title = data.title;
   } else {
@@ -384,6 +388,31 @@ function toggleVisibility(login, username) {
             </ul>
         </li>
       </ul>
+    `;
+  }
+}
+
+function displayAlert(elem) {
+  if (elem === 'email') {
+    const alert = document.getElementById('emailAlertBlock');
+    alert.innerHTML = '';
+    console.log(elem)
+    alert.innerHTML = `
+      入力されたメールアドレスが不正です
+    `;
+  } else if (elem === 'display_name') {
+    const alert = document.getElementById('displayNameAlertBlock');
+    alert.innerHTML = '';
+    console.log(elem)
+    alert.innerHTML = `
+      入力された Diplay name が不正です
+    `;
+  } else if (elem === 'password') {
+    const alert = document.getElementById('passwordAlertBlock');
+    alert.innerHTML = '';
+    console.log(elem)
+    alert.innerHTML = `
+      同一ではありません
     `;
   }
 }

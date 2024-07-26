@@ -203,7 +203,7 @@ def process_post_data(request):
                         response_data = {
                         'page': page,
                         'content': 'Saved',
-                        'title': 'Saved'
+                        'title': 'Saved',
                     }
                     else:
                         response_data = {
@@ -212,7 +212,9 @@ def process_post_data(request):
                                 render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
+                            'isValid': 'false',
+                            'elem': 'email'
                         }
                 else:
                     form = AuthenticationForm()
@@ -242,7 +244,9 @@ def process_post_data(request):
                                 render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
+                            'isValid': 'false',
+                            'elem': 'display_name'
                         }
                 else:
                     form = AuthenticationForm()
@@ -304,7 +308,9 @@ def process_post_data(request):
                                 render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
+                            'isValid': 'false',
+                            'elem': 'password'
                         }
                 else:
                     form = AuthenticationForm()
