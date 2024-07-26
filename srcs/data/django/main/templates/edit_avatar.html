@@ -11,24 +11,28 @@
         }
     </style>
 </head>
-<h2>Edit Avatar</h2>
-<form id="uploadForm" class="ajax-upload" action="upload/" enctype="multipart/form-data">
-    <label for="image" class="btn btn-secondary">ファイルを選択</label>
-    <input type="file" id="image" name="image" class="custom-file-input">
-    <button type="submit" class="btn btn-secondary">アップロード</button>
-</form>
-<!-- <form id="uploadForm" class="ajax-upload" action="upload/">
-    <input type="file" id="image" name="image">
-    <button type="submit" class="btn btn-secondary">アップロード</button>
-</form> -->
-<div id="descimage">現在の画像</div>
-<img id="uploaded" src="media/{{request.user.avatar}}" alt="">
-<div id="result"></div>
-<form class="ajax-form" action="process-post/" enctype="multipart/form-data">
-    <input type="hidden" name="page" value="edit_avatar">
-    {% csrf_token %}
-    {{ form_edit_avatar.as_p }}
-    <button type="submit" class="btn btn-secondary">Save</button>
-</form>
+<div class="mb-3">
+    <form id="uploadForm" class="ajax-upload" action="upload/" enctype="multipart/form-data">
+        <div>
+            <label for="id_email" class="form-label">Avatar</label>
+        </div>
+        <label for="image" class="btn btn-outline-secondary">ファイルを選択</label>
+        <input type="file" id="image" name="image" class="custom-file-input">
+        <button type="submit" class="btn btn-outline-secondary">アップロード</button>
+    </form>
+    <!-- <form id="uploadForm" class="ajax-upload" action="upload/">
+        <input type="file" id="image" name="image">
+        <button type="submit" class="btn btn-secondary">アップロード</button>
+    </form> -->
+    <div id="descimage" class="form-text">現在の画像</div>
+    <img id="uploaded" src="media/{{request.user.avatar}}" alt="">
+    <div id="result"></div>
+    <form class="ajax-form" action="process-post/" enctype="multipart/form-data">
+        <input type="hidden" name="page" value="edit_avatar">
+        {% csrf_token %}
+        {{ form_edit_avatar.as_p }}
+        <button type="submit" class="btn btn-secondary">Save</button>
+    </form>
+</div>
 
     
