@@ -257,7 +257,8 @@ function onKeyUp(e) {
 }
 
 function connect(){
-    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/game/' + gameid);
+    
+    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + gameid + "/");
     gameSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         updateGameState(data);

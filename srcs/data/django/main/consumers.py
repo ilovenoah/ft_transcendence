@@ -38,22 +38,23 @@ count_sleep = 0.0
 
 class PongConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        await self.accept()
-        self.room_name = "main"
-        # self.room_name = id
+        # self.room_name = "main"
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f'pong_{self.room_name}'
+
         await self.channel_layer.group_add(
-            self.room_name,
+            self.room_group_name,
             self.channel_name
         )
+        await self.accept()
        # ボールの位置を定期的に更新する非同期タスクを開始
         self.update_task = asyncio.create_task(self.update_ball_position())
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
-            self.room_name,
+            self.room_group_name,
             self.channel_name
         )
-
 
     async def server_disconnect(self):
         await self.close()
@@ -61,6 +62,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def disconnect_after_delay(consumer):
         await asyncio.sleep(5)
         await consumer.server_disconnect()
+
 
     async def receive(self, text_data):
         global ball_x, ball_y, ball_angle, ball_speed, player1_y, player2_y, score_player1, score_player2
@@ -83,7 +85,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 elif tmp2  < MIN_Y + player2_length / 2:
                     tmp2 = MIN_Y + player2_length / 2
                 player2_y = tmp2
-
 
             # ロジックを実装してプレイヤー1の位置を更新
             # ここにプレイヤー2やボールの位置、スコアの更新などのロジックを追加            
@@ -173,14 +174,14 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             # ゲームの状態をクライアントに送信
             await self.channel_layer.group_send(         
-                "main",
+                self.room_group_name,
                 {
                     "type": "game_update",
                     "game_state": game_state
                 }
             #    await self.send_game_state(game_state)
-            )
-            
+            )            
+
             if score_player1 == (score_match - 1) and score_player2 == (score_match - 1) :
                 score_match += 1
 
