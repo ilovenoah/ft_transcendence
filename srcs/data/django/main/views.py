@@ -18,6 +18,9 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db import models
 from math import log2, ceil
+from PIL import Image as PilImage, Image
+from django.core.files.base import ContentFile
+from io import BytesIO
 
 logger = logging.getLogger(__name__)
 
@@ -656,6 +659,17 @@ def upload_image(request):
             #受信データの処理            
             form = ImageForm(request.POST, request.FILES)
             if form.is_valid():
+                avatar = request.FILES.get('image') # アップロードされた画像ファイルを取得
+                if avatar:
+                    user = request.user
+                    img = PilImage.open(avatar) # 画像を開く
+                    img = img.resize((128, 128), Image.Resampling.LANCZOS) # 画像を128x128にリサイズ
+                    # 画像を保存するためのメモリストリームを用意
+                    img_io = BytesIO()
+                    img.save(img_io, format='PNG', quality=100)
+                    img_io.seek(0)
+                    img_content = ContentFile(img_io.getvalue()) # メモリストリームからContentFileを作成
+                    form.cleaned_data['image'].file = img_content # ContentFileをフォームのImageFieldに設定
                 image_instance = form.save()
                 response_data = {
                     'msgtagid':'result',
