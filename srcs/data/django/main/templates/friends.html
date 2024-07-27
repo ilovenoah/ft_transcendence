@@ -1,6 +1,15 @@
-<h1>Friends</h1>
-<ul>
-  {% for friend in friends %}
-  <li>{{ friend.username }} - {{ friend.online_status }}</li>
-  {% endfor %}
-</ul>
+<div class="px-5">
+  <h1>Friends</h1>
+  <table class="table table-borderless table-dark table-striped">
+    <tr>
+      <th>名前</th>
+      <th>オンラインステータス</th>
+    </tr>
+    {% for friend in friends %}
+    <tr>
+      <td>{{ friend.username }}</td>
+      <td>{{ friend.online_status }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
