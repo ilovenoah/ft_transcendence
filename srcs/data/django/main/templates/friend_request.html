@@ -1,7 +1,36 @@
-<h2>Friend Request</h2>
-<form class="ajax-form" action="process-post/">
-    <input type="hidden" name="page" value="friend_request">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Send Friend Request</button>
-</form>
+<head>
+    <style>
+        .errorlist {
+            display: none;
+        }
+        
+    </style>
+</head>
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active post-link" aria-current="page" href="#" data_url="process-post/" page="friends">友達</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active post-link" aria-current="page" href="#" data_url="process-post/" page="friend_request">友達リクエスト</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-10">
+        <div class="px-5">
+            <h1>友達リクエスト</h1>
+            <form class="ajax-form" action="process-post/">
+                <input type="hidden" name="page" value="friend_request">
+                {% csrf_token %}
+                <div class="form-group mb-0">
+                    {{ form.to_user }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mt-1">申請</button>
+            </form>
+        </div>
+        <hr></hr>
+      </div>
+    </div>
+  </div>

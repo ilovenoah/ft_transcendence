@@ -334,15 +334,21 @@ def process_post_data(request):
                             request.user.send_friend_request(to_user)
                         except ValidationError as e:
                             form.add_error(None, e)  # エラーをフォームに追加
+                            friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                            forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
                             response_data = {
                                 'page': page,
-                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                                    render_to_string('friend_request_list.html', {'forms': forms,}),
                                 'title': 'Friend Request',
                             }
                     else:
+                        friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                        forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
                         response_data = {
                             'page': page,
-                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                                render_to_string('friend_request_list.html', {'forms': forms,}),
                             'title': 'Friend Request',
                         }  
                 else:
@@ -362,8 +368,6 @@ def process_post_data(request):
                         friend_request = get_object_or_404(FriendRequest, id=request_id)
                         if action == 'accept':
                             friend_request.accept_request()
-                        elif action == 'decline':
-                            friend_request.decline_request()
                         response_data = {
                             'page': page,
                             'content': 'Sent',
@@ -372,14 +376,11 @@ def process_post_data(request):
                     else:
                         friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
                         forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
+                        form = FriendRequestForm(data=post_data, from_user=request.user) 
                         response_data = {
                             'page': page,
-                            'content': render_to_string('friend_request_list.html', {
-                                'form': form, 
-                                'request': request, 
-                                'fr': friend_requests,
-                                'forms': forms,
-                            }),
+                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                                render_to_string('friend_request_list.html', {'forms': forms,}),
                             'title': 'Friend Request List',
                         }
                 else:
@@ -404,10 +405,12 @@ def process_post_data(request):
                             friend.online_status = 'Online'
                         else:
                             friend.online_status = 'Offline'
+                    pending_requests = FriendRequest.objects.filter(from_user_id=user.id, status='P')
                     response_data = {
                         'page': page,
-                        'content': render_to_string('friends.html', {'friends': friends}),
-                        'title': 'Login',
+                        'content': render_to_string('friends.html', {'friends': friends}) +
+                            render_to_string('pending.html', {'pending_requests': pending_requests, 'request': request}),
+                        'title': 'Friends',
                     }
                 else:
                     form = AuthenticationForm()

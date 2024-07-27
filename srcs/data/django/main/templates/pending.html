@@ -1,0 +1,30 @@
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- ナビゲーションメニュー -->
+        <!-- <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active post-link" aria-current="page" href="#" data_url="process-post/" page="friends">友達</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active post-link" aria-current="page" href="#" data_url="process-post/" page="friend_request">友達リクエスト</a>
+          </li>
+        </ul> -->
+      </div>
+      <div class="col-md-10">
+        <!-- 友達リストの表示エリア -->
+        <div class="px-5">
+          <h5>未承認</h5>
+          <table class="table table-borderless table-dark table-striped">
+            {% for request in pending_requests %}
+            <tr>
+                <td>
+                    {{ request.to_user.username }}
+                </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>

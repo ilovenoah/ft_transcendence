@@ -34,14 +34,10 @@ class Image(models.Model):
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(CustomUser, related_name='friend_requests_sent', on_delete=models.CASCADE)
     to_user = models.ForeignKey(CustomUser, related_name='friend_requests_received', on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=[('P', 'Pending'), ('A', 'Accepted'), ('D', 'Declined')], default='P')
+    status = models.CharField(max_length=1, choices=[('P', 'Pending'), ('A', 'Accepted')], default='P')
 
     def accept_request(self):
         self.status = 'A'
-        self.save()
-
-    def decline_request(self):
-        self.status = 'D'
         self.save()
 
 class Tournament(models.Model):
