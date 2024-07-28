@@ -381,7 +381,7 @@ function toggleVisibility(login, username) {
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
               <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">Logout</a></li>
+              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
             </ul>
         </li>
       </ul>

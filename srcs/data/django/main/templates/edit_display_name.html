@@ -3,7 +3,7 @@
     {% csrf_token %}
     <div class="row g-3 align-items-center">
         <div class="mb-3 col-auto">
-            <label for="id_display_name" class="form-label">Display name</label>
+            <label for="id_display_name" class="form-label">ディスプレイネーム</label>
         </div>
         <div id="displayNameHelpBlock" class="mb-4 col-auto">
             ディスプレイネームを入力してください
@@ -11,7 +11,7 @@
     </div>
     <div class="row g-3 align-items-center">
         <div class="mb-3 col-auto">
-            <input type="text" class="form-control" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
+            <input type="text" class="form-control bg-dark text-light" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
         </div>
         <div id="displayNameAlertBlock" class="mb-3 col-auto"></div>
     </div>

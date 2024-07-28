@@ -131,7 +131,7 @@ def process_post_data(request):
                     response_data = {
                         'page':page,
                         'content':render_to_string('signup.html', context={'form': form, 'request': request}),
-                        'title': 'signup',
+                        'title': 'signup'
                     }
             elif page == 'login':
                 form = AuthenticationForm(data=post_data)

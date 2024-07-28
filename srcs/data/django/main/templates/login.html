@@ -13,8 +13,8 @@
         <input type="hidden" name="page" value="login">
         <h1 class="mb-5 mt-5 font-weight-normal text-center">ログイン</h1>
         {% csrf_token %}
-        <input type="text" id="{{ form.username.id_for_label }}" class="form-control" placeholder="Username" name="{{ form.username.name}}" required>
-        <input type="password" id="{{ form.password.id_for_label }}" class="form-control" name="{{ form.password.name }}" placeholder="Password" required>
+        <input type="text" id="{{ form.username.id_for_label }}" class="form-control" placeholder="ユーザーネーム" name="{{ form.username.name}}" required>
+        <input type="password" id="{{ form.password.id_for_label }}" class="form-control" name="{{ form.password.name }}" placeholder="パスワード" required>
         <button type="submit" class="btn btn-lg btn-primary d-block mx-auto mt-5">ログイン</button>
     </form>
 </div>
