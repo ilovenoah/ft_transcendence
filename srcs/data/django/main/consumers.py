@@ -48,6 +48,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         )
         await self.accept()
        # ボールの位置を定期的に更新する非同期タスクを開始
+
+        self.game_state = {}
         self.update_task = asyncio.create_task(self.update_ball_position())
 
     async def disconnect(self, close_code):
@@ -162,7 +164,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
                 
-            game_state = {
+            self.game_state = {
                 'info':'all',
                 'player1_y': player1_y,
                 'player2_y': player2_y,
@@ -177,7 +179,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     "type": "game_update",
-                    "game_state": game_state
+                    "game_state": self.game_state
                 }
             #    await self.send_game_state(game_state)
             )            
@@ -192,12 +194,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             else:
                 await asyncio.sleep(interval)
 
-    async def send_game_state(self, game_state):
-        await self.send(text_data=json.dumps(game_state))
+    # async def send_game_state(self, game_state):
+    #     await self.send(text_data=json.dumps(game_state))
 
     async def game_update(self, event):
-        game_state = event["game_state"]
-        await self.send(text_data=json.dumps(game_state))
+        self.game_state = event["game_state"]
+        await self.send(text_data=json.dumps(self.game_state))
 
 
     # def game_start(self, event):
