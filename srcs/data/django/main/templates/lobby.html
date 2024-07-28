@@ -1,30 +1,45 @@
-<h1>New Room</h1>
-<a href="#" class="post-link" data_url="process-post/" page="create_room" title="Create Room">Create Room</a>
-
-<h1>Room List</h1>
-<ul>
-    {% if rooms %}
-        {% for room in rooms %}
-            <li>{{ room.id }} Room created by {{ room.user1 }} at {{ room.timestamp }}</li>
-            <a href="#" class="post-link" data_url="process-post/" page="enter_room" room_id="{{ room.id }}">Enter Room</a>
-        {% endfor %}
-    {% else %}
-        <li>No rooms available</li>
-    {% endif %}
-</ul>
-
-<h1>New Tournament</h1>
-<li><a href="#" class="post-link" data_url="process-post/" page="create_tournament" title="Create Tournament" size="4">Create Tournament for 4 Players</a></li>
-<li><a href="#" class="post-link" data_url="process-post/" page="create_tournament" title="Create Tournament" size="8">Create Tournament for 8 Players</a></li>
-<li><a href="#" class="post-link" data_url="process-post/" page="create_tournament" title="Create Tournament" size="16">Create Tournament for 16 Players</a></li>
-<h1>Tournament List</h1>
-<ul>
-    {% if tournaments %}
-        {% for tournament in tournaments %}
-            <li>{{ tournament.id }} Tournament for {{ tournament.size }} at {{ tournament.timestamp }}</li>
-            <a href="#" class="post-link" data_url="process-post/" page="join_tournament" tournament_id="{{ tournament.id }}">Join Tournament</a>
-        {% endfor %}
-    {% else %}
-        <li>No tournaments available</li>
-    {% endif %}
-</ul>
+<head>
+    <style>
+        .btn-custom {
+            width: 25%; /* または任意の固定幅 */
+        }
+    </style>
+</head>
+<div class="px-5">
+    <h1 class="mb-4">ロビー</h1>
+    <div class="card border-primary bg-dark mb-3">
+        <h5 class="card-title text-light px-3 mt-3">シングルプレイ</h5>
+    </div>
+    <div class="card border-primary bg-dark mb-3">
+        <h5 class="card-title text-light px-3 mt-3">新しいルーム</h5>
+        <li class="mb-2"><a href="#" class="btn btn-primary btn-sm post-link mb-3 btn-custom" data_url="process-post/" page="create_room" title="Create Room">ルーム作成</a></li>
+        <h5 class="card-title text-light px-3">ルームリスト</h5>
+        <ul>
+            {% if rooms %}
+                {% for room in rooms %}
+                    <li class="card-text text-light">{{ room.user1 }} のルーム</li>
+                    <a href="#" class="btn btn-primary btn-sm post-link btn-custom" data_url="process-post/" page="enter_room" room_id="{{ room.id }}">入室</a>
+                {% endfor %}
+            {% else %}
+                <div class="card-text text-light">ルームがありません</div>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="card border-primary bg-dark mb-3">
+        <h5 class="card-title text-light px-3 mt-3">新しいトーナメント</h5>
+        <li class="mb-2"><a href="#" class="btn btn-primary btn-sm post-link btn-custom" data_url="process-post/" page="create_tournament" title="Create Tournament" size="4">4人用</a></li>
+        <li class="mb-2"><a href="#" class="btn btn-primary btn-sm post-link btn-custom" data_url="process-post/" page="create_tournament" title="Create Tournament" size="8">8人用</a></li>
+        <li class="mb-3"><a href="#" class="btn btn-primary btn-sm post-link btn-custom" data_url="process-post/" page="create_tournament" title="Create Tournament" size="16">16人用</a></li>
+        <h5 class="card-title text-light px-3">トーナメントに参加</h5>
+        <ul>
+            {% if tournaments %}
+                {% for tournament in tournaments %}
+                    <li class="card-text text-light mb-1">{{ tournament.size }}人用のトーナメント</li>
+                    <a href="#" class="btn btn-primary btn-sm post-link btn-custom" data_url="process-post/" page="join_tournament" tournament_id="{{ tournament.id }}">参戦</a>
+                {% endfor %}
+            {% else %}
+                <div class="card-text text-light">トーナメントがありません</div>
+            {% endif %}
+        </ul>
+    </div>
+</div>
