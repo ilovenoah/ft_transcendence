@@ -3,18 +3,20 @@
         .errorlist {
             display: none;
         }
-        
+        .btn-flat {
+            border-radius: 0 !important; /* 角の丸みを無くす */
+        }
     </style>
 </head>
 <div class="container-fluid">
     <div class="row">
       <div class="col-md-2">
         <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active post-link" aria-current="page" href="#" data_url="process-post/" page="friends">友達</a>
+          <li class="nav-item" style="width: 100%;">
+            <a class="btn btn-primary post-link w-100 btn-flat" href="#" data_url="process-post/" page="friends">友達</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link active post-link" aria-current="page" href="#" data_url="process-post/" page="friend_request">友達リクエスト</a>
+          <li class="nav-item" style="width: 100%;">
+            <a class="btn btn-primary post-link w-100 btn-flat" href="#" data_url="process-post/" page="friend_request">友達リクエスト</a>
           </li>
         </ul>
       </div>
@@ -27,7 +29,7 @@
                 <div class="form-group mb-0">
                     {{ form.to_user }}
                 </div>
-                <button type="submit" class="btn btn-primary btn-sm mt-1">申請</button>
+                <button type="submit" class="btn btn-primary btn-sm mt-1">追加</button>
             </form>
         </div>
         <hr></hr>
