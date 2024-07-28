@@ -47,10 +47,11 @@ def process_post_data(request):
                     user.last_active = timezone.now()
                     user.save(update_fields=['last_active', 'is_online'])
                     logout(request)
+                    form = AuthenticationForm(data=post_data)
                     response_data = {
-                        'page': page,
-                        'content': 'logged out',
-                        'title': 'Logout',
+                        'page': 'login',
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
                         'login': 'false'
                     }
                 else:
@@ -67,9 +68,9 @@ def process_post_data(request):
                     if form_edit_display_name.is_valid():
                         user = form_edit_display_name.save()
                         response_data = {
-                            'page': page,
-                            'content': 'Saved',
-                            'title': 'Saved'
+                            'page': 'profile',
+                            'content': render_to_string('profile.html', {'user': user}),
+                            'title': 'Profile',
                         }
                     else:
                         response_data = {
@@ -123,9 +124,9 @@ def process_post_data(request):
                 if form.is_valid():
                     user = form.save()
                     response_data = {
-                        'page':page,
-                        'content': 'Signup successful',
-                        'title': 'Signup Success'
+                        'page': 'login',
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login'
                     }       
                 else:
                     response_data = {
@@ -142,9 +143,9 @@ def process_post_data(request):
                     user.last_active = timezone.now()
                     user.save(update_fields=['is_online', 'last_active'])
                     response_data = {
-                        'page': page,
-                        'content': 'Login successful',
-                        'title': 'Login Success',
+                        'page': 'top',
+                        'content': read_file('top.html'),
+                        'title': 'トラセントップ',
                         'login': 'true',
                         'username' : user.username
                     }   
@@ -201,10 +202,10 @@ def process_post_data(request):
                     if form_edit_email.is_valid():
                         user = form_edit_email.save()
                         response_data = {
-                        'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved',
-                    }
+                            'page': 'profile',
+                            'content': render_to_string('profile.html', {'user': user}),
+                            'title': 'Profile',
+                        }
                     else:
                         response_data = {
                             'page': page,
@@ -233,10 +234,10 @@ def process_post_data(request):
                     if form_edit_display_name.is_valid():
                         user = form_edit_display_name.save()
                         response_data = {
-                        'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved'
-                    }
+                            'page': 'profile',
+                            'content': render_to_string('profile.html', {'user': user}),
+                            'title': 'Profile',
+                        }
                     else:
                         response_data = {
                             'page': page,
@@ -265,9 +266,9 @@ def process_post_data(request):
                     if form_edit_avatar.is_valid():
                         user = form_edit_avatar.save()
                         response_data = {
-                            'page': page,
-                            'content': 'Saved',
-                            'title': 'Saved'
+                            'page': 'profile',
+                            'content': render_to_string('profile.html', {'user': user}),
+                            'title': 'Profile',
                         }
                     else:
                         response_data = {
@@ -294,10 +295,12 @@ def process_post_data(request):
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_change_password.is_valid():
                         user = form_change_password.save()
+                        form = AuthenticationForm(data=post_data)
                         response_data = {
-                            'page': page,
-                            'content': 'Saved',
-                            'title': 'Saved'
+                            'page': 'login',
+                            'content': render_to_string('login.html', {'form': form, 'request': request}),
+                            'title': 'Login',
+                            'login': 'false'
                         }
                         user.is_online = False
                         user.save(update_fields=['is_online'])
@@ -326,14 +329,7 @@ def process_post_data(request):
                     if form.is_valid():
                         to_user = form.cleaned_data['to_user']
                         try:
-                            response_data = {
-                                    'page': page,
-                                    'content': 'Friend Request Sent',
-                                    'title': 'Friend Request Sent'
-                                }
                             request.user.send_friend_request(to_user)
-                        except ValidationError as e:
-                            form.add_error(None, e)  # エラーをフォームに追加
                             friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
                             forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
                             response_data = {
@@ -341,6 +337,17 @@ def process_post_data(request):
                                 'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
                                     render_to_string('friend_request_list.html', {'forms': forms,}),
                                 'title': 'Friend Request',
+                            }
+                        except Exception as e:
+                            friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                            forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
+                            response_data = {
+                                'page': page,
+                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                                    render_to_string('friend_request_list.html', {'forms': forms,}),
+                                'title': 'Friend Request',
+                                'isValid': "false",
+                                'elem': 'friend'
                             }
                     else:
                         friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
@@ -368,21 +375,15 @@ def process_post_data(request):
                         friend_request = get_object_or_404(FriendRequest, id=request_id)
                         if action == 'accept':
                             friend_request.accept_request()
-                        response_data = {
-                            'page': page,
-                            'content': 'Sent',
-                            'title': 'Sent',
-                        }
-                    else:
-                        friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
-                        forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
-                        form = FriendRequestForm(data=post_data, from_user=request.user) 
-                        response_data = {
-                            'page': page,
-                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
-                                render_to_string('friend_request_list.html', {'forms': forms,}),
-                            'title': 'Friend Request List',
-                        }
+                    friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                    forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
+                    form = FriendRequestForm(data=post_data, from_user=request.user) 
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                            render_to_string('friend_request_list.html', {'forms': forms,}),
+                        'title': 'Friend Request List',
+                    }
                 else:
                     form = AuthenticationForm()
                     response_data = {

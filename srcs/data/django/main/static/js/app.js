@@ -390,26 +390,30 @@ function toggleVisibility(login, username) {
 }
 
 function displayAlert(elem) {
+  console.log(elem)
   if (elem === 'email') {
     const alert = document.getElementById('emailAlertBlock');
     alert.innerHTML = '';
-    console.log(elem)
     alert.innerHTML = `
       入力されたメールアドレスが不正です
     `;
   } else if (elem === 'display_name') {
     const alert = document.getElementById('displayNameAlertBlock');
     alert.innerHTML = '';
-    console.log(elem)
     alert.innerHTML = `
       入力された Diplay name が不正です
     `;
   } else if (elem === 'password') {
     const alert = document.getElementById('passwordAlertBlock');
     alert.innerHTML = '';
-    console.log(elem)
     alert.innerHTML = `
       同一ではありません
+    `;
+  } else if (elem === 'friend') {
+    const alert = document.getElementById('friendAlertBlock');
+    alert.innerHTML = '';
+    alert.innerHTML = `
+      その人は友達に追加できません
     `;
   }
 }

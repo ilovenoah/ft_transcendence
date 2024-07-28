@@ -19,14 +19,16 @@
       </div>
       <div class="col-md-10">
         <div class="px-5">
-            <h1>友達リクエスト</h1>
+            <h1 class="mb-3">友達リクエスト</h1>
+            <h5 class="mb-3">新しい友達を探す</h5>
             <form class="ajax-form" action="process-post/">
                 <input type="hidden" name="page" value="friend_request">
                 {% csrf_token %}
                 <div class="form-group mb-0">
                     {{ form.to_user }}
                 </div>
-                <button type="submit" class="btn btn-primary btn-sm mt-1">追加</button>
+                <div id="friendAlertBlock" class="mt-2 col-auto"></div>
+                <button type="submit" class="btn btn-primary btn-sm mt-2">追加</button>
             </form>
         </div>
         <hr></hr>
