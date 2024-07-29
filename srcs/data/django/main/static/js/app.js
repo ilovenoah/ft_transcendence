@@ -176,6 +176,7 @@ function updateContent(data) {
     reloadAjax(data.reload, data.timeout);
   }
   if (typeof data.login !== 'undefined') {
+    console.log(data.login)
     toggleVisibility(data.login, data.username)
   }
   if (typeof data.isValid !== 'undefined') {
@@ -355,6 +356,8 @@ function setIdValue(id, setvalue) {
 function toggleVisibility(login, username) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
+  const top = document.getElementById('expranations');
+  top.innerHTML = '';
   if (login === 'false') {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto">
@@ -365,6 +368,9 @@ function toggleVisibility(login, username) {
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
         </li>
       </ul>
+    `;
+    top.innerHTML = `
+      これはlogout後のトップページです
     `;
   } else {
     nav.innerHTML = `
@@ -386,6 +392,9 @@ function toggleVisibility(login, username) {
         </li>
       </ul>
     `;
+    top.innerHTML = `
+      これはlogin中のトップページです
+    `
   }
 }
 

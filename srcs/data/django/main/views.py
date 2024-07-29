@@ -47,10 +47,9 @@ def process_post_data(request):
                     user.last_active = timezone.now()
                     user.save(update_fields=['last_active', 'is_online'])
                     logout(request)
-                    form = AuthenticationForm(data=post_data)
                     response_data = {
                         'page': 'login',
-                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'content': read_file('top.html'),
                         'title': 'Login',
                         'login': 'false'
                     }
@@ -58,7 +57,8 @@ def process_post_data(request):
                     response_data = {
                         'page': page,
                         'content': read_file('top.html'),
-                        'title': 'トラセントップ'
+                        'title': 'トラセントップ',
+                        'login': 'false'
                     }
                 return JsonResponse(response_data)
             user = request.user
@@ -66,12 +66,13 @@ def process_post_data(request):
                 if not user.display_name:
                     form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                     if form_edit_display_name.is_valid():
-                        user = form_edit_display_name.save()
                         response_data = {
-                            'page': 'profile',
-                            'content': render_to_string('profile.html', {'user': user}),
-                            'title': 'Profile',
-                        }
+                            'page': 'top',
+                            'content': read_file('top.html'),
+                            'title': 'トラセントップ',
+                            'login': 'true',
+                            'username' : user.username
+                        }  
                     else:
                         response_data = {
                             'page': page,
@@ -80,11 +81,22 @@ def process_post_data(request):
                         }
                     return JsonResponse(response_data)
             if page == 'top':
-                response_data = {
-                    'page':page,
-                    'content':read_file('top.html'),
-                    'title': 'トラセントップ',
-                }
+                user = request.user
+                if user.is_authenticated:
+                    response_data = {
+                        'page':page,
+                        'content':read_file('top.html'),
+                        'title': 'トラセントップ',
+                        'username' : user.username,
+                        'login': 'true'
+                    }
+                else:
+                    response_data = {
+                        'page':page,
+                        'content':read_file('top.html'),
+                        'title': 'トラセントップ',
+                        'login': 'false'
+                    }
             elif page == 'test':
                 response_data = {
                     'page':page,
@@ -295,15 +307,14 @@ def process_post_data(request):
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_change_password.is_valid():
                         user = form_change_password.save()
-                        form = AuthenticationForm(data=post_data)
+                        user.is_online = False
+                        user.save(update_fields=['is_online'])
                         response_data = {
                             'page': 'login',
-                            'content': render_to_string('login.html', {'form': form, 'request': request}),
+                            'content': read_file('top.html'),
                             'title': 'Login',
                             'login': 'false'
                         }
-                        user.is_online = False
-                        user.save(update_fields=['is_online'])
                     else:
                         response_data = {
                             'page': page,
