@@ -1,10 +1,3 @@
-<head>
-    <style>
-        .errorlist {
-            display: none;
-        }
-    </style>
-</head>
 <div class="px-5">
     <h1 class="mb-3">サインアップ</h1>
     <form class="ajax-form" action="process-post/">
@@ -22,7 +15,11 @@
             <div class="mb-3 col-auto">
                 <input type="text" class="form-control bg-dark text-light" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" required>
             </div>
-            <div id="usernameAlertBlock" class="mb-3 col-auto"></div>
+            {% if form.username.errors %}
+                <div class="mb-3 col-auto">
+                    {{ form.username.errors.as_text }}
+                </div>
+            {% endif %}
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
@@ -36,7 +33,11 @@
             <div class="mb-3 col-auto">
                 <input type="email" class="form-control bg-dark text-light" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" required>
             </div>
-            <div id="emailAlertBlock" class="mb-3 col-auto"></div>
+            {% if form.email.errors %}
+                <div class="mb-3 col-auto">
+                    {{ form.email.errors.as_text }}
+                </div>
+            {% endif %}
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
@@ -50,7 +51,11 @@
             <div class="mb-3 col-auto">
                 <input type="password" class="form-control bg-dark text-light" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" required>
             </div>
-            <!-- <div id="password1AlertBlock" class="mb-3 col-auto"></div> -->
+            {% if form.password1.errors %}
+                <div class="mb-3 col-auto">
+                    {{ form.password1.errors.as_text }}
+                </div>
+            {% endif %}
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
@@ -64,7 +69,11 @@
             <div class="mb-3 col-auto">
                 <input type="password" class="form-control bg-dark text-light" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" required>
             </div>
-            <div id="password2AlertBlock" class="mb-3 col-auto"></div>
+            {% if form.password2.errors %}
+                <div class="mb-3 col-auto">
+                    {{ form.password2.errors.as_text }}
+                </div>
+            {% endif %}
         </div>
         <button type="submit" class="btn btn-primary mb-5 mt-3">サインアップ</button>
     </form>
