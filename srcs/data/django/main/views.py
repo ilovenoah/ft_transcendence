@@ -176,7 +176,7 @@ def process_post_data(request):
                                 # 'isValid': 'false',
                                 # 'elem': 'display_name'
                             }
-                    return JsonResponse(response_data)
+                        return JsonResponse(response_data)
                     response_data = {
                         'page': 'top',
                         'content': read_file('top.html'),
