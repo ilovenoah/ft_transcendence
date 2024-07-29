@@ -18,17 +18,19 @@
         <h1 class="mb-5 mt-5 font-weight-normal text-center">ログイン</h1>
         {% csrf_token %}
         <input type="text" id="{{ form.username.id_for_label }}" class="form-control bg-dark text-light" placeholder="ユーザーネーム" name="{{ form.username.name}}" required>
-        <!-- {% if form.username.errors %} -->
-            <!-- <div class="mb-3 col-auto"> -->
-                <!-- {{ form.username.errors.as_text }} -->
-            <!-- </div> -->
-        <!-- {% endif %} -->
         <input type="password" id="{{ form.password.id_for_label }}" class="form-control bg-dark text-light" name="{{ form.password.name }}" placeholder="パスワード" required>
-        <!-- {% if form.password.errors %} -->
-            <!-- <div class="mb-3 col-auto"> -->
-                <!-- {{ form.password.errors.as_text }} -->
-            <!-- </div> -->
-        <!-- {% endif %} -->
+        {% if form.username.errors or form.password.errors %}
+                {% for error in form.username.errors %}
+                    {% if error != "このフィールドは必須です。" %}
+                        <p>{{ error }}</p>
+                    {% endif %}
+                {% endfor %}
+                {% for error in form.password.errors %}
+                    {% if error != "このフィールドは必須です。" %}
+                        <p>{{ error }}</p>
+                    {% endif %}
+                {% endfor %}
+        {% endif %}
         <button type="submit" class="btn btn-lg btn-primary d-block mx-auto mt-5">ログイン</button>
     </form>
 </div>

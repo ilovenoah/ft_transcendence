@@ -191,8 +191,6 @@ def process_post_data(request):
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                        'isValid': 'false',
-                        'elem': 'login'
                     }
             elif page == 'profile':
                 user = request.user
