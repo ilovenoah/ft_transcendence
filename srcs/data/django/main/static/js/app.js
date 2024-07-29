@@ -424,5 +424,5 @@ function displayAlert(elem) {
     alert.innerHTML = `
       その人は友達に追加できません
     `;
-  }
+  } 
 }

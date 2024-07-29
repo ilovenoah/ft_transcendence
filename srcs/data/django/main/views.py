@@ -66,6 +66,7 @@ def process_post_data(request):
                 if not user.display_name:
                     form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                     if form_edit_display_name.is_valid():
+                        user = form_edit_display_name.save()
                         response_data = {
                             'page': 'top',
                             'content': read_file('top.html'),
@@ -77,7 +78,9 @@ def process_post_data(request):
                         response_data = {
                             'page': page,
                             'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
-                            'title': 'Edit Display Name'
+                            'title': 'Edit Display Name',
+                            'isValid': 'false',
+                            'elem': 'display_name'
                         }
                     return JsonResponse(response_data)
             if page == 'top':
@@ -154,6 +157,26 @@ def process_post_data(request):
                     user.is_online = True
                     user.last_active = timezone.now()
                     user.save(update_fields=['is_online', 'last_active'])
+                    if not user.display_name:
+                        form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
+                        if form_edit_display_name.is_valid():
+                            user = form_edit_display_name.save()
+                            response_data = {
+                                'page': 'top',
+                                'content': read_file('top.html'),
+                                'title': 'トラセントップ',
+                                'login': 'true',
+                                'username' : user.username
+                            }  
+                        else:
+                            response_data = {
+                                'page': page,
+                                'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
+                                'title': 'Edit Display Name',
+                                'isValid': 'false',
+                                'elem': 'display_name'
+                            }
+                    return JsonResponse(response_data)
                     response_data = {
                         'page': 'top',
                         'content': read_file('top.html'),
@@ -165,7 +188,9 @@ def process_post_data(request):
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
-                        'title': 'Login'
+                        'title': 'Login',
+                        'isValid': 'false',
+                        'elem': 'login'
                     }
             elif page == 'profile':
                 user = request.user
