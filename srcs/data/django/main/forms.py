@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from .models import Image
+import re
+confirm_password = forms.CharField(widget=forms.PasswordInput(), label="Confirm password")
 
 
 class SignUpForm(UserCreationForm):
@@ -58,6 +60,14 @@ class PasswordChangeForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['password']
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if len(password) < 8:
+            raise ValidationError('パスワードは8文字以上である必要があります。')
+        if not re.findall('[a-zA-Z]', password):
+            raise ValidationError('パスワードには少なくとも一つの文字が含まれている必要があります。')
+        return password
 
     def clean(self):
         cleaned_data = super().clean()

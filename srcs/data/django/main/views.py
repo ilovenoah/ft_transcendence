@@ -79,8 +79,8 @@ def process_post_data(request):
                             'page': page,
                             'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
                             'title': 'Edit Display Name',
-                            'isValid': 'false',
-                            'elem': 'display_name'
+                            # 'isValid': 'false',
+                            # 'elem': 'display_name'
                         }
                     return JsonResponse(response_data)
             if page == 'top':
@@ -173,8 +173,8 @@ def process_post_data(request):
                                 'page': page,
                                 'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
                                 'title': 'Edit Display Name',
-                                'isValid': 'false',
-                                'elem': 'display_name'
+                                # 'isValid': 'false',
+                                # 'elem': 'display_name'
                             }
                     return JsonResponse(response_data)
                     response_data = {
