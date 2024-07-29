@@ -14,6 +14,12 @@
             <input type="text" class="form-control bg-dark text-light" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
         </div>
         <div id="displayNameAlertBlock" class="mb-3 col-auto"></div>
+        {% if form_edit_display_name.display_name.errors %}
+            <!-- <div class="mb-3 col-auto"> -->
+            <div class="text-light">
+                {{ form_edit_display_name.display_name.errors }}
+            </div>
+        {% endif %}
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </form>

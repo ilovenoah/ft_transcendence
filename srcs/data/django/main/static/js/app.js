@@ -356,8 +356,7 @@ function setIdValue(id, setvalue) {
 function toggleVisibility(login, username) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
-  const top = document.getElementById('expranations');
-  top.innerHTML = '';
+  console.log('im here')
   if (login === 'false') {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto">
@@ -368,9 +367,6 @@ function toggleVisibility(login, username) {
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
         </li>
       </ul>
-    `;
-    top.innerHTML = `
-      これはlogout後のトップページです
     `;
   } else {
     nav.innerHTML = `
@@ -394,7 +390,20 @@ function toggleVisibility(login, username) {
     `;
     top.innerHTML = `
       これはlogin中のトップページです
-    `
+    `;
+  }
+  if (elem === 'top') {
+    const top = document.getElementById('expranations');
+    top.innerHTML = '';
+    if (login === 'false') {
+      top.innerHTML = `
+        これはlogout後のトップページです
+      `;
+    } else {
+      top.innerHTML = `
+      これはlogin中のトップページです
+    `;
+    }
   }
 }
 

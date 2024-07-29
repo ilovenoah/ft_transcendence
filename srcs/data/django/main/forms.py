@@ -41,6 +41,11 @@ class DisplayNameForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super(DisplayNameForm, self).__init__(*args, **kwargs)
         self.fields['display_name'].required = True
+    # def clean_display_name(self):
+    #     display_name = self.cleaned_data.get('display_name')
+    #     if User.objects.filter(display_name=display_name).exists():
+    #         raise forms.ValidationError('この表示名は既に使用されています。別の表示名を選んでください。')
+    #     return display_name
 
 class AvatarForm(forms.ModelForm):
     class Meta:

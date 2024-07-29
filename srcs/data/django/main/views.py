@@ -72,15 +72,16 @@ def process_post_data(request):
                             'content': read_file('top.html'),
                             'title': 'トラセントップ',
                             'login': 'true',
-                            'username' : user.username
+                            'username' : user.username,
+                            'elem': 'top'
                         }  
                     else:
                         response_data = {
                             'page': page,
                             'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
                             'title': 'Edit Display Name',
-                            # 'isValid': 'false',
-                            # 'elem': 'display_name'
+                            'login': 'true',
+                            'username' : user.username,
                         }
                     return JsonResponse(response_data)
             if page == 'top':
@@ -166,15 +167,16 @@ def process_post_data(request):
                                 'content': read_file('top.html'),
                                 'title': 'トラセントップ',
                                 'login': 'true',
-                                'username' : user.username
+                                'username' : user.username,
+                                'elem': 'top'
                             }  
                         else:
                             response_data = {
-                                'page': page,
+                                'page': 'display_name_form',
                                 'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
                                 'title': 'Edit Display Name',
-                                # 'isValid': 'false',
-                                # 'elem': 'display_name'
+                                'login': 'true',
+                                'username' : user.username,
                             }
                         return JsonResponse(response_data)
                     response_data = {
@@ -658,6 +660,7 @@ def process_post_data(request):
                         'timeout' : '10000',
                         'alert': 'Please, wait a moment.',
                     }
+            
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
