@@ -7,6 +7,7 @@ import re
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 
@@ -35,8 +36,6 @@ class LoginForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
-
-
 
 User = get_user_model()
 
@@ -87,9 +86,9 @@ class PasswordChangeForm(forms.ModelForm):
     def clean_password(self):
         password = self.cleaned_data.get('password')
         if len(password) < 8:
-            raise ValidationError('パスワードは8文字以上である必要があります。')
+            raise ValidationError('パスワードは8文字以上である必要があります')
         if not re.findall('[a-zA-Z]', password):
-            raise ValidationError('パスワードには少なくとも一つの文字が含まれている必要があります。')
+            raise ValidationError('パスワードには少なくとも一つの文字が含まれている必要があります')
         return password
 
     def clean(self):
@@ -98,7 +97,7 @@ class PasswordChangeForm(forms.ModelForm):
         confirm_password = cleaned_data.get("confirm_password")
 
         if password and confirm_password and password != confirm_password:
-            self.add_error('confirm_password', "Passwords do not match.")
+            self.add_error('confirm_password', "同一のパスワードではありません")
         return cleaned_data
 
     def save(self, commit=True):

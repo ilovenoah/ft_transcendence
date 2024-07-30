@@ -421,12 +421,6 @@ function displayAlert(elem) {
     alert.innerHTML = `
       入力された Diplay name が不正です
     `;
-  } else if (elem === 'password') {
-    const alert = document.getElementById('passwordAlertBlock');
-    alert.innerHTML = '';
-    alert.innerHTML = `
-      同一ではありません
-    `;
   } else if (elem === 'friend') {
     const alert = document.getElementById('friendAlertBlock');
     alert.innerHTML = '';
