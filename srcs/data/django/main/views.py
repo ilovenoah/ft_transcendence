@@ -51,7 +51,8 @@ def process_post_data(request):
                         'page': 'login',
                         'content': read_file('top.html'),
                         'title': 'Login',
-                        'login': 'false'
+                        'login': 'false',
+                        'elem': 'top'
                     }
                 else:
                     response_data = {
@@ -92,14 +93,16 @@ def process_post_data(request):
                         'content':read_file('top.html'),
                         'title': 'トラセントップ',
                         'username' : user.username,
-                        'login': 'true'
+                        'login': 'true',
+                        'elem': 'top'
                     }
                 else:
                     response_data = {
                         'page':page,
                         'content':read_file('top.html'),
                         'title': 'トラセントップ',
-                        'login': 'false'
+                        'login': 'false',
+                        'elem': 'top'
                     }
             elif page == 'test':
                 response_data = {
@@ -185,7 +188,8 @@ def process_post_data(request):
                         'content': read_file('top.html'),
                         'title': 'トラセントップ',
                         'login': 'true',
-                        'username' : user.username
+                        'username' : user.username,
+                        'elem': 'top'
                     }   
                 else:
                     response_data = {

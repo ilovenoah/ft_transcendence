@@ -177,7 +177,8 @@ function updateContent(data) {
   }
   if (typeof data.login !== 'undefined') {
     console.log(data.login)
-    toggleVisibility(data.login, data.username)
+    console.log(data.elem)
+    toggleVisibility(data.login, data.username, data.elem)
   }
   if (typeof data.isValid !== 'undefined') {
     console.log('defined')
@@ -353,10 +354,11 @@ function setIdValue(id, setvalue) {
   document.getElementById(id).value = setvalue;
 }
 
-function toggleVisibility(login, username) {
+function toggleVisibility(login, username, elem) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
   console.log('im here')
+  console.log(elem)
   if (login === 'false') {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto">
@@ -388,20 +390,42 @@ function toggleVisibility(login, username) {
         </li>
       </ul>
     `;
-    top.innerHTML = `
-      これはlogin中のトップページです
-    `;
   }
   if (elem === 'top') {
     const top = document.getElementById('expranations');
     top.innerHTML = '';
     if (login === 'false') {
       top.innerHTML = `
-        これはlogout後のトップページです
+        <div>
+            このサイトでは、ブラウザでPong Gameが楽しめます
+        </div>
+        <div>
+            もちろん、完全無料！
+        </div>
+        <div>
+            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
+        </div>
+        <div>
+            ご利用には、ユーザー登録が必要です
+        </div>
+        <div class="mb-5">
+            サインアップボタンからユーザー登録をお願いします
+        </div>
       `;
     } else {
       top.innerHTML = `
-      これはlogin中のトップページです
+        <div>
+            いますぐPong GameをするにはLobbyから、お好みのゲーム方式を選んでください
+        </div>
+        <div>
+            他のユーザーを友達に登録すると、ユーザーのオンライン状態を確認できます
+        </div>
+        <div>
+            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
+        </div>
+        <div class="mb-5">
+            プロフィールにはアバターを設定することができます
+        </div>
     `;
     }
   }
@@ -419,7 +443,7 @@ function displayAlert(elem) {
     const alert = document.getElementById('displayNameAlertBlock');
     alert.innerHTML = '';
     alert.innerHTML = `
-      入力された Diplay name が不正です
+      入力されたディスプレイネームが不正です
     `;
   } else if (elem === 'friend') {
     const alert = document.getElementById('friendAlertBlock');
