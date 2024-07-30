@@ -52,14 +52,17 @@ def process_post_data(request):
                         'content': read_file('top.html'),
                         'title': 'Login',
                         'login': 'false',
-                        'elem': 'top'
+                        'elem': 'top',
+                        'alert': 'ログアウトしました'
                     }
                 else:
                     response_data = {
                         'page': page,
                         'content': read_file('top.html'),
                         'title': 'トラセントップ',
-                        'login': 'false'
+                        'login': 'true',
+                        'elem': 'top',
+                        'username' : user.username,
                     }
                 return JsonResponse(response_data)
             user = request.user
@@ -145,7 +148,8 @@ def process_post_data(request):
                     response_data = {
                         'page': 'login',
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
-                        'title': 'Login'
+                        'title': 'Login',
+                        'alert': 'サインアップに成功しました'
                     }       
                 else:
                     response_data = {
@@ -155,7 +159,6 @@ def process_post_data(request):
                     }
             elif page == 'login':
                 form = LoginForm(data=post_data)
-                # form = AuthenticationForm(data=post_data)
                 if form.is_valid():
                     login(request, form.get_user())
                     user = request.user
@@ -172,7 +175,7 @@ def process_post_data(request):
                                 'title': 'トラセントップ',
                                 'login': 'true',
                                 'username' : user.username,
-                                'elem': 'top'
+                                'elem': 'top',
                             }  
                         else:
                             response_data = {
@@ -189,13 +192,15 @@ def process_post_data(request):
                         'title': 'トラセントップ',
                         'login': 'true',
                         'username' : user.username,
-                        'elem': 'top'
+                        'elem': 'top', 
+                        'alert': 'ログインしました'
                     }   
                 else:
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
+                        'login': 'false',
                     }
             elif page == 'profile':
                 user = request.user
@@ -423,6 +428,7 @@ def process_post_data(request):
                         'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
                             render_to_string('friend_request_list.html', {'forms': forms,}),
                         'title': 'Friend Request List',
+                        'alert': '承認しました'
                     }
                 else:
                     form = AuthenticationForm()
