@@ -15,14 +15,14 @@
         </div>
         <div class="col-md-10">
             <div class="px-5">
-                <h5 class="mb-3">保留中のリクエスト</h5>
+                <h5 class="mb-3">未承認のリクエスト</h5>
                 <form class="ajax-form" action="process-post/">
                     <input type="hidden" name="page" value="friend_request_list">
                     {% csrf_token %}
                     {% for request_id, data in forms.items %}
                     <div style="display: flex; align-items: center; margin-bottom: 10px;">
                         <div style="flex-grow: 1; margin-right: 10px;">
-                            {{ data.0.from_user.username }}
+                            {{ data.0.from_user.display_name }}
                         </div>
                         <form method="post" class="friend-request-form" data-request-id="{{ request_id }}" style="flex-shrink: 0;">
                             <div style="display: none;">{{ data.1 }}</div>

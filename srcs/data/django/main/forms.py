@@ -113,12 +113,17 @@ class ImageForm(forms.ModelForm):
         fields = ['image']
 
 class FriendRequestForm(forms.Form):
-    to_user = forms.ModelChoiceField(queryset=User.objects.all())
+    to_user = forms.ModelChoiceField(queryset=User.objects.all(), label="Add Friend")
+
     def __init__(self, *args, **kwargs):
         self.from_user = kwargs.pop('from_user', None)
         super().__init__(*args, **kwargs)
         if self.from_user:
             self.fields['to_user'].queryset = User.objects.exclude(id=self.from_user.id)
+        self.fields['to_user'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return obj.display_name
 
 class FriendRequestActionForm(forms.Form):
     action = forms.ChoiceField(choices=[('accept', 'Accept')])

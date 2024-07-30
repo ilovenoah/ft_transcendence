@@ -14,12 +14,12 @@
       <div class="col-md-10">
         <!-- 友達リストの表示エリア -->
         <div class="px-5">
-          <h5 class="mb-3">未承認</h5>
+          <h5 class="mb-3">待機中</h5>
           <table class="table table-borderless table-dark table-striped">
             {% for request in pending_requests %}
             <tr>
                 <td>
-                    {{ request.to_user.username }}
+                    {{ request.to_user.display_name }}
                 </td>
             </tr>
             {% endfor %}

@@ -376,6 +376,7 @@ def process_post_data(request):
                                 'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
                                     render_to_string('friend_request_list.html', {'forms': forms,}),
                                 'title': 'Friend Request',
+                                'alert': '送信しました',
                             }
                         except Exception as e:
                             friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')

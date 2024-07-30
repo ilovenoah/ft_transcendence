@@ -167,7 +167,7 @@ function updateContent(data) {
   //   eval(data.exec);
   // }
   if (typeof data.alert !== 'undefined') {     
-    displayAlert(data.alert);
+    popupAlert(data.alert);
   }
   if (typeof data.setid !== 'undefined') {     
     setIdValue(data.setid, data.setvalue);
@@ -340,7 +340,7 @@ function reloadAjax(page, timeout) {
   }, timeout)
 }
 
-function displayAlert(mesg) {
+function popupAlert(mesg) {
   alertBox = document.getElementById('custom-alert');
   alertBox.innerText = mesg;
   alertBox.style.display = 'block';
