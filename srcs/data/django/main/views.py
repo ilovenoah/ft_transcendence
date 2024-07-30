@@ -145,6 +145,7 @@ def process_post_data(request):
                 form = SignUpForm(data=post_data)
                 if form.is_valid():
                     user = form.save()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': 'login',
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -213,7 +214,7 @@ def process_post_data(request):
                         'title': 'Profile',
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -235,7 +236,7 @@ def process_post_data(request):
                         'title': 'Edit Profile'
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -267,7 +268,7 @@ def process_post_data(request):
                             'elem': 'email'
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -299,7 +300,7 @@ def process_post_data(request):
                             'elem': 'display_name'
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -329,7 +330,7 @@ def process_post_data(request):
                             'title': 'Edit Profile',
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -362,7 +363,7 @@ def process_post_data(request):
                             'title': 'Edit Profile',
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -406,7 +407,7 @@ def process_post_data(request):
                             'title': 'Friend Request',
                         }  
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -433,7 +434,7 @@ def process_post_data(request):
                         'alert': '承認しました'
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -462,7 +463,7 @@ def process_post_data(request):
                         'title': 'Friends',
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -479,7 +480,7 @@ def process_post_data(request):
                         'title': 'Lobby'
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -528,7 +529,7 @@ def process_post_data(request):
                         'alert': 'Please, wait a moment.',
                    }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -573,7 +574,7 @@ def process_post_data(request):
                         'alert': 'Please, wait a moment.',
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),

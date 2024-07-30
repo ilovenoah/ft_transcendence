@@ -176,6 +176,7 @@ function updateContent(data) {
     reloadAjax(data.reload, data.timeout);
   }
   if (typeof data.login !== 'undefined') {
+    
     console.log(data.login)
     console.log(data.elem)
     toggleVisibility(data.login, data.username, data.elem)
