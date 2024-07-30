@@ -24,12 +24,15 @@
                         <div style="flex-grow: 1; margin-right: 10px;">
                             {{ data.0.from_user.display_name }}
                         </div>
-                        <form method="post" class="friend-request-form" data-request-id="{{ request_id }}" style="flex-shrink: 0;">
-                            <div style="display: none;">{{ data.1 }}</div>
-                            <input type="hidden" name="request_id" value="{{ request_id }}">
-                            <input type="hidden" name="prefix" value="{{ data.1.prefix }}">
-                            <button class="btn btn-primary btn-sm" type="submit">承認</button>
-                        </form>
+                        <div style="flex-grow: 1; display: flex; justify-content: center;">
+                            <form method="post" class="friend-request-form" data-request-id="{{ request_id }}" style="flex-shrink: 0;">
+                                <div style="display: none;">{{ data.1 }}</div>
+                                <input type="hidden" name="request_id" value="{{ request_id }}">
+                                <input type="hidden" name="prefix" value="{{ data.1.prefix }}">
+                                
+                                <button class="btn btn-primary btn-sm" type="submit">承認</button>
+                            </form>
+                        </div>
                     </div>
                     {% endfor %}
                 </form>

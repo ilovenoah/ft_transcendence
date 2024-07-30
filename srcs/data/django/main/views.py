@@ -149,7 +149,8 @@ def process_post_data(request):
                         'page': 'login',
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                        'alert': 'サインアップに成功しました'
+                        'alert': 'サインアップに成功しました',
+                        'test': 'test'
                     }       
                 else:
                     response_data = {
@@ -201,6 +202,7 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                         'login': 'false',
+                        'elem': 'login'
                     }
             elif page == 'profile':
                 user = request.user
