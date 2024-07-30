@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
-from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestActionForm
+from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestActionForm, LoginForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -151,7 +151,8 @@ def process_post_data(request):
                         'title': 'signup'
                     }
             elif page == 'login':
-                form = AuthenticationForm(data=post_data)
+                form = LoginForm(data=post_data)
+                # form = AuthenticationForm(data=post_data)
                 if form.is_valid():
                     login(request, form.get_user())
                     user = request.user

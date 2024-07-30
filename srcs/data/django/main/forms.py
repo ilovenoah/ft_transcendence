@@ -4,7 +4,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from .models import Image
 import re
-confirm_password = forms.CharField(widget=forms.PasswordInput(), label="Confirm password")
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
+
 
 
 class SignUpForm(UserCreationForm):
@@ -13,6 +16,26 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = get_user_model() 
         fields = ('username', 'email', 'password1', 'password2')
+
+class LoginForm(AuthenticationForm):
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            self.user_cache = authenticate(self.request, username=username, password=password)
+            if self.user_cache is None:
+                # ログ出力で何が起きているかを確認
+                print("Authentication failed: Username or password is incorrect.")
+                raise forms.ValidationError(
+                    _("ユーザー名またはパスワードが正しくありません。"),
+                    code='invalid_login',
+                )
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
+
 
 
 User = get_user_model()
@@ -41,11 +64,6 @@ class DisplayNameForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super(DisplayNameForm, self).__init__(*args, **kwargs)
         self.fields['display_name'].required = True
-    # def clean_display_name(self):
-    #     display_name = self.cleaned_data.get('display_name')
-    #     if User.objects.filter(display_name=display_name).exists():
-    #         raise forms.ValidationError('この表示名は既に使用されています。別の表示名を選んでください。')
-    #     return display_name
 
 class AvatarForm(forms.ModelForm):
     class Meta:

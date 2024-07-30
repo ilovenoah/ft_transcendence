@@ -12,27 +12,26 @@
         }
     </style>
 </head>
-<div class="d-flex justify-content-center align-items-center">
-    <form class="ajax-form form-signup" action="process-post/">
-        <input type="hidden" name="page" value="login">
-        <h1 class="mb-5 mt-5 font-weight-normal text-center">ログイン</h1>
-        {% csrf_token %}
-        <input type="text" id="{{ form.username.id_for_label }}" class="form-control bg-dark text-light" placeholder="ユーザーネーム" name="{{ form.username.name}}" required>
-        <input type="password" id="{{ form.password.id_for_label }}" class="form-control bg-dark text-light" name="{{ form.password.name }}" placeholder="パスワード" required>
-        {% if form.username.errors or form.password.errors %}
-                {% for error in form.username.errors %}
-                    {% if error != "このフィールドは必須です。" %}
-                        <p>{{ error }}</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-3">
+            <form class="ajax-form form-signup" action="process-post/">
+                <input type="hidden" name="page" value="login">
+                <h1 class="mb-5 mt-5 font-weight-normal text-center">ログイン</h1>
+                {% csrf_token %}
+                <input type="text" id="{{ form.username.id_for_label }}" class="form-control bg-dark text-light" placeholder="ユーザーネーム" name="{{ form.username.name}}" required>
+                <input type="password" id="{{ form.password.id_for_label }}" class="form-control bg-dark text-light" name="{{ form.password.name }}" placeholder="パスワード" required>
+                <div class="error-container mt-2 mb-2" style="height: 50px;">
+                    {% if form.non_field_errors %}
+                        <div class="mb-3 col-auto">
+                            {{ form.non_field_errors }}
+                        </div>
                     {% endif %}
-                {% endfor %}
-                {% for error in form.password.errors %}
-                    {% if error != "このフィールドは必須です。" %}
-                        <p>{{ error }}</p>
-                    {% endif %}
-                {% endfor %}
-        {% endif %}
-        <button type="submit" class="btn btn-lg btn-primary d-block mx-auto mt-5">ログイン</button>
-    </form>
+                </div>
+                <button type="submit" class="btn btn-lg btn-primary d-block mx-auto mt-5">ログイン</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 
