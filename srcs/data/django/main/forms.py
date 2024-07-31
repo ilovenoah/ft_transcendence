@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
-from .models import Image, FriendRequest
+from .models import Image, FriendRequest, CustomUser
 import re
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
