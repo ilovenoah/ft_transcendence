@@ -2,12 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
-from .models import Image
+from .models import Image, FriendRequest
 import re
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 
@@ -112,6 +113,19 @@ class ImageForm(forms.ModelForm):
         model = Image
         fields = ['image']
 
+# class FriendRequestForm(forms.Form):
+#     to_user = forms.ModelChoiceField(queryset=User.objects.all(), label="Add Friend")
+
+#     def __init__(self, *args, **kwargs):
+#         self.from_user = kwargs.pop('from_user', None)
+#         super().__init__(*args, **kwargs)
+#         if self.from_user:
+#             self.fields['to_user'].queryset = User.objects.exclude(id=self.from_user.id).exclude(display_name=None).order_by('display_name')
+#         self.fields['to_user'].label_from_instance = self.label_from_instance
+
+#     def label_from_instance(self, obj):
+#         return obj.display_name
+
 class FriendRequestForm(forms.Form):
     to_user = forms.ModelChoiceField(queryset=User.objects.all(), label="Add Friend")
 
@@ -119,11 +133,25 @@ class FriendRequestForm(forms.Form):
         self.from_user = kwargs.pop('from_user', None)
         super().__init__(*args, **kwargs)
         if self.from_user:
-            self.fields['to_user'].queryset = User.objects.exclude(id=self.from_user.id).exclude(display_name=None).order_by('display_name')
+            accepted_requests = FriendRequest.objects.filter(
+                (Q(from_user=self.from_user) | Q(to_user=self.from_user)),
+                status='A'
+            ).values_list('from_user', 'to_user')
+
+            # フレンドリクエストが受諾されたユーザーのIDリストを作成
+            accepted_user_ids = set()
+            for from_user_id, to_user_id in accepted_requests:
+                if from_user_id != self.from_user.id:
+                    accepted_user_ids.add(from_user_id)
+                if to_user_id != self.from_user.id:
+                    accepted_user_ids.add(to_user_id)
+
+            self.fields['to_user'].queryset = User.objects.exclude(id__in=accepted_user_ids).exclude(id=self.from_user.id).exclude(display_name=None).order_by('display_name')
         self.fields['to_user'].label_from_instance = self.label_from_instance
 
     def label_from_instance(self, obj):
         return obj.display_name
+
 
 class FriendRequestActionForm(forms.Form):
     action = forms.ChoiceField(choices=[('accept', 'Accept')])
