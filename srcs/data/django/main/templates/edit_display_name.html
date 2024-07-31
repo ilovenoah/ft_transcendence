@@ -13,10 +13,10 @@
         <div class="mb-3 col-auto">
             <input type="text" class="form-control bg-dark text-light" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
         </div>
-        <div id="displayNameAlertBlock" class="mb-3 col-auto"></div>
+        <div id="displayNameAlertBlock" class="mb-3 col-auto text-warning"></div>
         {% if form_edit_display_name.display_name.errors %}
             <!-- <div class="mb-3 col-auto"> -->
-            <div class="text-light">
+            <div class="text-warning">
                 {{ form_edit_display_name.display_name.errors }}
             </div>
         {% endif %}

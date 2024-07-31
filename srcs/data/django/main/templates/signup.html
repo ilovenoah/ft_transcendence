@@ -16,7 +16,7 @@
                 <input type="text" class="form-control bg-dark text-light" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" required>
             </div>
             {% if form.username.errors %}
-                <div class="mb-3 col-auto">
+                <div class="mb-3 col-auto text-warning">
                     {{ form.username.errors.as_text }}
                 </div>
             {% endif %}
@@ -34,7 +34,7 @@
                 <input type="email" class="form-control bg-dark text-light" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" required>
             </div>
             {% if form.email.errors %}
-                <div class="mb-3 col-auto">
+                <div class="mb-3 col-auto text-warning">
                     {{ form.email.errors.as_text }}
                 </div>
             {% endif %}
@@ -52,7 +52,7 @@
                 <input type="password" class="form-control bg-dark text-light" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" required>
             </div>
             {% if form.password1.errors %}
-                <div class="mb-3 col-auto">
+                <div class="mb-3 col-auto text-warning">
                     {{ form.password1.errors.as_text }}
                 </div>
             {% endif %}
@@ -70,7 +70,7 @@
                 <input type="password" class="form-control bg-dark text-light" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" required>
             </div>
             {% if form.password2.errors %}
-                <div class="mb-3 col-auto">
+                <div class="mb-3 col-auto text-warning">
                     {{ form.password2.errors.as_text }}
                 </div>
             {% endif %}
