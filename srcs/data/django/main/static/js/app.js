@@ -450,7 +450,7 @@ function displayAlert(elem) {
     const alert = document.getElementById('friendAlertBlock');
     alert.innerHTML = '';
     alert.innerHTML = `
-      その人は友達に追加できません
+      そのユーザーは友達に追加できません
     `;
   } 
 }
