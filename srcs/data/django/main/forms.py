@@ -120,33 +120,59 @@ class ImageForm(forms.ModelForm):
 #         self.from_user = kwargs.pop('from_user', None)
 #         super().__init__(*args, **kwargs)
 #         if self.from_user:
-#             self.fields['to_user'].queryset = User.objects.exclude(id=self.from_user.id).exclude(display_name=None).order_by('display_name')
+#             accepted_requests = FriendRequest.objects.filter(
+#                 (Q(from_user=self.from_user) | Q(to_user=self.from_user)),
+#                 status='A'
+#             ).values_list('from_user', 'to_user')
+
+#             # フレンドリクエストが受諾されたユーザーのIDリストを作成
+#             accepted_user_ids = set()
+#             for from_user_id, to_user_id in accepted_requests:
+#                 if from_user_id != self.from_user.id:
+#                     accepted_user_ids.add(from_user_id)
+#                 if to_user_id != self.from_user.id:
+#                     accepted_user_ids.add(to_user_id)
+
+#             self.fields['to_user'].queryset = User.objects.exclude(id__in=accepted_user_ids).exclude(id=self.from_user.id).exclude(display_name=None).order_by('display_name')
 #         self.fields['to_user'].label_from_instance = self.label_from_instance
 
 #     def label_from_instance(self, obj):
 #         return obj.display_name
 
+from django import forms
+from django.db.models import Q
+from .models import FriendRequest, CustomUser  # 必要なモデルをインポート
+
 class FriendRequestForm(forms.Form):
-    to_user = forms.ModelChoiceField(queryset=User.objects.all(), label="Add Friend")
+    to_user = forms.ModelChoiceField(queryset=CustomUser.objects.all(), label="Add Friend")
 
     def __init__(self, *args, **kwargs):
         self.from_user = kwargs.pop('from_user', None)
         super().__init__(*args, **kwargs)
         if self.from_user:
-            accepted_requests = FriendRequest.objects.filter(
-                (Q(from_user=self.from_user) | Q(to_user=self.from_user)),
-                status='A'
+            # すでに友達申請を送ったユーザーとすでに友達になっているユーザーを取得
+            pending_or_accepted_requests = FriendRequest.objects.filter(
+                Q(from_user=self.from_user) | Q(to_user=self.from_user),
+                Q(status='P') | Q(status='A')
             ).values_list('from_user', 'to_user')
 
-            # フレンドリクエストが受諾されたユーザーのIDリストを作成
-            accepted_user_ids = set()
-            for from_user_id, to_user_id in accepted_requests:
+            # 除外するユーザーのIDリストを作成
+            excluded_user_ids = set()
+            for from_user_id, to_user_id in pending_or_accepted_requests:
                 if from_user_id != self.from_user.id:
-                    accepted_user_ids.add(from_user_id)
+                    excluded_user_ids.add(from_user_id)
                 if to_user_id != self.from_user.id:
-                    accepted_user_ids.add(to_user_id)
+                    excluded_user_ids.add(to_user_id)
 
-            self.fields['to_user'].queryset = User.objects.exclude(id__in=accepted_user_ids).exclude(id=self.from_user.id).exclude(display_name=None).order_by('display_name')
+            # 自分自身、display_nameがNone、すでに友達申請を送ったまたはすでに友達になっているユーザーを除外
+            self.fields['to_user'].queryset = CustomUser.objects.exclude(
+                id__in=excluded_user_ids
+            ).exclude(
+                id=self.from_user.id
+            ).exclude(
+                display_name=None
+            ).order_by('display_name')
+
         self.fields['to_user'].label_from_instance = self.label_from_instance
 
     def label_from_instance(self, obj):
