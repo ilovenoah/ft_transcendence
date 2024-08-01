@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
-from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestActionForm
+from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestActionForm, LoginForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -48,16 +48,21 @@ def process_post_data(request):
                     user.save(update_fields=['last_active', 'is_online'])
                     logout(request)
                     response_data = {
-                        'page': page,
-                        'content': 'logged out',
-                        'title': 'Logout',
-                        'login': 'false'
+                        'page': 'login',
+                        'content': read_file('top.html'),
+                        'title': 'Login',
+                        'login': 'false',
+                        'elem': 'top',
+                        'alert': 'ログアウトしました'
                     }
                 else:
                     response_data = {
                         'page': page,
                         'content': read_file('top.html'),
-                        'title': 'トラセントップ'
+                        'title': 'トラセントップ',
+                        'login': 'true',
+                        'elem': 'top',
+                        'username' : user.username,
                     }
                 return JsonResponse(response_data)
             user = request.user
@@ -67,23 +72,41 @@ def process_post_data(request):
                     if form_edit_display_name.is_valid():
                         user = form_edit_display_name.save()
                         response_data = {
-                            'page': page,
-                            'content': 'Saved',
-                            'title': 'Saved'
-                        }
+                            'page': 'top',
+                            'content': read_file('top.html'),
+                            'title': 'トラセントップ',
+                            'login': 'true',
+                            'username' : user.username,
+                            'elem': 'top'
+                        }  
                     else:
                         response_data = {
                             'page': page,
                             'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
-                            'title': 'Edit Display Name'
+                            'title': 'Edit Display Name',
+                            'login': 'true',
+                            'username' : user.username,
                         }
                     return JsonResponse(response_data)
             if page == 'top':
-                response_data = {
-                    'page':page,
-                    'content':read_file('top.html'),
-                    'title': 'トラセントップ',
-                }
+                user = request.user
+                if user.is_authenticated:
+                    response_data = {
+                        'page':page,
+                        'content':read_file('top.html'),
+                        'title': 'トラセントップ',
+                        'username' : user.username,
+                        'login': 'true',
+                        'elem': 'top'
+                    }
+                else:
+                    response_data = {
+                        'page':page,
+                        'content':read_file('top.html'),
+                        'title': 'トラセントップ',
+                        'login': 'false',
+                        'elem': 'top'
+                    }
             elif page == 'test':
                 response_data = {
                     'page':page,
@@ -122,37 +145,65 @@ def process_post_data(request):
                 form = SignUpForm(data=post_data)
                 if form.is_valid():
                     user = form.save()
+                    form = LoginForm(data=post_data)
                     response_data = {
-                        'page':page,
-                        'content': 'Signup successful',
-                        'title': 'Signup Success'
+                        'page': 'login',
+                        'content': render_to_string('login.html', {'form': form, 'request': request}),
+                        'title': 'Login',
+                        'alert': 'サインアップに成功しました',
+                        'test': 'test'
                     }       
                 else:
                     response_data = {
                         'page':page,
                         'content':render_to_string('signup.html', context={'form': form, 'request': request}),
-                        'title': 'signup',
+                        'title': 'signup'
                     }
             elif page == 'login':
-                form = AuthenticationForm(data=post_data)
+                form = LoginForm(data=post_data)
                 if form.is_valid():
                     login(request, form.get_user())
                     user = request.user
                     user.is_online = True
                     user.last_active = timezone.now()
                     user.save(update_fields=['is_online', 'last_active'])
+                    if not user.display_name:
+                        form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
+                        if form_edit_display_name.is_valid():
+                            user = form_edit_display_name.save()
+                            response_data = {
+                                'page': 'top',
+                                'content': read_file('top.html'),
+                                'title': 'トラセントップ',
+                                'login': 'true',
+                                'username' : user.username,
+                                'elem': 'top',
+                            }  
+                        else:
+                            response_data = {
+                                'page': 'display_name_form',
+                                'content':render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}),
+                                'title': 'Edit Display Name',
+                                'login': 'true',
+                                'username' : user.username,
+                            }
+                        return JsonResponse(response_data)
                     response_data = {
-                        'page': page,
-                        'content': 'Login successful',
-                        'title': 'Login Success',
+                        'page': 'top',
+                        'content': read_file('top.html'),
+                        'title': 'トラセントップ',
                         'login': 'true',
-                        'username' : user.username
+                        'username' : user.username,
+                        'elem': 'top', 
+                        'alert': 'ログインしました'
                     }   
                 else:
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
-                        'title': 'Login'
+                        'title': 'Login',
+                        'login': 'false',
+                        'elem': 'login'
                     }
             elif page == 'profile':
                 user = request.user
@@ -163,7 +214,7 @@ def process_post_data(request):
                         'title': 'Profile',
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -185,7 +236,7 @@ def process_post_data(request):
                         'title': 'Edit Profile'
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -201,10 +252,10 @@ def process_post_data(request):
                     if form_edit_email.is_valid():
                         user = form_edit_email.save()
                         response_data = {
-                        'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved'
-                    }
+                            'page': 'profile',
+                            'content': render_to_string('profile.html', {'user': user}),
+                            'title': 'Profile',
+                        }
                     else:
                         response_data = {
                             'page': page,
@@ -212,10 +263,12 @@ def process_post_data(request):
                                 render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
+                            'isValid': 'false',
+                            'elem': 'email'
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -231,10 +284,10 @@ def process_post_data(request):
                     if form_edit_display_name.is_valid():
                         user = form_edit_display_name.save()
                         response_data = {
-                        'page': page,
-                        'content': 'Saved',
-                        'title': 'Saved'
-                    }
+                            'page': 'profile',
+                            'content': render_to_string('profile.html', {'user': user}),
+                            'title': 'Profile',
+                        }
                     else:
                         response_data = {
                             'page': page,
@@ -242,10 +295,12 @@ def process_post_data(request):
                                 render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
+                            'isValid': 'false',
+                            'elem': 'display_name'
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -261,9 +316,9 @@ def process_post_data(request):
                     if form_edit_avatar.is_valid():
                         user = form_edit_avatar.save()
                         response_data = {
-                            'page': page,
-                            'content': 'Saved',
-                            'title': 'Saved'
+                            'page': 'profile',
+                            'content': render_to_string('profile.html', {'user': user}),
+                            'title': 'Profile',
                         }
                     else:
                         response_data = {
@@ -275,7 +330,7 @@ def process_post_data(request):
                             'title': 'Edit Profile',
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -290,13 +345,14 @@ def process_post_data(request):
                     form_change_password = PasswordChangeForm(data=post_data, instance=user)
                     if form_change_password.is_valid():
                         user = form_change_password.save()
-                        response_data = {
-                            'page': page,
-                            'content': 'Saved',
-                            'title': 'Saved'
-                        }
                         user.is_online = False
                         user.save(update_fields=['is_online'])
+                        response_data = {
+                            'page': 'login',
+                            'content': read_file('top.html'),
+                            'title': 'Login',
+                            'login': 'false'
+                        }
                     else:
                         response_data = {
                             'page': page,
@@ -304,10 +360,10 @@ def process_post_data(request):
                                 render_to_string('edit_display_name.html', context={'form_edit_display_name': form_edit_display_name, 'request': request}) +
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
-                            'title': 'Edit Profile'
+                            'title': 'Edit Profile',
                         }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -320,27 +376,38 @@ def process_post_data(request):
                     if form.is_valid():
                         to_user = form.cleaned_data['to_user']
                         try:
-                            response_data = {
-                                    'page': page,
-                                    'content': 'Friend Request Sent',
-                                    'title': 'Friend Request Sent'
-                                }
                             request.user.send_friend_request(to_user)
-                        except ValidationError as e:
-                            form.add_error(None, e)  # エラーをフォームに追加
+                            friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                            forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
                             response_data = {
                                 'page': page,
-                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                                    render_to_string('friend_request_list.html', {'forms': forms,}),
                                 'title': 'Friend Request',
+                                'alert': '送信しました',
+                            }
+                        except Exception as e:
+                            friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                            forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
+                            response_data = {
+                                'page': page,
+                                'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                                    render_to_string('friend_request_list.html', {'forms': forms,}),
+                                'title': 'Friend Request',
+                                'isValid': "false",
+                                'elem': 'friend'
                             }
                     else:
+                        friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                        forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
                         response_data = {
                             'page': page,
-                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}),
+                            'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                                render_to_string('friend_request_list.html', {'forms': forms,}),
                             'title': 'Friend Request',
                         }  
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -356,28 +423,18 @@ def process_post_data(request):
                         friend_request = get_object_or_404(FriendRequest, id=request_id)
                         if action == 'accept':
                             friend_request.accept_request()
-                        elif action == 'decline':
-                            friend_request.decline_request()
-                        response_data = {
-                            'page': page,
-                            'content': 'Sent',
-                            'title': 'Sent',
-                        }
-                    else:
-                        friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
-                        forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
-                        response_data = {
-                            'page': page,
-                            'content': render_to_string('friend_request_list.html', {
-                                'form': form, 
-                                'request': request, 
-                                'fr': friend_requests,
-                                'forms': forms,
-                            }),
-                            'title': 'Friend Request List',
-                        }
+                    friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
+                    forms = {fr.id: (fr, FriendRequestActionForm(prefix=str(fr.id))) for fr in friend_requests}
+                    form = FriendRequestForm(data=post_data, from_user=request.user) 
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
+                            render_to_string('friend_request_list.html', {'forms': forms,}),
+                        'title': 'Friend Request List',
+                        'alert': '承認しました'
+                    }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -398,13 +455,15 @@ def process_post_data(request):
                             friend.online_status = 'Online'
                         else:
                             friend.online_status = 'Offline'
+                    pending_requests = FriendRequest.objects.filter(from_user_id=user.id, status='P')
                     response_data = {
                         'page': page,
-                        'content': render_to_string('friends.html', {'friends': friends}),
-                        'title': 'Login',
+                        'content': render_to_string('friends.html', {'friends': friends}) +
+                            render_to_string('pending.html', {'pending_requests': pending_requests, 'request': request}),
+                        'title': 'Friends',
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -421,7 +480,7 @@ def process_post_data(request):
                         'title': 'Lobby'
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -470,7 +529,7 @@ def process_post_data(request):
                         'alert': 'Please, wait a moment.',
                    }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -515,7 +574,7 @@ def process_post_data(request):
                         'alert': 'Please, wait a moment.',
                     }
                 else:
-                    form = AuthenticationForm()
+                    form = LoginForm(data=post_data)
                     response_data = {
                         'page': page,
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
@@ -612,6 +671,7 @@ def process_post_data(request):
                         'timeout' : '10000',
                         'alert': 'Please, wait a moment.',
                     }
+            
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {

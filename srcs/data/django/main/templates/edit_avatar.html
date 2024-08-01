@@ -3,21 +3,45 @@
         .errorlist {
             display: none;
         }
+
+        .custom-file-input {
+            visibility: hidden;
+            width: 1px;
+            height: 1px;
+        }
     </style>
 </head>
-<h2>Edit Avatar</h2>
-<form id="uploadForm" class="ajax-upload" action="upload/">
-    <input type="file" id="image" name="image">
-    <button type="submit">アップロード</button>
-</form>
-<div id="descimage">現在の画像</div>
-<img id="uploaded" src="media/{{request.user.avatar}}" alt="">
-<div id="result"></div>
-<form class="ajax-form" action="process-post/" enctype="multipart/form-data">
-    <input type="hidden" name="page" value="edit_avatar">
-    {% csrf_token %}
-    {{ form_edit_avatar.as_p }}
-    <button type="submit">Save</button>
-</form>
+<div class="px-5">
+    <form id="uploadForm" class="ajax-upload" action="upload/" enctype="multipart/form-data">
+        <div class="row g-3 align-items-center">
+            <div class="mb-3 col-auto">
+                <label for="id_email" class="form-label">アバター</label>
+            </div>
+            <div id="avatarHelpBlock" class="mb-4 col-auto">
+                画像ファイルを選択して、Uploadボタンを押してください
+            </div>
+        </div>
+            <label for="image" class="btn btn-outline-info">ファイルを選択</label>
+            <input type="file" id="image" name="image" class="custom-file-input">
+            <button type="submit" class="btn btn-outline-info">アップロード</button>
+        </form>
+        <!-- <form id="uploadForm" class="ajax-upload" action="upload/">
+            <input type="file" id="image" name="image">
+            <button type="submit" class="btn btn-secondary">アップロード</button>
+        </form> -->
+        <div id="descimage" class="form-text">現在の画像</div>
+        <img id="uploaded" src="media/{{request.user.avatar}}" alt="">
+        <div id="result"></div>
+        <form class="ajax-form" action="process-post/" enctype="multipart/form-data">
+            <input type="hidden" name="page" value="edit_avatar">
+            {% csrf_token %}
+            {{ form_edit_avatar.as_p }}
+            <div id="avatarHelpBlock" class="mb-4 col-auto">
+                変更を確定するには、Saveボタンを押してください
+            </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+<hr></hr>
 
     

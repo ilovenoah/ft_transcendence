@@ -1,7 +1,37 @@
-<h2>Friend Request</h2>
-<form class="ajax-form" action="process-post/">
-    <input type="hidden" name="page" value="friend_request">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Send Friend Request</button>
-</form>
+<head>
+    <style>
+        .errorlist {
+            display: none;
+        }
+    </style>
+</head>
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2">
+        <ul class="nav flex-column">
+          <li class="nav-item" style="width: 100%;">
+            <a class="btn btn-primary post-link w-100" href="#" data_url="process-post/" page="friends" style="margin-bottom: 10px;">友達</a>
+          </li>
+          <li class="nav-item" style="width: 100%;">
+            <a class="btn btn-primary post-link w-100" href="#" data_url="process-post/" page="friend_request" style="margin-bottom: 10px;">友達リクエスト</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-10">
+        <div class="px-5">
+            <h1 class="mb-3">友達リクエスト</h1>
+            <h5 class="mb-3">新しい友達を探す</h5>
+            <form class="ajax-form" action="process-post/">
+                <input type="hidden" name="page" value="friend_request">
+                {% csrf_token %}
+                <div class="form-group mb-0">
+                    {{ form.to_user }}
+                </div>
+                <div id="friendAlertBlock" class="mt-2 col-auto text-warning"></div>
+                <button type="submit" class="btn btn-primary btn-sm mt-2">追加</button>
+            </form>
+        </div>
+        <hr></hr>
+      </div>
+    </div>
+  </div>

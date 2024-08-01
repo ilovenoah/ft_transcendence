@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
     )
     is_online = models.BooleanField(default=False) #オンラインステータス
     last_active = models.DateTimeField(default=timezone.now)  # 最後にアクティブだった時間
-    display_name = models.CharField(max_length=255, unique=True)
+    display_name = models.CharField(max_length=255, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True)
 
     def send_friend_request(self, to_user):
@@ -34,14 +34,10 @@ class Image(models.Model):
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(CustomUser, related_name='friend_requests_sent', on_delete=models.CASCADE)
     to_user = models.ForeignKey(CustomUser, related_name='friend_requests_received', on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=[('P', 'Pending'), ('A', 'Accepted'), ('D', 'Declined')], default='P')
+    status = models.CharField(max_length=1, choices=[('P', 'Pending'), ('A', 'Accepted')], default='P')
 
     def accept_request(self):
         self.status = 'A'
-        self.save()
-
-    def decline_request(self):
-        self.status = 'D'
         self.save()
 
 class Tournament(models.Model):
