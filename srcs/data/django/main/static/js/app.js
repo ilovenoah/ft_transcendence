@@ -364,23 +364,14 @@ function toggleVisibility(login, username, elem) {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">Signup</a>
         </li>
         <li class="nav-item">
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
         </li>
       </ul>
-      <ul class="navbar-nav ms-auto">
-          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ request.LANGUAGE_CODE }}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=ja">日本語</a></li>
-                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=en">English</a></li>
-              </ul>
-          </li>
-      </ul>
+      <button onclick="setLanguage('en')">English</button>
+      <button onclick="setLanguage('ja')">日本語</button>
     `;
   } else {
     nav.innerHTML = `
@@ -395,23 +386,14 @@ function toggleVisibility(login, username, elem) {
               ${username}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
+              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">{% trans 'プロフィール' %}</a></li>
               <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
               <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
             </ul>
         </li>
       </ul>
-      <ul class="navbar-nav ms-auto">
-          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ request.LANGUAGE_CODE }}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=ja">日本語</a></li>
-                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=en">English</a></li>
-              </ul>
-          </li>
-      </ul>
+      <button onclick="setLanguage('en')">English</button>
+      <button onclick="setLanguage('ja')">日本語</button>
     `;
   }
   if (elem === 'top') {
@@ -476,3 +458,22 @@ function displayAlert(elem) {
     `;
   } 
 }
+
+function setLanguage(lang) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/static/translations/' + lang + '.json', true);
+
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+          var translations = JSON.parse(xhr.responseText);
+          document.getElementById('navbar_signup').innerText = translations.navbar_signup;
+          document.getElementById('welcome').innerText = translations.welcome;
+      } else if (xhr.readyState === 4) {
+          console.error('Error loading translations:', xhr.statusText);
+      }
+  };
+
+  xhr.send();
+}
+
+setLanguage('ja');
