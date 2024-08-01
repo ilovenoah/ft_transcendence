@@ -370,6 +370,17 @@ function toggleVisibility(login, username, elem) {
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
         </li>
       </ul>
+      <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ request.LANGUAGE_CODE }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=ja">日本語</a></li>
+                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=en">English</a></li>
+              </ul>
+          </li>
+      </ul>
     `;
   } else {
     nav.innerHTML = `
@@ -389,6 +400,17 @@ function toggleVisibility(login, username, elem) {
               <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
             </ul>
         </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ request.LANGUAGE_CODE }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=ja">日本語</a></li>
+                  <li><a class="dropdown-item" href="{% url 'set_language' %}?language=en">English</a></li>
+              </ul>
+          </li>
       </ul>
     `;
   }
