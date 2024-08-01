@@ -7,7 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script> -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/navbar-top.css"> -->
     <title>{% block title %}Default Title{% endblock %}</title>
     <style>
@@ -22,9 +23,9 @@
             top: 50%;
             transform: translate(-50%, -50%);
             padding: 20px;
-            background-color: #83ffb9;
-            color: #192ffd;
-            border: 1px solid #158eff;
+            background-color: #0d6efd;
+            color: #ffffff;
+            /* border: 1px solid #0d6efd; */
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
@@ -34,12 +35,20 @@
             flex-grow: 1;  /* フレックスアイテムがコンテナ内の余剰スペースを埋めるように設定 */
             justify-content: center; /* アイテムを中央に配置 */
         }
+        
+        .dropdown-menu {
+            background-color: #333; /* ダークグレーの背景色 */
+            color: #fff; /* ホワイトの文字色 */
+        }
+            .dropdown-menu a {
+            color: #fff; /* リンクの文字色もホワイトに設定 */
+        }
+
     </style>
 </head>
 
-<body>
-
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav">
+<body class="bg-dark text-white">
+    <nav class="navbar navbar-expand-md bg-primary fixed-top navbar-dark" id="nav">
         <div class="container-fluid">
             <a href="#" id="top" class="post-link navbar-brand" data_url="process-post/" page="top" title="トラセントップ"> MY2 GAMES </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,12 +77,9 @@
                             {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">Profile</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">Friends</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">Logout</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
                         </ul>
                     </li>
                 </ul>

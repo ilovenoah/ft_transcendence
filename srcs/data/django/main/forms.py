@@ -2,7 +2,14 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
-from .models import Image
+from .models import Image, FriendRequest, CustomUser
+import re
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+
 
 
 class SignUpForm(UserCreationForm):
@@ -11,6 +18,25 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = get_user_model() 
         fields = ('username', 'email', 'password1', 'password2')
+
+class LoginForm(AuthenticationForm):
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            self.user_cache = authenticate(self.request, username=username, password=password)
+            if self.user_cache is None:
+                # ログ出力で何が起きているかを確認
+                print("Authentication failed: Username or password is incorrect.")
+                raise forms.ValidationError(
+                    _("ユーザー名またはパスワードが正しくありません。"),
+                    code='invalid_login',
+                )
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
 
 User = get_user_model()
 
@@ -58,13 +84,21 @@ class PasswordChangeForm(forms.ModelForm):
         model = User
         fields = ['password']
 
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if len(password) < 8:
+            raise ValidationError('パスワードは8文字以上である必要があります')
+        if not re.findall('[a-zA-Z]', password):
+            raise ValidationError('パスワードには少なくとも一つの文字が含まれている必要があります')
+        return password
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
 
         if password and confirm_password and password != confirm_password:
-            self.add_error('confirm_password', "Passwords do not match.")
+            self.add_error('confirm_password', "同一のパスワードではありません")
         return cleaned_data
 
     def save(self, commit=True):
@@ -80,13 +114,40 @@ class ImageForm(forms.ModelForm):
         fields = ['image']
 
 class FriendRequestForm(forms.Form):
-    to_user = forms.ModelChoiceField(queryset=User.objects.all(), label="Select User to Send Request")
+    to_user = forms.ModelChoiceField(queryset=CustomUser.objects.all(), label="Add Friend")
 
     def __init__(self, *args, **kwargs):
         self.from_user = kwargs.pop('from_user', None)
         super().__init__(*args, **kwargs)
         if self.from_user:
-            self.fields['to_user'].queryset = User.objects.exclude(id=self.from_user.id)
+            # すでに友達申請を送ったユーザーとすでに友達になっているユーザーを取得
+            pending_or_accepted_requests = FriendRequest.objects.filter(
+                Q(from_user=self.from_user) | Q(to_user=self.from_user),
+                Q(status='P') | Q(status='A')
+            ).values_list('from_user', 'to_user')
+
+            # 除外するユーザーのIDリストを作成
+            excluded_user_ids = set()
+            for from_user_id, to_user_id in pending_or_accepted_requests:
+                if from_user_id != self.from_user.id:
+                    excluded_user_ids.add(from_user_id)
+                if to_user_id != self.from_user.id:
+                    excluded_user_ids.add(to_user_id)
+
+            # 自分自身、display_nameがNone、すでに友達申請を送ったまたはすでに友達になっているユーザーを除外
+            self.fields['to_user'].queryset = CustomUser.objects.exclude(
+                id__in=excluded_user_ids
+            ).exclude(
+                id=self.from_user.id
+            ).exclude(
+                display_name=None
+            ).order_by('display_name')
+
+        self.fields['to_user'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return obj.display_name
+
 
 class FriendRequestActionForm(forms.Form):
-    action = forms.ChoiceField(choices=[('accept', 'Accept'), ('decline', 'Decline')])
+    action = forms.ChoiceField(choices=[('accept', 'Accept')])

@@ -167,7 +167,7 @@ function updateContent(data) {
   //   eval(data.exec);
   // }
   if (typeof data.alert !== 'undefined') {     
-    displayAlert(data.alert);
+    popupAlert(data.alert);
   }
   if (typeof data.setid !== 'undefined') {     
     setIdValue(data.setid, data.setvalue);
@@ -176,7 +176,14 @@ function updateContent(data) {
     reloadAjax(data.reload, data.timeout);
   }
   if (typeof data.login !== 'undefined') {
-    toggleVisibility(data.login, data.username)
+    
+    console.log(data.login)
+    console.log(data.elem)
+    toggleVisibility(data.login, data.username, data.elem)
+  }
+  if (typeof data.isValid !== 'undefined') {
+    console.log('defined')
+    displayAlert(data.elem)
   }
   if (typeof data.title !== 'undefined') {     
     document.title = data.title;
@@ -335,7 +342,7 @@ function reloadAjax(page, timeout) {
   }, timeout)
 }
 
-function displayAlert(mesg) {
+function popupAlert(mesg) {
   alertBox = document.getElementById('custom-alert');
   alertBox.innerText = mesg;
   alertBox.style.display = 'block';
@@ -349,9 +356,11 @@ function setIdValue(id, setvalue) {
   document.getElementById(id).value = setvalue;
 }
 
-function toggleVisibility(login, username) {
+function toggleVisibility(login, username, elem) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
+  console.log('im here')
+  console.log(elem)
   if (login === 'false') {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto">
@@ -370,21 +379,89 @@ function toggleVisibility(login, username) {
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="lobby">Pong Lobby</a>
         </li>
       </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" data_url="process-post/" page="ponggame" title="Pong Game">Ponggame</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" class="nav-link active post-link" data_url="process-post/" page="gamelist" title="Game List">GameList</a>
+        </li>
+      </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               ${username}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">Profile</a></li>
-                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="edit_profile" title="Edit Profile">Edit Profile</a></li>
-                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request" title="Friend Request">Friend Request</a></li>
-                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friend_request_list" title="Friend Request List">Friend Request List</a></li>
-                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">Friends</a></li>
-                <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">Logout</a></li>
+              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
+              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
+              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
             </ul>
         </li>
       </ul>
     `;
   }
+  if (elem === 'top') {
+    const top = document.getElementById('expranations');
+    top.innerHTML = '';
+    if (login === 'false') {
+      top.innerHTML = `
+        <div>
+            このサイトでは、ブラウザでPong Gameが楽しめます
+        </div>
+        <div>
+            もちろん、完全無料！
+        </div>
+        <div>
+            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
+        </div>
+        <div>
+            ご利用には、ユーザー登録が必要です
+        </div>
+        <div class="mb-5">
+            サインアップボタンからユーザー登録をお願いします
+        </div>
+      `;
+    } else {
+      top.innerHTML = `
+        <div>
+            いますぐPong GameをするにはLobbyから、お好みのゲーム方式を選んでください
+        </div>
+        <div>
+            他のユーザーを友達に登録すると、ユーザーのオンライン状態を確認できます
+        </div>
+        <div>
+            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
+        </div>
+        <div class="mb-5">
+            プロフィールにはアバターを設定することができます
+        </div>
+    `;
+    }
+  }
+}
+
+function displayAlert(elem) {
+  console.log(elem)
+  if (elem === 'email') {
+    const alert = document.getElementById('emailAlertBlock');
+    alert.innerHTML = '';
+    alert.innerHTML = `
+      入力されたメールアドレスが不正です
+    `;
+  } else if (elem === 'display_name') {
+    const alert = document.getElementById('displayNameAlertBlock');
+    alert.innerHTML = '';
+    alert.innerHTML = `
+      入力されたディスプレイネームが不正です
+    `;
+  } else if (elem === 'friend') {
+    const alert = document.getElementById('friendAlertBlock');
+    alert.innerHTML = '';
+    alert.innerHTML = `
+      そのユーザーは友達に追加できません
+    `;
+  } 
 }

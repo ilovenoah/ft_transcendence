@@ -1,6 +1,39 @@
-<h1>Friends</h1>
-<ul>
-  {% for friend in friends %}
-  <li>{{ friend.username }} - {{ friend.online_status }}</li>
-  {% endfor %}
-</ul>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2">
+      <!-- ナビゲーションメニュー -->
+      <ul class="nav flex-column">
+        <li class="nav-item" style="width: 100%;">
+          <a class="btn btn-primary post-link w-100" href="#" data_url="process-post/" page="friends" style="margin-bottom: 10px;">友達</a>
+        </li>
+        <li class="nav-item" style="width: 100%;">
+          <a class="btn btn-primary post-link w-100" href="#" data_url="process-post/" page="friend_request" style="margin-bottom: 10px;">友達リクエスト</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-10">
+      <!-- 友達リストの表示エリア -->
+      <div class="px-5">
+        <h1 class="mb-3">友達</h1>
+        <h5 class="mb-3">友達ステータス</h5>
+        <table class="table table-borderless table-dark table-striped">
+          {% for friend in friends %}
+          <tr>
+            <td>
+              {% if friend.online_status == 'online' %}
+                <span class="status-dot" style="height:10px; width:10px; background-color: green; border-radius: 50%; display: inline-block;"></span>
+              {% else %}
+                <span class="status-dot" style="height:10px; width:10px; background-color: gray; border-radius: 50%; display: inline-block;"></span>
+              {% endif %}
+            </td>
+            <td>{{ friend.display_name }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <hr>
+    </div>
+  </div>
+</div>
+
+

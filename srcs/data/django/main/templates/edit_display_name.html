@@ -1,10 +1,26 @@
-<h2>Edit Display Name</h2>
-<form class="ajax-form" action="process-post/">
+<form class="ajax-form px-5" action="process-post/">
     <input type="hidden" name="page" value="edit_display_name">
     {% csrf_token %}
-    <div>
-        <label for="id_display_name">display_name:</label>
-        <input type="text" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
+    <div class="row g-3 align-items-center">
+        <div class="mb-3 col-auto">
+            <label for="id_display_name" class="form-label">ディスプレイネーム</label>
+        </div>
+        <div id="displayNameHelpBlock" class="mb-4 col-auto">
+            ディスプレイネームを入力してください
+        </div>
     </div>
-    <button type="submit">Save</button>
+    <div class="row g-3 align-items-center">
+        <div class="mb-3 col-auto">
+            <input type="text" class="form-control bg-dark text-light" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
+        </div>
+        <div id="displayNameAlertBlock" class="mb-3 col-auto text-warning"></div>
+        {% if form_edit_display_name.display_name.errors %}
+            <!-- <div class="mb-3 col-auto"> -->
+            <div class="text-warning">
+                {{ form_edit_display_name.display_name.errors }}
+            </div>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
+<hr></hr>

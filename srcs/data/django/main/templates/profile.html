@@ -1,9 +1,24 @@
-<h1>User Profile</h1>
-<p><img src="media/{{ user.avatar }}" alt="User Avatar"></p>
-<p>Username: {{ user.username }}</p>
-<p>Display Name: {{ user.display_name }}</p>
-<p>Email: {{ user.email }}</p>
-<p>Online Status: {{ user.is_online }}</p>
+<div class="px-5">
+    <h1 class="mb-4">プロフィール</h1>
+    <div class="card border-primary text-bg-dark mb-2" style="max-width: 540px;">
+        <div class="row g-0">
+            <div class="col-md-4 d-flex align-items-center">
+                <img src="media/{{ user.avatar }}" class="img-fluid rounded-start" alt="User Avatar"  style="margin: 30px;">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">ユーザーネーム</h5>
+                    <p class="card-text">{{ user.username }}</p>
+                    <h5 class="card-title">ディスプレイネーム</h5>
+                    <p class="card-text">{{ user.display_name }}</p>
+                    <h5 class="card-title">メール</h5>
+                    <p class="card-text">{{ user.email }}</p>
+                    <a href="#" class="btn btn-primary card-link post-link" data_url="process-post/" page="edit_profile" title="Edit Profile">プロフィールの編集</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

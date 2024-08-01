@@ -1,11 +1,21 @@
-<h2>Edit Email</h2>
-<form class="ajax-form" action="process-post/">
+<h1 class="px-5 mb-4">プロフィールの編集</h1>
+<form class="ajax-form px-5" action="process-post/">
     <input type="hidden" name="page" value="edit_email">
     {% csrf_token %}
-    <div>
-        <label for="id_email">Email:</label>
-        <input type="text" name="email" id="id_email" value="{{ form_edit_email.email.value|default_if_none:'' }}">
+    <div class="row g-3 align-items-center">
+        <div class="mb-3 col-auto">
+            <label for="id_email" class="form-label">メールアドレス</label>
+        </div>
+        <div id="emailHelpBlock" class="mb-4 col-auto">
+            メールアドレスを入力してください
+        </div>
     </div>
-    <button type="submit">Save</button>
-    <!-- {{ form_edit_email.as_p }} -->
+    <div class="row g-3 align-items-center">
+        <div class="mb-3 col-auto">
+            <input type="email" class="form-control bg-dark text-light" name="email" id="id_email" value="{{ form_edit_email.email.value|default_if_none:'' }}">
+        </div>
+        <div id="emailAlertBlock" class="mb-3 col-auto text-warning"></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
+<hr></hr>
