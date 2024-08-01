@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ja">
+{% load i18n %}
+<html lang="{{ LANGUAGE_CODE }}">
 
 <head>
     <meta charset="UTF-8">
@@ -67,7 +68,7 @@
                             {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
+                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">{% trans 'プロフィール' %}</a></li>
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
                             <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
                         </ul>
@@ -84,6 +85,17 @@
                     </li>
                 </ul>
                 {% endif %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ request.LANGUAGE_CODE }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" href="{% url 'set_language' %}?language=ja">日本語</a></li>
+                            <li><a class="dropdown-item" href="{% url 'set_language' %}?language=en">English</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

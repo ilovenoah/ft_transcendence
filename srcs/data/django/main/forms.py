@@ -30,7 +30,7 @@ class LoginForm(AuthenticationForm):
                 # ログ出力で何が起きているかを確認
                 print("Authentication failed: Username or password is incorrect.")
                 raise forms.ValidationError(
-                    _("ユーザー名またはパスワードが正しくありません。"),
+                    _("ユーザー名またはパスワードが正しくありません"),
                     code='invalid_login',
                 )
             else:
