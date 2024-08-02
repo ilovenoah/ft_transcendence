@@ -88,8 +88,17 @@
                     </li>
                 </ul>
                 {% endif %}
-                <button onclick="setLanguage('en')">English</button>
-                <button onclick="setLanguage('ja')">日本語</button>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ja
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

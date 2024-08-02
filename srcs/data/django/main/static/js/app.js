@@ -370,8 +370,17 @@ function toggleVisibility(login, username, elem) {
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
         </li>
       </ul>
-      <button onclick="setLanguage('en')">English</button>
-      <button onclick="setLanguage('ja')">日本語</button>
+      <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  ja
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+              </ul>
+          </li>
+      </ul>
     `;
   } else {
     nav.innerHTML = `
@@ -392,8 +401,17 @@ function toggleVisibility(login, username, elem) {
             </ul>
         </li>
       </ul>
-      <button onclick="setLanguage('en')">English</button>
-      <button onclick="setLanguage('ja')">日本語</button>
+      <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  ja
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+              </ul>
+          </li>
+      </ul>
     `;
   }
   if (elem === 'top') {
@@ -466,8 +484,9 @@ function setLanguage(lang) {
   xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
           var translations = JSON.parse(xhr.responseText);
+          document.getElementById('languageDropdown').innerText = translations.languageDropdown;
           document.getElementById('navbar_signup').innerText = translations.navbar_signup;
-          document.getElementById('welcome').innerText = translations.welcome;
+          // document.getElementById('welcome').innerText = translations.welcome;
       } else if (xhr.readyState === 4) {
           console.error('Error loading translations:', xhr.statusText);
       }
