@@ -358,7 +358,6 @@ function setIdValue(id, setvalue) {
 function toggleVisibility(login, username, elem) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
-  console.log('im here')
   console.log(elem)
   if (login === 'false') {
     nav.innerHTML = `
@@ -508,8 +507,25 @@ function setLanguage(lang) {
       if (xhr.readyState === 4 && xhr.status === 200) {
           var translations = JSON.parse(xhr.responseText);
           document.getElementById('languageDropdown').innerText = translations.languageDropdown;
-          document.getElementById('navbar_signup').innerText = translations.navbar_signup;
-          document.getElementById('navbar_login').innerText = translations.navbar_login;
+          if (document.getElementById('navbar_signup')) {
+            document.getElementById('navbar_signup').innerText = translations.navbar_signup;
+          }
+          if (document.getElementById('navbar_login')) {
+            document.getElementById('navbar_login').innerText = translations.navbar_login;
+          }
+          if (document.getElementById('login_header')) {
+            document.getElementById('login_header').innerText = translations.login_header;
+          }
+          if (document.getElementById('login_username')) {
+            document.getElementById('login_username').innerText = translations.login_username;
+          }
+          if (document.getElementById('login_password')) {
+            document.getElementById('login_password').innerText = translations.login_password;
+          }
+          if (document.getElementById('login_warning')) {
+            document.getElementById('login_warning').innerText = translations.login_warning;
+          }
+          document.getElementById('login_button').innerText = translations.login_button;
       } else if (xhr.readyState === 4) {
           console.error('Error loading translations:', xhr.statusText);
       }

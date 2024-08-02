@@ -1,5 +1,10 @@
 {
     "languageDropdown": "ja",
     "navbar_signup": "サインアップ",
-    "navbar_login": "ログイン"
+    "navbar_login": "ログイン",
+    "login_header": "ログイン",
+    "login_warning": "ユーザーネームまたはパスワードが正しくありません",
+    "login_button": "ログイン",
+    "login_username": "ユーザーネーム",
+    "login_password": "パスワード"
 }

@@ -1,5 +1,10 @@
 {
     "languageDropdown": "en",
     "navbar_signup": "Signup",
-    "navbar_login": "Login"
+    "navbar_login": "Login",
+    "login_header": "Login",
+    "login_warning": "inncorrect username or password",
+    "login_button": "login",
+    "login_username": "Username",
+    "login_password": "Password"
 }
