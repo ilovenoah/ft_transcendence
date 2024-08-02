@@ -364,10 +364,10 @@ function toggleVisibility(login, username, elem) {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">Signup</a>
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">サインアップ</a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
+          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login" id="navbar_login">ログイン</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
@@ -452,6 +452,7 @@ function toggleVisibility(login, username, elem) {
     `;
     }
   }
+  loadLanguage();
 }
 
 function displayAlert(elem) {
@@ -477,7 +478,29 @@ function displayAlert(elem) {
   } 
 }
 
+function setCookie(name, value, days) {
+  var expires = "";
+  if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
 function setLanguage(lang) {
+  setCookie('language', lang, 7); // 言語設定を7日間保存
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/static/translations/' + lang + '.json', true);
 
@@ -486,7 +509,7 @@ function setLanguage(lang) {
           var translations = JSON.parse(xhr.responseText);
           document.getElementById('languageDropdown').innerText = translations.languageDropdown;
           document.getElementById('navbar_signup').innerText = translations.navbar_signup;
-          // document.getElementById('welcome').innerText = translations.welcome;
+          document.getElementById('navbar_login').innerText = translations.navbar_login;
       } else if (xhr.readyState === 4) {
           console.error('Error loading translations:', xhr.statusText);
       }
@@ -495,4 +518,11 @@ function setLanguage(lang) {
   xhr.send();
 }
 
-setLanguage('ja');
+function loadLanguage() {
+  var lang = getCookie('language') || 'ja'; // クッキーが見つからない場合はデフォルトで'ja'を使用
+  console.log(lang)
+  setLanguage(lang);
+}
+
+// ページが読み込まれた時に言語を読み込む
+window.onload = loadLanguage;
