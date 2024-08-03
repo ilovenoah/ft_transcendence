@@ -13,5 +13,7 @@
     "signup_email": "Email",
     "signup_email_helper": "Please enter your email",
     "signup_password": "Password",
-    "signup_password_helper": "Please enter a password with more than 7 alphanumeric characters"
+    "signup_password_helper": "Please enter a password with more than 7 alphanumeric characters",
+    "signup_confirmation": "Confirmation",
+    "signup_confirmation_helper": "Please enter the same password as above"
 }

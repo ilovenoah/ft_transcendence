@@ -48,13 +48,6 @@ document.addEventListener("DOMContentLoaded", function() {
       if (classes.includes('post-link')) {
         send_ajax(postData);
       }
-      // var lang = document.getElementById('languageDropdown').innerText;
-      // console.log('lang: ', lang);
-      // setLanguage(lang);
-      // loadLanguage();
-      // if (postData['class'] === 'post-link'){
-      //   send_ajax(postData);
-      // }
     }
   });
 
@@ -507,9 +500,7 @@ function getCookie(name) {
 }
 
 function setLanguage(lang) {
-  // if (toSetCookie === true) {
-    // setCookie('language', lang, 7); // 言語設定を7日間保存
-  // }
+  setCookie('language', lang, 7); // 言語設定を7日間保存
 
   console.log(lang)
   
@@ -542,6 +533,8 @@ function setLanguage(lang) {
             document.getElementById('signup_email_helper').innerText = translations.signup_email_helper;
             document.getElementById('signup_password').innerText = translations.signup_password;
             document.getElementById('signup_password_helper').innerText = translations.signup_password_helper;
+            document.getElementById('signup_confirmation').innerText = translations.signup_confirmation;
+            document.getElementById('signup_confirmation_helper').innerText = translations.signup_confirmation_helper;
           }
       } else if (xhr.readyState === 4) {
           console.error('Error loading translations:', xhr.statusText);
