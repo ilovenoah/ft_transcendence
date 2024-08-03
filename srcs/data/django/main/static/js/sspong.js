@@ -170,32 +170,34 @@ function animate() {
 
 function updateGameState(data) {
    //#endregion console.log(data);
+    
     if (data.info === 'paddle'){
-        paddle1.position.y = data.player1_y / 100;
-        paddle2.position.y = data.player2_y / 100;    
+        paddle1.position.y = data.paddle_1[1] / 100;
+        paddle2.position.y = data.paddle_2[1] / 100;    
     } else if (data.info === 'ball'){        
-        ball.position.x = data.ball_x / 100;
-        ball.position.y = data.ball_y / 100;
+        ball.position.x = data.ball[0] / 100;
+        ball.position.y = data.ball[1] / 100;
     } else if (data.info === 'score'){        
-        if (score_player1 != data.score_player1){
-            score_player1 = data.score_player1;
+        if (score_player1 != data.scores[0]){
+            score_player1 = data.scores[0];
             displayScore(score_player1,score_player2);
         }
-        if (score_player2 != data.score_player2){
-            score_player2 = data.score_player2;
+        if (score_player2 != data.scores[1]){
+            score_player2 = data.scores[1];
             displayScore(score_player1,score_player2);
         }
     } else {
-        paddle1.position.y = data.player1_y / 100;
-        paddle2.position.y = data.player2_y / 100;    
-        ball.position.x = data.ball_x / 100;
-        ball.position.y = data.ball_y / 100;
-        if (score_player1 != data.score_player1){
-            score_player1 = data.score_player1;
+        paddle1.position.y = data.paddle_1[1] / 100;
+        paddle2.position.y = data.paddle_2[1] / 100;
+        
+        ball.position.x = data.ball[0] / 100;
+        ball.position.y = data.ball[1] / 100;
+        if (score_player1 != data.scores[0]){
+            score_player1 = data.scores[0];
             displayScore(score_player1,score_player2);
         }
-        if (score_player2 != data.score_player2){
-            score_player2 = data.score_player2;
+        if (score_player2 != data.scores[1]){
+            score_player2 = data.scores[1];
             displayScore(score_player1,score_player2);
         }
     }
@@ -271,7 +273,7 @@ function connect(){
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
         // 自動再接続
-        setTimeout(connect, reconnectInterval);
+        //setTimeout(connect, reconnectInterval);
     };
 }
 
@@ -288,8 +290,5 @@ let match = document.currentScript.src.match(regexp);
 let gameid = match[1];
 
 console.log("match", gameid);
-
-
-
 
 connect();
