@@ -364,16 +364,16 @@ function toggleVisibility(login, username, elem) {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto" id="navbar_before_login">
         <li class="nav-item">
-          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">サインアップ</a>
+            <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">　</a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login" id="navbar_login">ログイン</a>
+            <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="login" title="login" id="navbar_login">　</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  ja
+              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  　
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
@@ -395,16 +395,16 @@ function toggleVisibility(login, username, elem) {
               ${username}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">{% trans 'プロフィール' %}</a></li>
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="profile" title="Profile">　</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="friends" title="Friends">　</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="logout" title="Logout">　</a></li>
             </ul>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  ja
+              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  　
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
@@ -499,6 +499,17 @@ function getCookie(name) {
   return null;
 }
 
+function applyTranslations(translations) {
+  var elements = document.querySelectorAll('.translations');
+  elements.forEach(function (element) {
+      var translationKey = element.id;
+      if (translations[translationKey]) {
+          element.textContent = translations[translationKey];
+      } 
+  });
+}
+
+
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
 
@@ -510,32 +521,34 @@ function setLanguage(lang) {
   xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
           var translations = JSON.parse(xhr.responseText);
-          document.getElementById('languageDropdown').innerText = translations.languageDropdown;
-          if (document.getElementById('navbar_before_login')) {
-            document.getElementById('navbar_signup').innerText = translations.navbar_signup;
-            document.getElementById('navbar_login').innerText = translations.navbar_login;
-          }
-          if (document.getElementById("login_page")) {
-            document.getElementById('login_header').innerText = translations.login_header;
-            document.getElementById('login_username').innerText = translations.login_username;
-            document.getElementById('login_password').innerText = translations.login_password;
-            document.getElementById('login_button').innerText = translations.login_button;
-            if (document.getElementById('login_warning')) {
-              document.getElementById('login_warning').innerText = translations.login_warning;
-            }
-          }
-          if (document.getElementById('signup_page')) {
-            console.log('im here')
-            document.getElementById('signup_header').innerText = translations.signup_header;
-            document.getElementById('signup_username').innerText = translations.signup_username;
-            document.getElementById('signup_username_helper').innerText = translations.signup_username_helper;
-            document.getElementById('signup_email').innerText = translations.signup_email;
-            document.getElementById('signup_email_helper').innerText = translations.signup_email_helper;
-            document.getElementById('signup_password').innerText = translations.signup_password;
-            document.getElementById('signup_password_helper').innerText = translations.signup_password_helper;
-            document.getElementById('signup_confirmation').innerText = translations.signup_confirmation;
-            document.getElementById('signup_confirmation_helper').innerText = translations.signup_confirmation_helper;
-          }
+          applyTranslations(translations);
+  
+          // document.getElementById('languageDropdown').innerText = translations.languageDropdown;
+          // if (document.getElementById('navbar_before_login')) {
+          //   document.getElementById('navbar_signup').innerText = translations.navbar_signup;
+          //   document.getElementById('navbar_login').innerText = translations.navbar_login;
+          // }
+          // if (document.getElementById("login_page")) {
+          //   document.getElementById('login_header').innerText = translations.login_header;
+          //   document.getElementById('login_username').innerText = translations.login_username;
+          //   document.getElementById('login_password').innerText = translations.login_password;
+          //   document.getElementById('login_button').innerText = translations.login_button;
+          //   if (document.getElementById('login_warning')) {
+          //     document.getElementById('login_warning').innerText = translations.login_warning;
+          //   }
+          // }
+          // if (document.getElementById('signup_page')) {
+          //   console.log('im here')
+          //   document.getElementById('signup_header').innerText = translations.signup_header;
+          //   document.getElementById('signup_username').innerText = translations.signup_username;
+          //   document.getElementById('signup_username_helper').innerText = translations.signup_username_helper;
+          //   document.getElementById('signup_email').innerText = translations.signup_email;
+          //   document.getElementById('signup_email_helper').innerText = translations.signup_email_helper;
+          //   document.getElementById('signup_password').innerText = translations.signup_password;
+          //   document.getElementById('signup_password_helper').innerText = translations.signup_password_helper;
+          //   document.getElementById('signup_confirmation').innerText = translations.signup_confirmation;
+          //   document.getElementById('signup_confirmation_helper').innerText = translations.signup_confirmation_helper;
+          // }
       } else if (xhr.readyState === 4) {
           console.error('Error loading translations:', xhr.statusText);
       }

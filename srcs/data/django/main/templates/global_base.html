@@ -71,9 +71,9 @@
                             {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
+                            <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="profile" title="Profile">　</a></li>
+                            <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="friends" title="Friends">　</a></li>
+                            <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="logout" title="Logout">　</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -81,17 +81,17 @@
                 {% if not user.is_authenticated %}
                 <ul class="navbar-nav ms-auto" id="navbar_before_login"> 
                     <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">サインアップ</a>
+                        <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">　</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login" id="navbar_login">ログイン</a>
+                        <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="login" title="login" id="navbar_login">　</a>
                     </li>
                 </ul>
                 {% endif %}
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            ja
+                        <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            　
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                             <li><a class="dropdown-item" href="#" onclick="setLanguage('en' , true)">English</a></li>
