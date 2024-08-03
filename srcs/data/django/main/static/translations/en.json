@@ -6,5 +6,12 @@
     "login_warning": "inncorrect username or password",
     "login_button": "login",
     "login_username": "Username",
-    "login_password": "Password"
+    "login_password": "Password",
+    "signup_header": "Signup",
+    "signup_username": "Username",
+    "signup_username_helper": "Please enter your username in alphanumeric characters",
+    "signup_email": "Email",
+    "signup_email_helper": "Please enter your email",
+    "signup_password": "Password",
+    "signup_password_helper": "Please enter a password with more than 7 alphanumeric characters"
 }

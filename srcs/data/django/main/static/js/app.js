@@ -48,6 +48,10 @@ document.addEventListener("DOMContentLoaded", function() {
       if (classes.includes('post-link')) {
         send_ajax(postData);
       }
+      // var lang = document.getElementById('languageDropdown').innerText;
+      // console.log('lang: ', lang);
+      // setLanguage(lang);
+      // loadLanguage();
       // if (postData['class'] === 'post-link'){
       //   send_ajax(postData);
       // }
@@ -278,6 +282,10 @@ function send_ajax(data)
         var response = JSON.parse(xhr.responseText);
         //データを更新する
         updateContent(response);
+
+
+        loadLanguage();
+
         //履歴にページを登録
         history.pushState({ data: response }, response.title, '');
       } else {
@@ -361,7 +369,7 @@ function toggleVisibility(login, username, elem) {
   console.log(elem)
   if (login === 'false') {
     nav.innerHTML = `
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto" id="navbar_before_login">
         <li class="nav-item">
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">サインアップ</a>
         </li>
@@ -499,7 +507,12 @@ function getCookie(name) {
 }
 
 function setLanguage(lang) {
-  setCookie('language', lang, 7); // 言語設定を7日間保存
+  // if (toSetCookie === true) {
+    // setCookie('language', lang, 7); // 言語設定を7日間保存
+  // }
+
+  console.log(lang)
+  
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/static/translations/' + lang + '.json', true);
 
@@ -507,25 +520,29 @@ function setLanguage(lang) {
       if (xhr.readyState === 4 && xhr.status === 200) {
           var translations = JSON.parse(xhr.responseText);
           document.getElementById('languageDropdown').innerText = translations.languageDropdown;
-          if (document.getElementById('navbar_signup')) {
+          if (document.getElementById('navbar_before_login')) {
             document.getElementById('navbar_signup').innerText = translations.navbar_signup;
-          }
-          if (document.getElementById('navbar_login')) {
             document.getElementById('navbar_login').innerText = translations.navbar_login;
           }
-          if (document.getElementById('login_header')) {
+          if (document.getElementById("login_page")) {
             document.getElementById('login_header').innerText = translations.login_header;
-          }
-          if (document.getElementById('login_username')) {
             document.getElementById('login_username').innerText = translations.login_username;
-          }
-          if (document.getElementById('login_password')) {
             document.getElementById('login_password').innerText = translations.login_password;
+            document.getElementById('login_button').innerText = translations.login_button;
+            if (document.getElementById('login_warning')) {
+              document.getElementById('login_warning').innerText = translations.login_warning;
+            }
           }
-          if (document.getElementById('login_warning')) {
-            document.getElementById('login_warning').innerText = translations.login_warning;
+          if (document.getElementById('signup_page')) {
+            console.log('im here')
+            document.getElementById('signup_header').innerText = translations.signup_header;
+            document.getElementById('signup_username').innerText = translations.signup_username;
+            document.getElementById('signup_username_helper').innerText = translations.signup_username_helper;
+            document.getElementById('signup_email').innerText = translations.signup_email;
+            document.getElementById('signup_email_helper').innerText = translations.signup_email_helper;
+            document.getElementById('signup_password').innerText = translations.signup_password;
+            document.getElementById('signup_password_helper').innerText = translations.signup_password_helper;
           }
-          document.getElementById('login_button').innerText = translations.login_button;
       } else if (xhr.readyState === 4) {
           console.error('Error loading translations:', xhr.statusText);
       }
@@ -535,10 +552,10 @@ function setLanguage(lang) {
 }
 
 function loadLanguage() {
-  var lang = getCookie('language') || 'ja'; // クッキーが見つからない場合はデフォルトで'ja'を使用
-  console.log(lang)
+  lang = getCookie('language') || 'ja'; // クッキーが見つからない場合はデフォルトで'ja'を使用
   setLanguage(lang);
 }
 
 // ページが読み込まれた時に言語を読み込む
 window.onload = loadLanguage;
+

@@ -1,13 +1,13 @@
-<div class="px-5">
-    <h1 class="mb-3">サインアップ</h1>
+<div class="px-5" id="signup_page">
+    <h1 class="mb-3" id="signup_header">サインアップ</h1>
     <form class="ajax-form" action="process-post/">
         <input type="hidden" name="page" value="signup">
         {% csrf_token %}
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_username" class="form-label">ユーザーネーム</label>
+                <label for="id_username" class="form-label" id="signup_username">ユーザーネーム</label>
             </div>
-            <div id="usernameHelpBlock" class="mb-4 col-auto">
+            <div id="signup_username_helper" class="mb-4 col-auto">
                 半角英数字でユーザーネームを入力してください
             </div>
         </div>
@@ -23,9 +23,9 @@
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_email" class="form-label">メールアドレス</label>
+                <label for="id_email" class="form-label" id="signup_email">メールアドレス</label>
             </div>
-            <div id="emailHelpBlock" class="mb-4 col-auto">
+            <div class="mb-4 col-auto" id="signup_email_helper">
                 メールアドレスを入力してください
             </div>
         </div>
@@ -41,9 +41,9 @@
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_password1" class="form-label">パスワード</label>
+                <label for="id_password1" class="form-label" id="signup_password">パスワード</label>
             </div>
-            <div id="password1HelpBlock" class="mb-4 col-auto">
+            <div id="signup_password_helper" class="mb-4 col-auto">
                 8文字以上の半角英数字を入力してください
             </div>
         </div>

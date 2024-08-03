@@ -79,7 +79,7 @@
                 </ul>
                 {% endif %}
                 {% if not user.is_authenticated %}
-                <ul class="navbar-nav ms-auto"> 
+                <ul class="navbar-nav ms-auto" id="navbar_before_login"> 
                     <li class="nav-item">
                         <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">サインアップ</a>
                     </li>
@@ -94,8 +94,8 @@
                             ja
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                            <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setLanguage('en' , true)">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setLanguage('ja', true)">日本語</a></li>
                         </ul>
                     </li>
                 </ul>

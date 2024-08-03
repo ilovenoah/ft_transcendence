@@ -6,5 +6,12 @@
     "login_warning": "ユーザーネームまたはパスワードが正しくありません",
     "login_button": "ログイン",
     "login_username": "ユーザーネーム",
-    "login_password": "パスワード"
+    "login_password": "パスワード",
+    "signup_header": "サインアップ",
+    "signup_username": "ユーザーネーム",
+    "signup_username_helper": "半角英数字でユーザーネームを入力してください",
+    "signup_email": "メールアドレス",
+    "signup_email_helper": "メールアドレスを入力してください",
+    "signup_password": "パスワード",
+    "signup_password_helper": "8文字以上の半角英数字を入力してください"
 }
