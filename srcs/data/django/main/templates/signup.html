@@ -1,13 +1,13 @@
 <div class="px-5" id="signup_page">
-    <h1 class="mb-3" id="signup_header">　</h1>
+    <h1 class="mb-3 translations" id="signup_header">　</h1>
     <form class="ajax-form" action="process-post/">
         <input type="hidden" name="page" value="signup">
         {% csrf_token %}
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_username" class="form-label" id="signup_username">ユーザーネーム</label>
+                <label for="id_username" class="form-label translations" id="signup_username">　</label>
             </div>
-            <div id="signup_username_helper" class="mb-4 col-auto">
+            <div id="signup_username_helper" class="mb-4 col-auto translations">
                 　
             </div>
         </div>
@@ -20,12 +20,21 @@
                     {{ form.username.errors.as_text }}
                 </div>
             {% endif %}
+            <!-- {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                    {% if error != "このフィールドは必須です。" %}
+                        <div class="mb-3 col-auto text-warning translations" id="signup_username_warning">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %} -->
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_email" class="form-label" id="signup_email">　</label>
+                <label for="id_email" class="form-label translations" id="signup_email">　</label>
             </div>
-            <div class="mb-4 col-auto" id="signup_email_helper">
+            <div class="mb-4 col-auto translations" id="signup_email_helper">
                 　
             </div>
         </div>
@@ -41,9 +50,9 @@
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_password1" class="form-label" id="signup_password">　</label>
+                <label for="id_password1" class="form-label translations" id="signup_password">　</label>
             </div>
-            <div id="signup_password_helper" class="mb-4 col-auto">
+            <div id="signup_password_helper" class="mb-4 col-auto translations">
                 　
             </div>
         </div>
@@ -59,9 +68,9 @@
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_password2" class="form-label" id="signup_confirmation">　</label>
+                <label for="id_password2" class="form-label translations" id="signup_confirmation">　</label>
             </div>
-            <div id="signup_confirmation_helper" class="mb-4 col-auto">
+            <div id="signup_confirmation_helper" class="mb-4 col-auto translations">
                　
             </div>
         </div>
@@ -75,7 +84,7 @@
                 </div>
             {% endif %}
         </div>
-        <button type="submit" class="btn btn-primary mb-5 mt-3">サインアップ</button>
+        <button type="submit" class="btn btn-primary mb-5 mt-3 translations" id="signup_button">　</button>
     </form>
 </div>
 

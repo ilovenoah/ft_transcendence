@@ -419,7 +419,7 @@ function toggleVisibility(login, username, elem) {
     top.innerHTML = '';
     if (login === 'false') {
       top.innerHTML = `
-        <div>
+        <div class="translations" id="top1_l1">
             このサイトでは、ブラウザでPong Gameが楽しめます
         </div>
         <div>
@@ -505,10 +505,10 @@ function applyTranslations(translations) {
       var translationKey = element.id;
       if (translations[translationKey]) {
           element.textContent = translations[translationKey];
+          console.log(element.textContent)
       } 
   });
 }
-
 
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
@@ -522,33 +522,6 @@ function setLanguage(lang) {
       if (xhr.readyState === 4 && xhr.status === 200) {
           var translations = JSON.parse(xhr.responseText);
           applyTranslations(translations);
-  
-          // document.getElementById('languageDropdown').innerText = translations.languageDropdown;
-          // if (document.getElementById('navbar_before_login')) {
-          //   document.getElementById('navbar_signup').innerText = translations.navbar_signup;
-          //   document.getElementById('navbar_login').innerText = translations.navbar_login;
-          // }
-          // if (document.getElementById("login_page")) {
-          //   document.getElementById('login_header').innerText = translations.login_header;
-          //   document.getElementById('login_username').innerText = translations.login_username;
-          //   document.getElementById('login_password').innerText = translations.login_password;
-          //   document.getElementById('login_button').innerText = translations.login_button;
-          //   if (document.getElementById('login_warning')) {
-          //     document.getElementById('login_warning').innerText = translations.login_warning;
-          //   }
-          // }
-          // if (document.getElementById('signup_page')) {
-          //   console.log('im here')
-          //   document.getElementById('signup_header').innerText = translations.signup_header;
-          //   document.getElementById('signup_username').innerText = translations.signup_username;
-          //   document.getElementById('signup_username_helper').innerText = translations.signup_username_helper;
-          //   document.getElementById('signup_email').innerText = translations.signup_email;
-          //   document.getElementById('signup_email_helper').innerText = translations.signup_email_helper;
-          //   document.getElementById('signup_password').innerText = translations.signup_password;
-          //   document.getElementById('signup_password_helper').innerText = translations.signup_password_helper;
-          //   document.getElementById('signup_confirmation').innerText = translations.signup_confirmation;
-          //   document.getElementById('signup_confirmation_helper').innerText = translations.signup_confirmation_helper;
-          // }
       } else if (xhr.readyState === 4) {
           console.error('Error loading translations:', xhr.statusText);
       }
