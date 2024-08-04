@@ -17,5 +17,6 @@
     "signup_confirmation": "確認用",
     "signup_confirmation_helper": "確認のため上と同じパスワードを入力してください",
     "signup_button": "サインアップ",
-    "signup_username_warning": "そのユーザーネームは使用できません"
+    "signup_username_warning": "そのユーザーネームは使用できません",
+    "signup_email_warning:": "そのメールアドレスは使用できません"
 }

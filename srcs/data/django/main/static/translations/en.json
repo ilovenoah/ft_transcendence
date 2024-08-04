@@ -18,6 +18,5 @@
     "signup_confirmation_helper": "Please enter the same password as above",
     "signup_button": "Signup",
     "signup_username_warning": "You cannot use the username",
-
-    "top1_l1": "You can enjoy Pong Game"
+    "signup_email_warning": "You cannot use the email"
 }

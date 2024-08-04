@@ -16,19 +16,12 @@
                 <input type="text" class="form-control bg-dark text-light" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" required>
             </div>
             {% if form.username.errors %}
-                <div class="mb-3 col-auto text-warning">
-                    {{ form.username.errors.as_text }}
-                </div>
-            {% endif %}
-            <!-- {% if form.username.errors %}
                 {% for error in form.username.errors %}
                     {% if error != "このフィールドは必須です。" %}
-                        <div class="mb-3 col-auto text-warning translations" id="signup_username_warning">
-                            {{ error }}
-                        </div>
+                        <div class="mb-3 col-auto text-warning translations" id="signup_username_warning">　</div>
                     {% endif %}
                 {% endfor %}
-            {% endif %} -->
+            {% endif %}
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
@@ -43,9 +36,11 @@
                 <input type="email" class="form-control bg-dark text-light" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" required>
             </div>
             {% if form.email.errors %}
-                <div class="mb-3 col-auto text-warning">
-                    {{ form.email.errors.as_text }}
-                </div>
+                {% for error in form.email.errors %}
+                    {% if error != "このフィールドは必須です。" %}
+                        <div class="mb-3 col-auto text-warning translations" id="signup_email_warning">　</div>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         </div>
         <div class="row g-3 align-items-center">

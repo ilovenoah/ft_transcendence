@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function() {
           console.error('Error:', xhr.statusText);
             // エラー処理をここに追加します     
         }
+        loadLanguage();
       };
   
       xhr.onerror = function() {
