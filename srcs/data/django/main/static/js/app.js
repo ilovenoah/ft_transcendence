@@ -373,9 +373,7 @@ function toggleVisibility(login, username, elem) {
       </ul>
       <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  　
-              </a>
+              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">　</a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
@@ -404,9 +402,7 @@ function toggleVisibility(login, username, elem) {
       </ul>
       <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  　
-              </a>
+              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">　</a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
@@ -431,7 +427,7 @@ function toggleVisibility(login, username, elem) {
         <div class="translations mb-2" id="top2_l1">　</div>
         <div class="translations mb-2" id="top2_l2">　</div>
         <div class="translations mb-2" id="top2_l3">　</div>
-        <div class="translations mb-2" id="top2_l4">　</div>
+        <div class="translations mb-5" id="top2_l4">　</div>
     `;
     }
   }
