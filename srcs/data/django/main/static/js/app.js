@@ -396,9 +396,9 @@ function toggleVisibility(login, username, elem) {
               ${username}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="profile" title="Profile">　</a></li>
-              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="friends" title="Friends">　</a></li>
-              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="logout" title="Logout">　</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="profile" title="Profile" id="navbar_profile">　</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="friends" title="Friends" id="navbar_friends">　</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="logout" title="Logout" id="navbar_logout">　</a></li>
             </ul>
         </li>
       </ul>
