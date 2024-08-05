@@ -12,6 +12,7 @@ RUN     pip install Pillow
 RUN     pip install channels
 RUN     pip install channels-redis
 RUN     pip install django-redis
+RUN     pip install aioredis
 
 RUN     pip install daphne
 RUN     pip install gunicorn

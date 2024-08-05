@@ -1,6 +1,7 @@
 import json
 import math
 import asyncio
+import aioredis
 #from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django_redis import get_redis_connection
@@ -30,10 +31,14 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'pong_{self.room_name}'
 
+        # aioredisを使ってRedisに接続
+        # self.redis = await aioredis.create_redis_pool('redis://redis4242')
+
+        self.redis = await aioredis.from_url('redis://redis4242:6379')
+
         # Redisから状態を取得
-        redis_conn = get_redis_connection("default")
-        game_state_raw = await sync_to_async(redis_conn.get)(self.room_group_name)
-       
+        game_state_raw = await self.redis.get(self.room_group_name)
+
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
         else:
@@ -59,6 +64,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        # タスクをキャンセル
+        self.update_task.cancel()
+
+        # Redis接続を閉じる
+        self.redis.close()
+        await self.redis.wait_closed()
 
     async def server_disconnect(self):
         await self.close()
@@ -181,6 +192,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # await asyncio.sleep(3600)
             else:
                 await asyncio.sleep(interval)
+
+            # Redisに状態を保存
+            await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
     # async def send_game_state(self, game_state):
     #     await self.send(text_data=json.dumps(game_state))
