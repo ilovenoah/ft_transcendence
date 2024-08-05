@@ -18,5 +18,12 @@
     "signup_confirmation_helper": "Please enter the same password as above",
     "signup_button": "Signup",
     "signup_username_warning": "You cannot use the username",
-    "signup_email_warning": "You cannot use the email"
+    "signup_email_warning": "You cannot use the email",
+    "signup_password_warning1": "Password is similar to your personal information",
+    "signup_password_warning2": "Password must be more than 7 characters",
+    "signup_password_warning3": "Password is too common",
+    "signup_password_warning4": "Password must contain alphabets",
+    "signup_password_warning5": "They do not matchh"
+
+
 }
