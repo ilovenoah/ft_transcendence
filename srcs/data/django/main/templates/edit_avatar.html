@@ -15,31 +15,27 @@
     <form id="uploadForm" class="ajax-upload" action="upload/" enctype="multipart/form-data">
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_email" class="form-label">アバター</label>
+                <label for="id_email" class="form-label translations" id="edit_avatar_header">　</label>
             </div>
-            <div id="avatarHelpBlock" class="mb-4 col-auto">
-                画像ファイルを選択して、Uploadボタンを押してください
-            </div>
+            <div id="edit_avatar_helper1" class="mb-4 col-auto translations">　</div>
         </div>
-            <label for="image" class="btn btn-outline-info">ファイルを選択</label>
+            <label for="image" class="btn btn-outline-info translations" id="edit_avatar_button1">　</label>
             <input type="file" id="image" name="image" class="custom-file-input">
-            <button type="submit" class="btn btn-outline-info">アップロード</button>
+            <button type="submit" class="btn btn-outline-info translations" id="edit_avatar_button2">　</button>
         </form>
         <!-- <form id="uploadForm" class="ajax-upload" action="upload/">
             <input type="file" id="image" name="image">
             <button type="submit" class="btn btn-secondary">アップロード</button>
         </form> -->
-        <div id="descimage" class="form-text">現在の画像</div>
+        <div id="descimage" class="form-text translations" id="edit_avatar_helper2">　</div>
         <img id="uploaded" src="media/{{request.user.avatar}}" alt="">
         <div id="result"></div>
         <form class="ajax-form" action="process-post/" enctype="multipart/form-data">
             <input type="hidden" name="page" value="edit_avatar">
             {% csrf_token %}
             {{ form_edit_avatar.as_p }}
-            <div id="avatarHelpBlock" class="mb-4 col-auto">
-                変更を確定するには、Saveボタンを押してください
-            </div>
-        <button type="submit" class="btn btn-primary">Save</button>
+            <div id="edit_avatar_helper3" class="mb-4 col-auto translations">　</div>
+        <button type="submit" class="btn btn-primary translations" id="edit_avatar_button3">　</button>
     </form>
 </div>
 <hr></hr>

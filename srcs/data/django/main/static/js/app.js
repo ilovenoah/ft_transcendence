@@ -76,7 +76,12 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.onload = function() {
             if (xhr.status === 200) {
               const response = JSON.parse(xhr.responseText);
-              document.getElementById('result').innerText = response.message;
+              lang = getCookie('language') || 'ja';
+              if (lang === 'ja') {
+                document.getElementById('result').innerText = "アップロードが成功しました\nこの画像を保存しますか？";
+              } else {
+                document.getElementById('result').innerText = "Upload succeeded\nWould you like to save this image?";
+              }
               document.getElementById('uploaded').src = response.imgsrc;
               document.getElementById('descimage').innertext ="画像";
               if (typeof response.setid !== 'undefined') {     
@@ -276,10 +281,7 @@ function send_ajax(data)
         var response = JSON.parse(xhr.responseText);
         //データを更新する
         updateContent(response);
-
-
         loadLanguage();
-
         //履歴にページを登録
         history.pushState({ data: response }, response.title, '');
       } else {
@@ -436,24 +438,19 @@ function toggleVisibility(login, username, elem) {
 
 function displayAlert(elem) {
   console.log(elem)
-  if (elem === 'email') {
-    const alert = document.getElementById('emailAlertBlock');
-    alert.innerHTML = '';
-    alert.innerHTML = `
-      入力されたメールアドレスが不正です
-    `;
-  } else if (elem === 'display_name') {
-    const alert = document.getElementById('displayNameAlertBlock');
-    alert.innerHTML = '';
-    alert.innerHTML = `
-      入力されたディスプレイネームが不正です
-    `;
-  } else if (elem === 'friend') {
+  lang = getCookie('language') || 'ja';
+  if (elem === 'friend') {
     const alert = document.getElementById('friendAlertBlock');
     alert.innerHTML = '';
-    alert.innerHTML = `
-      そのユーザーは友達に追加できません
-    `;
+    if (lang === 'en') {
+      alert.innerHTML = `
+        そのユーザーは友達に追加できません
+      `;
+    } else {
+      alert.innerHTML = `
+        You cannot add the user as a friend
+      `;
+    }
   } 
 }
 

@@ -264,8 +264,6 @@ def process_post_data(request):
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile',
-                            'isValid': 'false',
-                            'elem': 'email'
                         }
                 else:
                     form = LoginForm(data=post_data)
@@ -296,8 +294,6 @@ def process_post_data(request):
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile',
-                            'isValid': 'false',
-                            'elem': 'display_name'
                         }
                 else:
                     form = LoginForm(data=post_data)
@@ -726,7 +722,6 @@ def upload_image(request):
                 response_data = {
                     'msgtagid':'result',
                     'imgtagid':'uploaded',
-                    'message':'アップロードが成功しました\nこの画像を保存しますか',
                     'imgsrc':'media/' + image_instance.image.name,
                     'descimage':'アップロード画像',
                     'setid': 'id_avatar',
