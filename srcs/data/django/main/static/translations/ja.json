@@ -23,6 +23,11 @@
     "signup_password_warning2": "パスワードは最低８文字以上必要です",
     "signup_password_warning3": "このパスワードは一般的すぎます",
     "signup_password_warning4": "このパスワードは数字しか使われていません",
-    "signup_password_warning5": "確認用パスワードが一致しません"
-
+    "signup_password_warning5": "確認用パスワードが一致しません",
+    "top_header": "MY2 GAMES へようこそ",
+    "top1_l1": "このサイトでは、ブラウザでPong Gameが楽しめます",
+    "top1_l2": "もちろん、完全無料",
+    "top1_l3": "AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます",
+    "top1_l4": "ご利用には、ユーザー登録が必要です",
+    "top1_l5": "サインアップボタンからユーザー登録をお願いします"
 }

@@ -23,7 +23,11 @@
     "signup_password_warning2": "Password must be more than 7 characters",
     "signup_password_warning3": "Password is too common",
     "signup_password_warning4": "Password must contain alphabets",
-    "signup_password_warning5": "They do not matchh"
-
-
+    "signup_password_warning5": "They do not matchh",
+    "top_header": "Welcome to MY2 GAMES",
+    "top1_l1": "You can enjoy Pong Game",
+    "top1_l2": "Of course, for free",
+    "top1_l3": "You can play against AI, a player, or in tournament with 4, 8, or 16 players",
+    "top1_l4": "Do you have an account?",
+    "top1_l5": "If not, please Sign up"
 }

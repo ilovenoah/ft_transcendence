@@ -420,21 +420,11 @@ function toggleVisibility(login, username, elem) {
     top.innerHTML = '';
     if (login === 'false') {
       top.innerHTML = `
-        <div class="translations" id="top1_l1">
-            このサイトでは、ブラウザでPong Gameが楽しめます
-        </div>
-        <div>
-            もちろん、完全無料！
-        </div>
-        <div>
-            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
-        </div>
-        <div>
-            ご利用には、ユーザー登録が必要です
-        </div>
-        <div class="mb-5">
-            サインアップボタンからユーザー登録をお願いします
-        </div>
+        <div class="translations mb-2" id="top1_l1">　</div>
+        <div class="translations mb-2" id="top1_l2">　</div>
+        <div class="translations mb-2" id="top1_l3">　</div>
+        <div class="translations mb-2" id="top1_l4">　</div>
+        <div class="translations mb-5" id="top1_l5">　</div>
       `;
     } else {
       top.innerHTML = `
