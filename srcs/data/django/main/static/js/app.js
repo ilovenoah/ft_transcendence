@@ -428,18 +428,10 @@ function toggleVisibility(login, username, elem) {
       `;
     } else {
       top.innerHTML = `
-        <div>
-            いますぐPong GameをするにはLobbyから、お好みのゲーム方式を選んでください
-        </div>
-        <div>
-            他のユーザーを友達に登録すると、ユーザーのオンライン状態を確認できます
-        </div>
-        <div>
-            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
-        </div>
-        <div class="mb-5">
-            プロフィールにはアバターを設定することができます
-        </div>
+        <div class="translations mb-2" id="top2_l1">　</div>
+        <div class="translations mb-2" id="top2_l2">　</div>
+        <div class="translations mb-2" id="top2_l3">　</div>
+        <div class="translations mb-2" id="top2_l4">　</div>
     `;
     }
   }

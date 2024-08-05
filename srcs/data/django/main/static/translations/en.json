@@ -3,7 +3,7 @@
     "navbar_signup": "Signup",
     "navbar_login": "Login",
     "login_header": "Login",
-    "login_warning": "inncorrect username or password",
+    "login_warning": "Inncorrect username or password",
     "login_button": "login",
     "login_username": "Username",
     "login_password": "Password",
@@ -29,5 +29,9 @@
     "top1_l2": "Of course, for free",
     "top1_l3": "You can play against AI, a player, or in tournament with 4, 8, or 16 players",
     "top1_l4": "Do you have an account?",
-    "top1_l5": "If not, please Sign up"
+    "top1_l5": "If not, please sign up",
+    "top2_l1": "You can choose a game you want to play on the Lobby page",
+    "top2_l2": "You can see your friends' online status",
+    "top2_l3": "You can play against AI, a player, or in tournament with 4, 8, or 16 players",
+    "top2_l4": "You can set up your avator"
 }
