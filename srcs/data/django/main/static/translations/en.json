@@ -77,6 +77,22 @@
     "friend_requests_header2": "Find New Friends",
     "friend_requests_button3": "Add",
     "friend_request_list_header": "Requests Recieved",
-    "friend_request_list_button": "Accept"
+    "friend_request_list_button": "Accept",
+    "lobby_header": "Lobby",
+    "lobby_single_play": "Single Play",
+    "lobby_new_room": "New Room",
+    "lobby_button1": "Create a Room",
+    "lobby_room_list": "Room List",
+    "lobby_button2": "Enter the Room",
+    "lobby_room_list_helper1": "No room",
+    "lobby_room_list_helper2": "Player",
+    "lobby_new_tournament": "New Tournament",
+    "lobby_4players": "4 Players",
+    "lobby_8players": "8 Players",
+    "lobby_16players": "16 Players",
+    "lobby_tournament_list": "Tournament List",
+    "lobby_tournament_list_helper1": "No tournament",
+    "lobby_tournament_list_helper2": "Size",
+    "lobby_button3": "Join"
 
 }

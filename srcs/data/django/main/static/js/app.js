@@ -437,12 +437,12 @@ function toggleVisibility(login, username, elem) {
 }
 
 function displayAlert(elem) {
-  console.log(elem)
+  console.log(elem);
   lang = getCookie('language') || 'ja';
   if (elem === 'friend') {
     const alert = document.getElementById('friendAlertBlock');
     alert.innerHTML = '';
-    if (lang === 'en') {
+    if (lang === 'ja') {
       alert.innerHTML = `
         そのユーザーは友達に追加できません
       `;
@@ -451,7 +451,31 @@ function displayAlert(elem) {
         You cannot add the user as a friend
       `;
     }
-  } 
+  } else if (elem === 'room') {
+    const alert = document.getElementById('roomAlertBlock');
+    alert.innerHTML = '';
+    if (lang === 'ja') {
+      alert.innerHTML = `
+        そのルームには入れません
+      `;
+    } else {
+      alert.innerHTML = `
+        You cannot enter the room
+      `;
+    }
+  } else if (elem === 'tournament') {
+    const alert = document.getElementById('tournamentAlertBlock');
+    alert.innerHTML = '';
+    if (lang === 'ja') {
+      alert.innerHTML = `
+        そのトーナメントには参加できません
+      `;
+    } else {
+      alert.innerHTML = `
+        You cannot join the tournament
+      `;
+    }
+  }
 }
 
 function setCookie(name, value, days) {

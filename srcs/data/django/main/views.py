@@ -493,6 +493,8 @@ def process_post_data(request):
                             'page': page,
                             'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
                             'title': 'Lobby',
+                            'isValid': 'false',
+                            'elem': 'room'
                         }
                     else:
                         room.user2 = request.user
@@ -624,7 +626,9 @@ def process_post_data(request):
                         response_data = {
                             'page': page,
                             'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
-                            'title': 'Lobby'
+                            'title': 'Lobby',
+                            'isValid': 'false',
+                            'elem': 'tournament'
                         }
                         return JsonResponse(response_data)
                 else: #存在しないはずのトーナメント
@@ -633,7 +637,9 @@ def process_post_data(request):
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
-                        'title': 'Lobby'
+                        'title': 'Lobby',
+                        'isValid': 'false',
+                        'elem': 'tourmanet'
                     }
                     return JsonResponse(response_data)
                 tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)

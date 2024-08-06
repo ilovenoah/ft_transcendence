@@ -77,6 +77,21 @@
     "friend_requests_header2": "新しい友達を探す",
     "friend_requests_button3": "追加",
     "friend_request_list_header": "届いたリクエスト",
-    "friend_request_list_button": "承認"
-
+    "friend_request_list_button": "承認",
+    "lobby_header": "ロビー",
+    "lobby_single_play": "シングルプレー",
+    "lobby_new_room": "新しいルーム",
+    "lobby_button1": "ルーム作成",
+    "lobby_room_list": "ルームリスト",
+    "lobby_button2": "入室",
+    "lobby_room_list_helper1": "ルームがありません",
+    "lobby_room_list_helper2": "プレイヤー",
+    "lobby_new_tournament": "新しいトーナメント",
+    "lobby_4players": "4人用",
+    "lobby_8players": "8人用",
+    "lobby_16players": "16人用",
+    "lobby_tournament_list": "トーナメントリスト",
+    "lobby_tournament_list_helper1": "トーナメントがありません",
+    "lobby_tournament_list_helper2": "大きさ",
+    "lobby_button3": "参加"
 }
