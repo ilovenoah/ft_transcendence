@@ -65,7 +65,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         # タスクをキャンセル
-        self.update_task.cancel()
+        # self.update_task.cancel()
 
         # Redis接続を閉じる
         self.redis.close()
@@ -86,18 +86,22 @@ class PongConsumer(AsyncWebsocketConsumer):
         if message == 'update_position':             
             tmp1 = text_data_json['player1_y']
             if tmp1 != "":
-                if tmp1 > MAX_Y - self.game_state['paddle_1'][2] / 2:
-                    tmp1 = MAX_Y - self.game_state['paddle_1'][2] / 2
-                elif tmp1 < MIN_Y + self.game_state['paddle_1'][2] / 2:
-                    tmp1 = MIN_Y + self.game_state['paddle_1'][2] / 2
+                if tmp1 > MAX_Y :
+                    tmp1 = MAX_Y
+                    # tmp1 = MAX_Y - self.game_state['paddle_1'][2] / 10
+                elif tmp1 < MIN_Y:
+                    tmp1 = MIN_Y
+                    # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
                 self.game_state['paddle_1'][1] = tmp1
             tmp2 = text_data_json['player2_y']
             if tmp2 != "":
-                if tmp2 > MAX_Y - self.game_state['paddle_2'][2] / 2:
-                    tmp2 = MAX_Y - self.game_state['paddle_2'][2] / 2
-                elif tmp2  < MIN_Y + self.game_state['paddle_2'][2] / 2:
-                    tmp2 = MIN_Y + self.game_state['paddle_2'][2] / 2
+                if tmp2 > MAX_Y :
+                    tmp2 = MAX_Y
+                elif tmp2  < MIN_Y :
+                    tmp2 = MIN_Y 
                 self.game_state['paddle_2'][1] = tmp2
+            # Redisに状態を保存
+            # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
             # ロジックを実装してプレイヤー1の位置を更新
             # ここにプレイヤー2やボールの位置、スコアの更新などのロジックを追加            

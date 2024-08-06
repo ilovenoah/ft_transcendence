@@ -1,8 +1,11 @@
 let scene, camera, renderer, overlayCanvas, paddle1, paddle2, ball, score;
-let player1Y = 0;
-let player2Y = 0;
+// let player1Y = 0;
+// let player2Y = 0;
 let paddle1length = 6;
-let paddle2length = 6  ;
+let paddle2length = 6;
+
+
+
 let moveUpX = false;
 let moveDownX = false;
 let moveUpY = false;
@@ -13,6 +16,8 @@ let score_player1 = 0;
 let score_player2 = 0;
 
 let speedrate = 5.0;
+
+let paddleflag = 0;
 
 let lastUpdateTime = Date.now();
 const updateInterval = 1000;  // 1秒
@@ -144,21 +149,24 @@ function init() {
 }
 
 function animate() {
-    if (moveUpX) {
-        paddle1.position.y += 0.1 * speedrate;
-    } else if (moveDownX) {
-        paddle1.position.y -= 0.1 * speedrate;
-    } else if (moveUpY) {
-        paddle2.position.y += 0.1 * speedrate;
-    } else if (moveDownY) {
-        paddle2.position.y -= 0.1 * speedrate;
-    }
 
-    gameSocket.send(JSON.stringify({
-        'message': 'update_position',
-        'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
-        'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
-    }));
+    if (paddleflag > 0){
+        if (moveUpX) {
+            paddle1.position.y += 0.1 * speedrate;
+        } else if (moveDownX) {
+            paddle1.position.y -= 0.1 * speedrate;
+        } else if (moveUpY) {
+            paddle2.position.y += 0.1 * speedrate;
+        } else if (moveDownY) {
+            paddle2.position.y -= 0.1 * speedrate;
+        }
+
+        gameSocket.send(JSON.stringify({
+            'message': 'update_position',
+            'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
+            'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
+        }));
+    }
         
     // } else {
     //     ball.position.x = targetBallPosition.x;
@@ -170,7 +178,7 @@ function animate() {
 
 function updateGameState(data) {
    //#endregion console.log(data);
-    
+    paddleflag = 1;
     if (data.info === 'paddle'){
         paddle1.position.y = data.paddle_1[1] / 100;
         paddle2.position.y = data.paddle_2[1] / 100;    
