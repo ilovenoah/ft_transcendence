@@ -65,6 +65,18 @@
     "change_password_button": "保存",
     "change_password_warning1": "パスワードは最低８文字以上必要です",
     "change_password_warning2": "このパスワードは数字しか使われていません",
-    "change_password_warning3": "確認用パスワードが一致しません"
+    "change_password_warning3": "確認用パスワードが一致しません",
+    "friends_button1": "友達",
+    "friends_button2": "友達リクエスト",
+    "friends_header": "友達",
+    "friends_online_status": "オンラインステータス",
+    "pending_header": "待機中",
+    "friend_requests_button1": "友達",
+    "friend_requests_button2": "友達リクエスト",
+    "friend_requests_header1": "友達リクエスト",
+    "friend_requests_header2": "新しい友達を探す",
+    "friend_requests_button3": "追加",
+    "friend_request_list_header": "届いたリクエスト",
+    "friend_request_list_button": "承認"
 
 }
