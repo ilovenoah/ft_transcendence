@@ -377,8 +377,9 @@ function toggleVisibility(login, username, elem) {
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">　</a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('kr')">한국어</a></li>
               </ul>
           </li>
       </ul>
@@ -406,8 +407,9 @@ function toggleVisibility(login, username, elem) {
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">　</a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('kr')">한국어</a></li>
               </ul>
           </li>
       </ul>
