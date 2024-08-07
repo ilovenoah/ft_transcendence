@@ -79,8 +79,10 @@ document.addEventListener("DOMContentLoaded", function() {
               lang = getCookie('language') || 'ja';
               if (lang === 'ja') {
                 document.getElementById('result').innerText = "アップロードが成功しました\nこの画像を保存しますか？";
-              } else {
+              } else if (lang === 'en') {
                 document.getElementById('result').innerText = "Upload succeeded\nWould you like to save this image?";
+              } else {
+                document.getElementById('result').innerText = "업로드가 성공했습니다\n이 이미지를 저장하시겠습니까?";
               }
               document.getElementById('uploaded').src = response.imgsrc;
               document.getElementById('descimage').innertext ="画像";
