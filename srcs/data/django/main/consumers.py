@@ -24,6 +24,8 @@ sleep_sec = 3.0
 
 
 class PongConsumer(AsyncWebsocketConsumer):
+    room_tasks = {}
+
     async def connect(self):
         # self.room_name = "main"
 
@@ -57,7 +59,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.accept()
        # ボールの位置を定期的に更新する非同期タスクを開始
 
-        self.update_task = asyncio.create_task(self.update_ball_position())
+        # self.update_task = asyncio.create_task(self.update_ball_position())
+        # if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
+        PongConsumer.room_tasks[self.room_group_name] = asyncio.create_task(self.update_ball_position())
         
 
     async def disconnect(self, close_code):
