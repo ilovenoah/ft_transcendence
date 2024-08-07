@@ -10,7 +10,7 @@
     </div>
     <div class="row g-3 align-items-center">
         <div class="mb-3 col-auto">
-            <input type="email" class="form-control bg-dark text-light" name="email" id="id_email" value="{{ form_edit_email.email.value|default_if_none:'' }}">
+            <input type="text" class="form-control bg-dark text-light" name="email" id="id_email" value="{{ form_edit_email.email.value|default_if_none:'' }}">
         </div>
         {% if form_edit_email.email.errors %}
             {% for error in form_edit_email.email.errors %}

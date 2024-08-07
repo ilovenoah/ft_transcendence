@@ -1,10 +1,10 @@
-<head>
+<!-- <head>
     <style>
         .errorlist {
             display: none;
         }
     </style>
-</head>
+</head> -->
 <div class="px-5" id="signup_page">
     <h1 class="mb-3 translations" id="signup_header">　</h1>
     <form class="ajax-form" action="process-post/">
@@ -40,7 +40,7 @@
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <input type="email" class="form-control bg-dark text-light" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" required>
+                <input type="text" class="form-control bg-dark text-light" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" required>
             </div>
             {% if form.email.errors %}
                 {% for error in form.email.errors %}

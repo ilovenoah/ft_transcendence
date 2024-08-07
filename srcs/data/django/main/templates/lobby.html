@@ -19,7 +19,7 @@
                 <div class="card-text text-light translations" id="lobby_room_list_helper2">　</div>
                 {% for room in rooms %}
                     <li class="card-text text-light">{{ room.user1 }}</li>
-                    <div id="roomAlertBlock" class="card-text text-warning"></div>
+                    <div id="roomAlertBlock"></div>
                     <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations" data_url="process-post/" page="enter_room" room_id="{{ room.id }}" id="lobby_button2">　</a>
                 {% endfor %}
             {% else %}
@@ -38,7 +38,7 @@
                 <div class="card-text text-light translations" id="lobby_tournament_list_helper2"></div>
                 {% for tournament in tournaments %}
                     <li class="card-text text-light mb-1">{{ tournament.size }}</li>
-                    <div id="tournamentAlertBlock" class="card-text text-warning"></div>
+                    <div id="tournamentAlertBlock"></div>
                     <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations" data_url="process-post/" page="join_tournament" tournament_id="{{ tournament.id }}" id="lobby_button3">　</a>
                 {% endfor %}
             {% else %}

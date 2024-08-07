@@ -78,11 +78,11 @@ document.addEventListener("DOMContentLoaded", function() {
               const response = JSON.parse(xhr.responseText);
               lang = getCookie('language') || 'ja';
               if (lang === 'ja') {
-                document.getElementById('result').innerText = "アップロードが成功しました\nこの画像を保存しますか？";
+                document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"upload\">アップロードが成功しました\nこの画像を保存しますか？</div>";
               } else if (lang === 'en') {
-                document.getElementById('result').innerText = "Upload succeeded\nWould you like to save this image?";
+                document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"upload\">Upload succeeded\nWould you like to save this image?</div>";
               } else {
-                document.getElementById('result').innerText = "업로드가 성공했습니다\n이 이미지를 저장하시겠습니까?";
+                document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"upload\">업로드가 성공했습니다\n이 이미지를 저장하시겠습니까?</div>";
               }
               document.getElementById('uploaded').src = response.imgsrc;
               document.getElementById('descimage').innertext ="画像";
@@ -359,8 +359,8 @@ function popupAlert(mesg) {
       alertBox.innerText = 'Signed up'
     } else if (mesg === 'ログインしました') {
       alertBox.innerText = 'Logged in'
-    } else if (mesg === '送信しました') {
-      alertBox.innerText = 'Sent'
+    } else if (mesg === '追加しました') {
+      alertBox.innerText = 'Added'
     } else if (mesg === '承認しました') {
       alertBox.innerText = 'Accepted'
     } else if (mesg === '対戦相手を待っています') {
@@ -375,8 +375,8 @@ function popupAlert(mesg) {
       alertBox.innerText = '사인업했습니다'
     } else if (mesg === 'ログインしました') {
       alertBox.innerText = '로그인했습니다'
-    } else if (mesg === '送信しました') {
-      alertBox.innerText = '송신했습니다'
+    } else if (mesg === '追加しました') {
+      alertBox.innerText = '추가했습니다'
     } else if (mesg === '承認しました') {
       alertBox.innerText = '승인했습니다'
     } else if (mesg === '対戦相手を待っています') {
@@ -478,36 +478,20 @@ function toggleVisibility(login, username, elem) {
 function displayAlert(elem) {
   console.log(elem);
   lang = getCookie('language') || 'ja';
-  if (elem === 'friend') {
-    const alert = document.getElementById('friendAlertBlock');
-    alert.innerHTML = '';
-    if (lang === 'ja') {
-      alert.innerHTML = `
-        そのユーザーは友達に追加できません
-      `;
-    } else if (lang === 'en') {
-      alert.innerHTML = `
-        You cannot add the user as a friend
-      `;
-    } else {
-      alert.innerHTML = `
-        그 사용자는 친구에 추가할 수 없습니다
-      `;
-    }
-  } else if (elem === 'room') {
+  if (elem === 'room') {
     const alert = document.getElementById('roomAlertBlock');
     alert.innerHTML = '';
     if (lang === 'ja') {
       alert.innerHTML = `
-        そのルームには入れません
+        <div id="room_warning" class="card-text text-warning translations">そのルームには入れません</div>
       `;
     } else if (lang === 'en') {
       alert.innerHTML = `
-        You cannot enter the room
+        <div id="room_warning" class="card-text text-warning translations">You cannot enter the room</div>
       `;
     } else {
       alert.innerHTML = `
-        그 룸에는 들어갈 수 없습니다
+        <div id="room_warning" class="card-text text-warning translations">그 룸에는 들어갈 수 없습니다</div>
       `;
     }
   } else if (elem === 'tournament') {
@@ -515,15 +499,15 @@ function displayAlert(elem) {
     alert.innerHTML = '';
     if (lang === 'ja') {
       alert.innerHTML = `
-        そのトーナメントには参加できません
+        <div id="tournament_warning" class="card-text text-warning translations">そのトーナメントには参加できません</div>
       `;
     } else if (lang === 'en') {
       alert.innerHTML = `
-        You cannot join the tournament
+        <div id="tournament_warning" class="card-text text-warning translations">You cannot join the tournament</div>
       `;
     } else {
       alert.innerHTML = `
-        그 토너먼트에는 참가할 수 없습니다
+        <div id="tournament_warning" class="card-text text-warning translations">그 토너먼트에는 참가할 수 없습니다</div>
       `;
     }
   }

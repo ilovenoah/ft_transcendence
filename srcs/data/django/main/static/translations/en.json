@@ -93,5 +93,8 @@
     "lobby_tournament_list": "Tournament List",
     "lobby_tournament_list_helper1": "No tournament",
     "lobby_tournament_list_helper2": "Size",
-    "lobby_button3": "Join"
+    "lobby_button3": "Join",
+    "upload": "Upload succeeded\nWould you like to save this image?",
+    "room_warning": "You cannot enter the room",
+    "tournament_warning": "You cannot join the tournament"
 }
