@@ -366,6 +366,22 @@ function popupAlert(mesg) {
     } else if (mesg === '参加者を待っています') {
       alertBox.innerText = 'Waiting for players'
     }
+  } else {
+    if (mesg === 'ログアウトしました') {
+      alertBox.innerText = 'L로그아웃했습니다'
+    } else if (mesg === 'サインアップしました') {
+      alertBox.innerText = '사인업했습니다'
+    } else if (mesg === 'ログインしました') {
+      alertBox.innerText = '로그인했습니다'
+    } else if (mesg === '送信しました') {
+      alertBox.innerText = '송신했습니다'
+    } else if (mesg === '承認しました') {
+      alertBox.innerText = '승인했습니다'
+    } else if (mesg === '対戦相手を待っています') {
+      alertBox.innerText = '대전 상대를 기다리고 있습니다'
+    } else if (mesg === '参加者を待っています') {
+      alertBox.innerText = '참가자를 기다리고 있습니다'
+    }
   }
   alertBox.style.display = 'block';
   setTimeout(() => {
@@ -467,9 +483,13 @@ function displayAlert(elem) {
       alert.innerHTML = `
         そのユーザーは友達に追加できません
       `;
-    } else {
+    } else if (lang === 'en') {
       alert.innerHTML = `
         You cannot add the user as a friend
+      `;
+    } else {
+      alert.innerHTML = `
+        그 사용자는 친구에 추가할 수 없습니다
       `;
     }
   } else if (elem === 'room') {
@@ -479,9 +499,13 @@ function displayAlert(elem) {
       alert.innerHTML = `
         そのルームには入れません
       `;
-    } else {
+    } else if (lang === 'en') {
       alert.innerHTML = `
         You cannot enter the room
+      `;
+    } else {
+      alert.innerHTML = `
+        그 룸에는 들어갈 수 없습니다
       `;
     }
   } else if (elem === 'tournament') {
@@ -491,9 +515,13 @@ function displayAlert(elem) {
       alert.innerHTML = `
         そのトーナメントには参加できません
       `;
-    } else {
+    } else if (lang === 'en') {
       alert.innerHTML = `
         You cannot join the tournament
+      `;
+    } else {
+      alert.innerHTML = `
+        그 토너먼트에는 참가할 수 없습니다
       `;
     }
   }
