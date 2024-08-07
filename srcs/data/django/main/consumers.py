@@ -58,6 +58,7 @@ class PongConsumer(AsyncWebsocketConsumer):
        # ボールの位置を定期的に更新する非同期タスクを開始
 
         self.update_task = asyncio.create_task(self.update_ball_position())
+        
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(

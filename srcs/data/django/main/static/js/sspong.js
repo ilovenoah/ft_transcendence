@@ -3,6 +3,7 @@ let scene, camera, renderer, overlayCanvas, paddle1, paddle2, ball, score;
 // let player2Y = 0;
 let paddle1length = 6;
 let paddle2length = 6;
+let gameSocket;
 
 
 
@@ -266,9 +267,10 @@ function onKeyUp(e) {
     }
 }
 
-function connect(){
+
+function connect(roomName){
     
-    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + gameid + "/");
+    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
     gameSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         updateGameState(data);
@@ -288,6 +290,22 @@ function connect(){
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 
+window.addEventListener('click', (event) => {
+    // クリックされた要素を取得
+    var targetElement = event.target;
+    // 要素が属性 page="ponggame" を持っているか確認
+    if (targetElement.getAttribute('page') !== 'ponggame') {
+        gameSocket.close();
+    }
+});
+
+window.addEventListener('beforeunload', () => {
+    if (gameSocket) {
+        gameSocket.close();
+    }
+});
+
+
 init();
 
 //これでidがとれる
@@ -296,7 +314,7 @@ init();
 let regexp = /\?gameid=(\d+)/
 let match = document.currentScript.src.match(regexp);
 let gameid = match[1];
-
-console.log("match", gameid);
-
-connect();
+if (gameSocket) {
+    gameSocket.close();
+}
+connect(gameid);
