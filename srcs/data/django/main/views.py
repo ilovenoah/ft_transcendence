@@ -150,7 +150,7 @@ def process_post_data(request):
                         'page': 'login',
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                        'alert': 'サインアップに成功しました',
+                        'alert': 'サインアップしました',
                         'test': 'test'
                     }       
                 else:
@@ -524,7 +524,7 @@ def process_post_data(request):
                         'title': 'Room',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '対戦相手を待っています',
                    }
                 else:
                     form = LoginForm(data=post_data)
@@ -547,7 +547,7 @@ def process_post_data(request):
                             'title': 'Room',
                             'reload': page,
                             'timeout' : '10000',
-                            'alert': 'Please, wait a moment.',
+                            'alert': '対戦相手を待っています',
                     }
                     else:
                         response_data = {
@@ -569,7 +569,7 @@ def process_post_data(request):
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '参加者を待っています',
                     }
                 else:
                     form = LoginForm(data=post_data)
@@ -611,7 +611,7 @@ def process_post_data(request):
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '参加者を待っています',
                     }
             elif page == 'join_tournament':
                 user = request.user
@@ -671,7 +671,7 @@ def process_post_data(request):
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '参加者を待っています',
                     }
             
             else:

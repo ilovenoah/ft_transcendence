@@ -347,7 +347,26 @@ function reloadAjax(page, timeout) {
 
 function popupAlert(mesg) {
   alertBox = document.getElementById('custom-alert');
-  alertBox.innerText = mesg;
+  lang = getCookie('language') || 'ja';
+  if (lang === 'ja') {
+    alertBox.innerText = mesg;
+  } else if (lang === 'en') {
+    if (mesg === 'ログアウトしました') {
+      alertBox.innerText = 'Logged out'
+    } else if (mesg === 'サインアップしました') {
+      alertBox.innerText = 'Signed up'
+    } else if (mesg === 'ログインしました') {
+      alertBox.innerText = 'Logged in'
+    } else if (mesg === '送信しました') {
+      alertBox.innerText = 'Sent'
+    } else if (mesg === '承認しました') {
+      alertBox.innerText = 'Accepted'
+    } else if (mesg === '対戦相手を待っています') {
+      alertBox.innerText = 'Waiting for a player'
+    } else if (mesg === '参加者を待っています') {
+      alertBox.innerText = 'Waiting for players'
+    }
+  }
   alertBox.style.display = 'block';
   setTimeout(() => {
       alertBox.style.display = 'none';
