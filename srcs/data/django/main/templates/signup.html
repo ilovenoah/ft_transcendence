@@ -1,14 +1,21 @@
-<div class="px-5">
-    <h1 class="mb-3">サインアップ</h1>
+<!-- <head>
+    <style>
+        .errorlist {
+            display: none;
+        }
+    </style>
+</head> -->
+<div class="px-5" id="signup_page">
+    <h1 class="mb-3 translations" id="signup_header">　</h1>
     <form class="ajax-form" action="process-post/">
         <input type="hidden" name="page" value="signup">
         {% csrf_token %}
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_username" class="form-label">ユーザーネーム</label>
+                <label for="id_username" class="form-label translations" id="signup_username">　</label>
             </div>
-            <div id="usernameHelpBlock" class="mb-4 col-auto">
-                半角英数字でユーザーネームを入力してください
+            <div id="signup_username_helper" class="mb-4 col-auto translations">
+                　
             </div>
         </div>
         <div class="row g-3 align-items-center">
@@ -16,53 +23,72 @@
                 <input type="text" class="form-control bg-dark text-light" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" required>
             </div>
             {% if form.username.errors %}
-                <div class="mb-3 col-auto text-warning">
-                    {{ form.username.errors.as_text }}
-                </div>
+                {% for error in form.username.errors %}
+                    {% if error != "このフィールドは必須です。" %}
+                        <div class="mb-3 col-auto text-warning translations" id="signup_username_warning">　</div>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_email" class="form-label">メールアドレス</label>
+                <label for="id_email" class="form-label translations" id="signup_email">　</label>
             </div>
-            <div id="emailHelpBlock" class="mb-4 col-auto">
-                メールアドレスを入力してください
+            <div class="mb-4 col-auto translations" id="signup_email_helper">
+                　
             </div>
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <input type="email" class="form-control bg-dark text-light" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" required>
+                <input type="text" class="form-control bg-dark text-light" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" required>
             </div>
             {% if form.email.errors %}
-                <div class="mb-3 col-auto text-warning">
-                    {{ form.email.errors.as_text }}
-                </div>
+                {% for error in form.email.errors %}
+                    {% if error != "このフィールドは必須です。" %}
+                        <div class="mb-3 col-auto text-warning translations" id="signup_email_warning">　</div>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_password1" class="form-label">パスワード</label>
+                <label for="id_password1" class="form-label translations" id="signup_password">　</label>
             </div>
-            <div id="password1HelpBlock" class="mb-4 col-auto">
-                8文字以上の半角英数字を入力してください
+            <div id="signup_password_helper" class="mb-4 col-auto translations">
+                　
             </div>
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
                 <input type="password" class="form-control bg-dark text-light" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" required>
             </div>
-            {% if form.password1.errors %}
-                <div class="mb-3 col-auto text-warning">
-                    {{ form.password1.errors.as_text }}
-                </div>
+            {% if form.password2.errors %}
+                {% for error in form.password2.errors %}
+                    {% if error != "このフィールドは必須です。" and error != "確認用パスワードが一致しません。"%}
+                        {% if error == "このパスワードは短すぎます。最低 8 文字以上必要です。" %}
+                            <div class="mb-3 col-auto text-warning translations" id="signup_password_warning2">　</div>
+                        {% elif error == "このパスワードは一般的すぎます。" %}
+                            <div class="mb-3 col-auto text-warning translations" id="signup_password_warning3">　</div>
+                        {% elif error == "このパスワードは数字しか使われていません。" %}
+                            <div class="mb-3 col-auto text-warning translations" id="signup_password_warning4">　</div>
+                        {% else %}
+                            <div class="mb-3 col-auto text-warning translations" id="signup_password_warning1">　</div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
             {% endif %}
+            <!-- {% if form.password2.errors %}
+                <div class="mb-3 col-auto text-warning">
+                    {{ form.password2.errors.as_text }}
+                </div>
+            {% endif %} -->
         </div>
         <div class="row g-3 align-items-center">
             <div class="mb-3 col-auto">
-                <label for="id_password2" class="form-label">確認用</label>
+                <label for="id_password2" class="form-label translations" id="signup_confirmation">　</label>
             </div>
-            <div id="password2HelpBlock" class="mb-4 col-auto">
-                確認のため上と同じパスワードを入力してください
+            <div id="signup_confirmation_helper" class="mb-4 col-auto translations">
+               　
             </div>
         </div>
         <div class="row g-3 align-items-center">
@@ -70,12 +96,14 @@
                 <input type="password" class="form-control bg-dark text-light" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" required>
             </div>
             {% if form.password2.errors %}
-                <div class="mb-3 col-auto text-warning">
-                    {{ form.password2.errors.as_text }}
-                </div>
+                {% for error in form.password2.errors %}
+                    {% if error == "確認用パスワードが一致しません。" %}
+                        <div class="mb-3 col-auto text-warning translations" id="signup_password_warning5">　</div>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         </div>
-        <button type="submit" class="btn btn-primary mb-5 mt-3">サインアップ</button>
+        <button type="submit" class="btn btn-primary mb-5 mt-3 translations" id="signup_button">　</button>
     </form>
 </div>
 

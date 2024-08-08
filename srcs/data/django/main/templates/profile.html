@@ -1,5 +1,6 @@
+{% load i18n %}
 <div class="px-5">
-    <h1 class="mb-4">プロフィール</h1>
+    <h1 class="mb-4 translations" id="profile_header">　</h1>
     <div class="card border-primary text-bg-dark mb-2" style="max-width: 540px;">
         <div class="row g-0">
             <div class="col-md-4 d-flex align-items-center">
@@ -7,13 +8,13 @@
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <h5 class="card-title">ユーザーネーム</h5>
+                    <h5 class="card-title translations" id="profile_username">　</h5>
                     <p class="card-text">{{ user.username }}</p>
-                    <h5 class="card-title">ディスプレイネーム</h5>
+                    <h5 class="card-title translations" id="profile_display_name">　</h5>
                     <p class="card-text">{{ user.display_name }}</p>
-                    <h5 class="card-title">メール</h5>
+                    <h5 class="card-title translations" id="profile_email">　</h5>
                     <p class="card-text">{{ user.email }}</p>
-                    <a href="#" class="btn btn-primary card-link post-link" data_url="process-post/" page="edit_profile" title="Edit Profile">プロフィールの編集</a>
+                    <a href="#" class="btn btn-primary card-link post-link translations" data_url="process-post/" page="edit_profile" title="Edit Profile" id="profile_button">　</a>
                 </div>
             </div>
         </div>

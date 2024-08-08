@@ -30,7 +30,7 @@ class LoginForm(AuthenticationForm):
                 # ログ出力で何が起きているかを確認
                 print("Authentication failed: Username or password is incorrect.")
                 raise forms.ValidationError(
-                    _("ユーザー名またはパスワードが正しくありません。"),
+                    _("ユーザー名またはパスワードが正しくありません"),
                     code='invalid_login',
                 )
             else:
@@ -114,7 +114,7 @@ class ImageForm(forms.ModelForm):
         fields = ['image']
 
 class FriendRequestForm(forms.Form):
-    to_user = forms.ModelChoiceField(queryset=CustomUser.objects.all(), label="Add Friend")
+    to_user = forms.ModelChoiceField(queryset=CustomUser.objects.all(), label="Add Friend", required=False)
 
     def __init__(self, *args, **kwargs):
         self.from_user = kwargs.pop('from_user', None)

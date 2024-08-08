@@ -48,9 +48,6 @@ document.addEventListener("DOMContentLoaded", function() {
       if (classes.includes('post-link')) {
         send_ajax(postData);
       }
-      // if (postData['class'] === 'post-link'){
-      //   send_ajax(postData);
-      // }
     }
   });
 
@@ -79,7 +76,14 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.onload = function() {
             if (xhr.status === 200) {
               const response = JSON.parse(xhr.responseText);
-              document.getElementById('result').innerText = response.message;
+              lang = getCookie('language') || 'ja';
+              if (lang === 'ja') {
+                document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"upload\">アップロードが成功しました\nこの画像を保存しますか？</div>";
+              } else if (lang === 'en') {
+                document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"upload\">Upload succeeded\nWould you like to save this image?</div>";
+              } else {
+                document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"upload\">업로드가 성공했습니다\n이 이미지를 저장하시겠습니까?</div>";
+              }
               document.getElementById('uploaded').src = response.imgsrc;
               document.getElementById('descimage').innertext ="画像";
               if (typeof response.setid !== 'undefined') {     
@@ -124,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function() {
           console.error('Error:', xhr.statusText);
             // エラー処理をここに追加します     
         }
+        loadLanguage();
       };
   
       xhr.onerror = function() {
@@ -278,6 +283,7 @@ function send_ajax(data)
         var response = JSON.parse(xhr.responseText);
         //データを更新する
         updateContent(response);
+        loadLanguage();
         //履歴にページを登録
         history.pushState({ data: response }, response.title, '');
       } else {
@@ -343,7 +349,42 @@ function reloadAjax(page, timeout) {
 
 function popupAlert(mesg) {
   alertBox = document.getElementById('custom-alert');
-  alertBox.innerText = mesg;
+  lang = getCookie('language') || 'ja';
+  if (lang === 'ja') {
+    alertBox.innerText = mesg;
+  } else if (lang === 'en') {
+    if (mesg === 'ログアウトしました') {
+      alertBox.innerText = 'Logged out'
+    } else if (mesg === 'サインアップしました') {
+      alertBox.innerText = 'Signed up'
+    } else if (mesg === 'ログインしました') {
+      alertBox.innerText = 'Logged in'
+    } else if (mesg === '追加しました') {
+      alertBox.innerText = 'Added'
+    } else if (mesg === '承認しました') {
+      alertBox.innerText = 'Accepted'
+    } else if (mesg === '対戦相手を待っています') {
+      alertBox.innerText = 'Waiting for a player'
+    } else if (mesg === '参加者を待っています') {
+      alertBox.innerText = 'Waiting for players'
+    }
+  } else {
+    if (mesg === 'ログアウトしました') {
+      alertBox.innerText = 'L로그아웃했습니다'
+    } else if (mesg === 'サインアップしました') {
+      alertBox.innerText = '사인업했습니다'
+    } else if (mesg === 'ログインしました') {
+      alertBox.innerText = '로그인했습니다'
+    } else if (mesg === '追加しました') {
+      alertBox.innerText = '추가했습니다'
+    } else if (mesg === '承認しました') {
+      alertBox.innerText = '승인했습니다'
+    } else if (mesg === '対戦相手を待っています') {
+      alertBox.innerText = '대전 상대를 기다리고 있습니다'
+    } else if (mesg === '参加者を待っています') {
+      alertBox.innerText = '참가자를 기다리고 있습니다'
+    }
+  }
   alertBox.style.display = 'block';
   setTimeout(() => {
       alertBox.style.display = 'none';
@@ -358,17 +399,26 @@ function setIdValue(id, setvalue) {
 function toggleVisibility(login, username, elem) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
-  console.log('im here')
   console.log(elem)
   if (login === 'false') {
     nav.innerHTML = `
+      <ul class="navbar-nav ms-auto" id="navbar_before_login">
+        <li class="nav-item">
+            <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">　</a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="login" title="login" id="navbar_login">　</a>
+        </li>
+      </ul>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
-        </li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">　</a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('kr')">한국어</a></li>
+              </ul>
+          </li>
       </ul>
     `;
   } else {
@@ -384,11 +434,21 @@ function toggleVisibility(login, username, elem) {
               ${username}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
-              <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="profile" title="Profile" id="navbar_profile">　</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="friends" title="Friends" id="navbar_friends">　</a></li>
+              <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="logout" title="Logout" id="navbar_logout">　</a></li>
             </ul>
         </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">　</a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('kr')">한국어</a></li>
+              </ul>
+          </li>
       </ul>
     `;
   }
@@ -397,60 +457,119 @@ function toggleVisibility(login, username, elem) {
     top.innerHTML = '';
     if (login === 'false') {
       top.innerHTML = `
-        <div>
-            このサイトでは、ブラウザでPong Gameが楽しめます
-        </div>
-        <div>
-            もちろん、完全無料！
-        </div>
-        <div>
-            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
-        </div>
-        <div>
-            ご利用には、ユーザー登録が必要です
-        </div>
-        <div class="mb-5">
-            サインアップボタンからユーザー登録をお願いします
-        </div>
+        <div class="translations mb-2" id="top1_l1">　</div>
+        <div class="translations mb-2" id="top1_l2">　</div>
+        <div class="translations mb-2" id="top1_l3">　</div>
+        <div class="translations mb-2" id="top1_l4">　</div>
+        <div class="translations mb-5" id="top1_l5">　</div>
       `;
     } else {
       top.innerHTML = `
-        <div>
-            いますぐPong GameをするにはLobbyから、お好みのゲーム方式を選んでください
-        </div>
-        <div>
-            他のユーザーを友達に登録すると、ユーザーのオンライン状態を確認できます
-        </div>
-        <div>
-            AI対戦、2人対戦の他、4人・8人・16人のトーナメント方式のプレイが行えます
-        </div>
-        <div class="mb-5">
-            プロフィールにはアバターを設定することができます
-        </div>
+        <div class="translations mb-2" id="top2_l1">　</div>
+        <div class="translations mb-2" id="top2_l2">　</div>
+        <div class="translations mb-2" id="top2_l3">　</div>
+        <div class="translations mb-5" id="top2_l4">　</div>
     `;
+    }
+  }
+  loadLanguage();
+}
+
+function displayAlert(elem) {
+  console.log(elem);
+  lang = getCookie('language') || 'ja';
+  if (elem === 'room') {
+    const alert = document.getElementById('roomAlertBlock');
+    alert.innerHTML = '';
+    if (lang === 'ja') {
+      alert.innerHTML = `
+        <div id="room_warning" class="card-text text-warning translations">そのルームには入れません</div>
+      `;
+    } else if (lang === 'en') {
+      alert.innerHTML = `
+        <div id="room_warning" class="card-text text-warning translations">You cannot enter the room</div>
+      `;
+    } else {
+      alert.innerHTML = `
+        <div id="room_warning" class="card-text text-warning translations">그 룸에는 들어갈 수 없습니다</div>
+      `;
+    }
+  } else if (elem === 'tournament') {
+    const alert = document.getElementById('tournamentAlertBlock');
+    alert.innerHTML = '';
+    if (lang === 'ja') {
+      alert.innerHTML = `
+        <div id="tournament_warning" class="card-text text-warning translations">そのトーナメントには参加できません</div>
+      `;
+    } else if (lang === 'en') {
+      alert.innerHTML = `
+        <div id="tournament_warning" class="card-text text-warning translations">You cannot join the tournament</div>
+      `;
+    } else {
+      alert.innerHTML = `
+        <div id="tournament_warning" class="card-text text-warning translations">그 토너먼트에는 참가할 수 없습니다</div>
+      `;
     }
   }
 }
 
-function displayAlert(elem) {
-  console.log(elem)
-  if (elem === 'email') {
-    const alert = document.getElementById('emailAlertBlock');
-    alert.innerHTML = '';
-    alert.innerHTML = `
-      入力されたメールアドレスが不正です
-    `;
-  } else if (elem === 'display_name') {
-    const alert = document.getElementById('displayNameAlertBlock');
-    alert.innerHTML = '';
-    alert.innerHTML = `
-      入力されたディスプレイネームが不正です
-    `;
-  } else if (elem === 'friend') {
-    const alert = document.getElementById('friendAlertBlock');
-    alert.innerHTML = '';
-    alert.innerHTML = `
-      そのユーザーは友達に追加できません
-    `;
-  } 
+function setCookie(name, value, days) {
+  var expires = "";
+  if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
+
+function getCookie(name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+function applyTranslations(translations) {
+  var elements = document.querySelectorAll('.translations');
+  elements.forEach(function (element) {
+      var translationKey = element.id;
+      if (translations[translationKey]) {
+          element.textContent = translations[translationKey];
+          console.log(element.textContent)
+      } 
+  });
+}
+
+function setLanguage(lang) {
+  setCookie('language', lang, 7); // 言語設定を7日間保存
+
+  console.log(lang)
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/static/translations/' + lang + '.json', true);
+
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+          var translations = JSON.parse(xhr.responseText);
+          applyTranslations(translations);
+      } else if (xhr.readyState === 4) {
+          console.error('Error loading translations:', xhr.statusText);
+      }
+  };
+
+  xhr.send();
+}
+
+function loadLanguage() {
+  lang = getCookie('language') || 'ja'; // クッキーが見つからない場合はデフォルトで'ja'を使用
+  setLanguage(lang);
+}
+
+// ページが読み込まれた時に言語を読み込む
+window.onload = loadLanguage;
+

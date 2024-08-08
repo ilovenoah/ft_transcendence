@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ja">
+{% load i18n %}
+<html lang="{{ request.LANGUAGE_CODE }}">
 
 <head>
     <meta charset="UTF-8">
@@ -11,6 +12,9 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script> -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/navbar-top.css"> -->
     <title>{% block title %}Default Title{% endblock %}</title>
+    <!-- <script>
+        var LANGUAGE_CODE = "{{ request.LANGUAGE_CODE }}";
+    </script> -->
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -67,23 +71,35 @@
                             {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="profile" title="Profile">プロフィール</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="friends" title="Friends">友達</a></li>
-                            <li><a class="dropdown-item post-link" href="#" data_url="process-post/" page="logout" title="Logout">ログアウト</a></li>
+                            <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="profile" title="Profile">　</a></li>
+                            <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="friends" title="Friends">　</a></li>
+                            <li><a class="dropdown-item post-link translations" href="#" data_url="process-post/" page="logout" title="Logout">　</a></li>
                         </ul>
                     </li>
                 </ul>
                 {% endif %}
                 {% if not user.is_authenticated %}
-                <ul class="navbar-nav ms-auto"> 
+                <ul class="navbar-nav ms-auto" id="navbar_before_login"> 
                     <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="signup" title="signup">Signup</a>
+                        <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="signup" title="signup" id="navbar_signup">　</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="login" title="login">Login</a>
+                        <a href="#" class="nav-link active post-link translations" aria-current="page" data_url="process-post/" page="login" title="login" id="navbar_login">　</a>
                     </li>
                 </ul>
                 {% endif %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle translations" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            　
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setLanguage('kr')">한국어</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

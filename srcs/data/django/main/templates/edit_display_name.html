@@ -3,24 +3,22 @@
     {% csrf_token %}
     <div class="row g-3 align-items-center">
         <div class="mb-3 col-auto">
-            <label for="id_display_name" class="form-label">ディスプレイネーム</label>
+            <label for="id_display_name" class="form-label translations" id="edit_display_name_header">　</label>
         </div>
-        <div id="displayNameHelpBlock" class="mb-4 col-auto">
-            ディスプレイネームを入力してください
-        </div>
+        <div id="edit_display_name_helper" class="mb-4 col-auto translations">　</div>
     </div>
     <div class="row g-3 align-items-center">
         <div class="mb-3 col-auto">
             <input type="text" class="form-control bg-dark text-light" name="display_name" id="id_display_name" value="{{ form_edit_display_name.display_name.value|default_if_none:'' }}">
         </div>
-        <div id="displayNameAlertBlock" class="mb-3 col-auto text-warning"></div>
         {% if form_edit_display_name.display_name.errors %}
-            <!-- <div class="mb-3 col-auto"> -->
-            <div class="text-warning">
-                {{ form_edit_display_name.display_name.errors }}
-            </div>
+            {% for error in form_edit_display_name.display_name.errors %}
+                {% if error != "このフィールドは必須です。" %}
+                    <div class="text-warning translations mb-3 col-auto" id="edit_display_name_warning">　</div>
+                {% endif %}
+            {% endfor %}
         {% endif %}
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary translations" id="edit_display_name_button">　</button>
 </form>
 <hr></hr>

@@ -150,7 +150,7 @@ def process_post_data(request):
                         'page': 'login',
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
-                        'alert': 'サインアップに成功しました',
+                        'alert': 'サインアップしました',
                         'test': 'test'
                     }       
                 else:
@@ -264,8 +264,6 @@ def process_post_data(request):
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile',
-                            'isValid': 'false',
-                            'elem': 'email'
                         }
                 else:
                     form = LoginForm(data=post_data)
@@ -296,8 +294,6 @@ def process_post_data(request):
                                 render_to_string('edit_avatar.html', context={'form_edit_avatar': form_edit_avatar, 'request': request}) +
                                 render_to_string('change_password.html', context={'form_change_password': form_change_password, 'request': request}),
                             'title': 'Edit Profile',
-                            'isValid': 'false',
-                            'elem': 'display_name'
                         }
                 else:
                     form = LoginForm(data=post_data)
@@ -384,7 +380,7 @@ def process_post_data(request):
                                 'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
                                     render_to_string('friend_request_list.html', {'forms': forms,}),
                                 'title': 'Friend Request',
-                                'alert': '送信しました',
+                                'alert': '追加しました',
                             }
                         except Exception as e:
                             friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
@@ -394,8 +390,6 @@ def process_post_data(request):
                                 'content': render_to_string('friend_request.html', {'form': form, 'request': request}) +
                                     render_to_string('friend_request_list.html', {'forms': forms,}),
                                 'title': 'Friend Request',
-                                'isValid': "false",
-                                'elem': 'friend'
                             }
                     else:
                         friend_requests = FriendRequest.objects.filter(to_user=request.user, status='P')
@@ -497,6 +491,8 @@ def process_post_data(request):
                             'page': page,
                             'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
                             'title': 'Lobby',
+                            'isValid': 'false',
+                            'elem': 'room'
                         }
                     else:
                         room.user2 = request.user
@@ -526,7 +522,7 @@ def process_post_data(request):
                         'title': 'Room',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '対戦相手を待っています',
                    }
                 else:
                     form = LoginForm(data=post_data)
@@ -549,7 +545,7 @@ def process_post_data(request):
                             'title': 'Room',
                             'reload': page,
                             'timeout' : '10000',
-                            'alert': 'Please, wait a moment.',
+                            'alert': '対戦相手を待っています',
                     }
                     else:
                         response_data = {
@@ -571,7 +567,7 @@ def process_post_data(request):
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '参加者を待っています',
                     }
                 else:
                     form = LoginForm(data=post_data)
@@ -613,7 +609,7 @@ def process_post_data(request):
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '参加者を待っています',
                     }
             elif page == 'join_tournament':
                 user = request.user
@@ -628,7 +624,9 @@ def process_post_data(request):
                         response_data = {
                             'page': page,
                             'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
-                            'title': 'Lobby'
+                            'title': 'Lobby',
+                            'isValid': 'false',
+                            'elem': 'tournament'
                         }
                         return JsonResponse(response_data)
                 else: #存在しないはずのトーナメント
@@ -637,7 +635,9 @@ def process_post_data(request):
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
-                        'title': 'Lobby'
+                        'title': 'Lobby',
+                        'isValid': 'false',
+                        'elem': 'tourmanet'
                     }
                     return JsonResponse(response_data)
                 tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
@@ -669,7 +669,7 @@ def process_post_data(request):
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
-                        'alert': 'Please, wait a moment.',
+                        'alert': '参加者を待っています',
                     }
             
             else:
@@ -726,7 +726,6 @@ def upload_image(request):
                 response_data = {
                     'msgtagid':'result',
                     'imgtagid':'uploaded',
-                    'message':'アップロードが成功しました\nこの画像を保存しますか',
                     'imgsrc':'media/' + image_instance.image.name,
                     'descimage':'アップロード画像',
                     'setid': 'id_avatar',
