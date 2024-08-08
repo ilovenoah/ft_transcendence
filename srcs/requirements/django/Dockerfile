@@ -3,6 +3,8 @@ FROM python:3.9
 # 作業ディレクトリを設定
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y gettext
+
 # 依存関係をインストール
 COPY    ./conf/requirements.txt /app
 RUN     pip install --upgrade pip
@@ -21,13 +23,14 @@ RUN     pip install psycopg2-binary
 
 EXPOSE  8000 8001
 
-#CMD  ["python", "manage.py", "makemigrations"]
-#CMD  ["python", "manage.py", "migrate"]
+# CMD  ["python", "manage.py", "makemigrations"]
+# CMD  ["python", "manage.py", "migrate"]
 
-#COPY toosl/entrypoint.sh /entrypoint.sh
-#RUN chmod +x /entrypoint.sh
-#CMD  ["python", "./tools/createsuperuser.py"]
-    
+# CMD  ["python", "./tools/createsuperuser.py"]
+
+# RUN python manage.py makemessages -l ja -l en
+
+
 # Djangoアプリケーションの開発サーバーを起動
 #CMD ["python", "manage.py", "runserver", "0.0.0.0:8000", "--noreload"]
 #CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

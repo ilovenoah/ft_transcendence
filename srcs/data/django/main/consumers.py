@@ -7,6 +7,15 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django_redis import get_redis_connection
 from asgiref.sync import sync_to_async  # sync_to_asyncをインポート
 
+import sys
+sys.path.append('/app/main')
+import game_ai
+
+#test用関数
+testmessage = game_ai.test("text")
+print(testmessage)
+
+
 #マッチスコア
 score_match = 10
 
@@ -21,6 +30,7 @@ interval = 1 / 30.0
 
 #点数が入ったときに何秒間停止するか
 sleep_sec = 3.0
+
 
 
 class PongConsumer(AsyncWebsocketConsumer):

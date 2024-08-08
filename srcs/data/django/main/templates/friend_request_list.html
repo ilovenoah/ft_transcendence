@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-10">
             <div class="px-5">
-                <h5 class="mb-3">未承認のリクエスト</h5>
+                <h5 class="mb-3 translations" id="friend_request_list_header">　</h5>
                 <form class="ajax-form" action="process-post/">
                     <input type="hidden" name="page" value="friend_request_list">
                     {% csrf_token %}
@@ -29,8 +29,7 @@
                                 <div style="display: none;">{{ data.1 }}</div>
                                 <input type="hidden" name="request_id" value="{{ request_id }}">
                                 <input type="hidden" name="prefix" value="{{ data.1.prefix }}">
-                                
-                                <button class="btn btn-primary btn-sm" type="submit">承認</button>
+                                <button class="btn btn-primary btn-sm translations" type="submit" id="friend_request_list_button">承認</button>
                             </form>
                         </div>
                     </div>
