@@ -305,15 +305,14 @@ window.addEventListener('beforeunload', () => {
 });
 
 
-init();
+function startGame(gameid){
+    init();
 
-//これでidがとれる
-
-
-let regexp = /\?gameid=(\d+)/
-let match = document.currentScript.src.match(regexp);
-let gameid = match[1];
-if (gameSocket) {
-    gameSocket.close();
+    // let regexp = /\?gameid=(\d+)/
+    // let match = document.currentScript.src.match(regexp);
+    // let gameid = match[1];
+    if (gameSocket) {
+        gameSocket.close();
+    }
+    connect(gameid);
 }
-connect(gameid);

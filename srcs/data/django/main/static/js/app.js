@@ -436,9 +436,11 @@ function toggleVisibility(login, username, elem) {
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a href="#" class="nav-link active post-link" data_url="process-post/" page="gamelist" title="Game List">GameList</a>
+          <a href="#" class="nav-link active post-link" data_url="process-post/" page="gamelist2" title="Game List 2">GameList2</a>
         </li>
       </ul>
+
+
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -487,7 +489,7 @@ function toggleVisibility(login, username, elem) {
 }
 
 function displayAlert(elem) {
-  console.log(elem);
+  // console.log(elem);
   lang = getCookie('language') || 'ja';
   if (elem === 'room') {
     const alert = document.getElementById('roomAlertBlock');
@@ -559,7 +561,7 @@ function applyTranslations(translations) {
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
 
-  console.log(lang)
+  // console.log(lang)
   
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/static/translations/' + lang + '.json', true);

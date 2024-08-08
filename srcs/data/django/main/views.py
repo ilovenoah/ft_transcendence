@@ -133,7 +133,7 @@ def process_post_data(request):
                     'page':page,
                     'content': content,
                     'title': title,
-                }    
+                }
             elif page == 'ponggame':
                 response_data = {
                     'page':page,
@@ -142,6 +142,15 @@ def process_post_data(request):
                     'gameid': gameid, 
                     # javascriptのファイルを指定するとき
                     'scriptfiles': '/static/js/sspong.js?gameid=' + gameid,
+                }
+            elif page == 'ponggame2':
+                response_data = {
+                    'page':page,
+                    'content':read_file('ponggame.html'),
+                    'title': title,
+                    'gameid': gameid, 
+                    # 生のjavascriptを埋め込みたいとき
+                    'rawscripts': 'startGame(' + gameid + ')',
                 }
             elif page == 'gamelist':
                 response_data = {
