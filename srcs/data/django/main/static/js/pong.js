@@ -254,8 +254,6 @@ function displayScore(score1, score2){
     context.fillText(txt_score2, txt_score2_x, txt_score2_y);
     context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
 
-
-
     if (score1 >= score_match || score2 >= score_match) {
         txt_win = "Win!";
         txt_lose = "Lose!";
