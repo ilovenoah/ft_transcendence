@@ -207,6 +207,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             # 一定の間隔でボールの位置を更新（例えば0.1秒）
             if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
+                await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                 asyncio.create_task(disconnect_after_delay(self))
                 # await asyncio.sleep(3600)
             else:

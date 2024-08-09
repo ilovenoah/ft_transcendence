@@ -12,8 +12,8 @@ let moveUpY = false;
 let moveDownY = false;
 let wrate = 0.0;
 
-let score_player1 = 0;
-let score_player2 = 0;
+let score_player1;
+let score_player2;
 
 let speedrate = 5.0;
 
@@ -27,8 +27,8 @@ let reconnectInterval = 100; // 再接続の間隔
 
 function init() {
 
-    wwidth = window.innerWidth * 0.9;
-    wheight = window.innerHeight * 0.9;
+    wwidth = window.innerWidth * 0.85;
+    wheight = window.innerHeight * 0.85;
     // console.log (wwidth);
     // console.log(wheight);
     if ( wwidth >= 2 * wheight)
@@ -48,8 +48,8 @@ function init() {
     // オーバーレイCanvasを作成
     overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'overlayCanvas';
-    overlayCanvas.width = wwidth;
-    overlayCanvas.height = wheight;
+    overlayCanvas.width = screen.width;
+    overlayCanvas.height = screen.height;
     document.getElementById('gameCanvas').appendChild(overlayCanvas);    
 
         
@@ -219,17 +219,31 @@ function displayScore(score1, score2){
 
     // テキストの設定
     const txt_score1 = score1;
-    const txt_score1_x = Math.trunc(context.canvas.width / 50.0 * 47); // テキストの描画位置（x座標）
-    const txt_score1_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
+    const canvas_top = document.getElementById('gameCanvas').getBoundingClientRect().top;
+    const canvas_left = document.getElementById('gameCanvas').getBoundingClientRect().left;
+    const canvas_width = document.getElementById('gameCanvas').getBoundingClientRect().width;
+    const canvas_height = document.getElementById('gameCanvas').getBoundingClientRect().height;
+    
+    console.log(canvas_top);
+    console.log(canvas_left);
+    console.log(document.getElementById('gameCanvas').getBoundingClientRect().width);
+    console.log(document.getElementById('gameCanvas').getBoundingClientRect().height);
+
+    const txt_score1_x = Math.trunc(canvas_left + canvas_width / 50.0 * 47.0); // テキストの描画位置（x座標）
+    const txt_score1_y = Math.trunc(canvas_top + canvas_height / 10.0); // テキストの描画位置（y座標）
     const txt_score2 = score2;
-    const txt_score2_x = Math.trunc(context.canvas.width / 50.0 * 2); // テキストの描画位置（x座標）
-    const txt_score2_y = Math.trunc(context.canvas.height / 5.0); // テキストの描画位置（y座標）
+    const txt_score2_x = Math.trunc(canvas_left + canvas_width / 50.0 * 1.0); // テキストの描画位置（x座標）
+    const txt_score2_y = Math.trunc(canvas_top + canvas_height / 10.0 ); // テキストの描画位置（y座標）
+
+
+    console.log(txt_score1_x);
+    console.log(txt_score1_y);
 
     // フォントとスタイルを設定
-    context.font = context.canvas.width / 20 + 'px Arial';
+    context.font = canvas_width / 20.0 + 'px Arial';
     context.fillStyle = 'white';
     
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.clearRect(0, 0, screen.width, screen.height);
     // テキストを描画
     context.fillText(txt_score2, txt_score2_x, txt_score2_y);
     context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
@@ -289,14 +303,14 @@ function connect(roomName){
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 
-window.addEventListener('click', (event) => {
-    // クリックされた要素を取得
-    var targetElement = event.target;
-    // 要素が属性 page="ponggame" を持っているか確認
-    if (targetElement.getAttribute('page') !== 'ponggame') {
-        gameSocket.close();
-    }
-});
+// window.addEventListener('click', (event) => {
+//     // クリックされた要素を取得
+//     var targetElement = event.target;
+//     // 要素が属性 page="ponggame" を持っているか確認
+//     if (targetElement.getAttribute('page') !== 'ponggame') {
+//         gameSocket.close();
+//     }
+// });
 
 window.addEventListener('beforeunload', () => {
     if (gameSocket) {

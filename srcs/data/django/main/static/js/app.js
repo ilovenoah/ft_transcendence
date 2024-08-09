@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
     while (link && link.tagName !== 'A') {
       link = link.parentElement;
     }
-    if (link.tagName === 'A') {
+    if (link != null && link.tagName === 'A') {
       event.preventDefault();
       // 属性を取得し、オブジェクトに変換
       var postData = {};
@@ -92,7 +92,8 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
             }
-        };
+            gameSocket.close();
+          };
         xhr.send(formData);
 
     //textデータを送信するときのform
@@ -129,6 +130,8 @@ document.addEventListener("DOMContentLoaded", function() {
             // エラー処理をここに追加します     
         }
         loadLanguage();
+        gameSocket.close();
+
       };
   
       xhr.onerror = function() {
