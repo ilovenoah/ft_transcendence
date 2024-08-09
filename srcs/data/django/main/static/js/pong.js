@@ -17,6 +17,7 @@ let score_player2;
 
 let speedrate = 5.0;
 
+let score_match = 10;
 let paddleflag = 0;
 
 let lastUpdateTime = Date.now();
@@ -24,6 +25,8 @@ const updateInterval = 1000;  // 1秒
 const animationInterval = 100;  // 10ms
 
 let reconnectInterval = 100; // 再接続の間隔
+
+let first_flag;
 
 function init() {
 
@@ -49,7 +52,7 @@ function init() {
     overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'overlayCanvas';
     overlayCanvas.width = screen.width;
-    overlayCanvas.height = screen.height;
+    overlayCanvas.height = window.innerHeight;
     document.getElementById('gameCanvas').appendChild(overlayCanvas);    
 
         
@@ -200,13 +203,21 @@ function updateGameState(data) {
         
         ball.position.x = data.ball[0] / 100;
         ball.position.y = data.ball[1] / 100;
-        if (score_player1 != data.scores[0]){
+        
+        if (first_flag) {
             score_player1 = data.scores[0];
-            displayScore(score_player1,score_player2);
-        }
-        if (score_player2 != data.scores[1]){
             score_player2 = data.scores[1];
             displayScore(score_player1,score_player2);
+            first_flag = false;
+        } else {
+            if (score_player1 != data.scores[0]){
+                score_player1 = data.scores[0];
+                displayScore(score_player1,score_player2);
+            }
+            if (score_player2 != data.scores[1]){
+                score_player2 = data.scores[1];
+                displayScore(score_player1,score_player2);
+            }
         }
     }
 
@@ -218,17 +229,13 @@ function displayScore(score1, score2){
     const context = overlayCanvas.getContext('2d');
 
     // テキストの設定
-    const txt_score1 = score1;
     const canvas_top = document.getElementById('gameCanvas').getBoundingClientRect().top;
     const canvas_left = document.getElementById('gameCanvas').getBoundingClientRect().left;
     const canvas_width = document.getElementById('gameCanvas').getBoundingClientRect().width;
-    const canvas_height = document.getElementById('gameCanvas').getBoundingClientRect().height;
+//    const canvas_height = document.getElementById('gameCanvas').getBoundingClientRect().height;
+    const canvas_height = window.innerHeight;
     
-    console.log(canvas_top);
-    console.log(canvas_left);
-    console.log(document.getElementById('gameCanvas').getBoundingClientRect().width);
-    console.log(document.getElementById('gameCanvas').getBoundingClientRect().height);
-
+    const txt_score1 = score1;
     const txt_score1_x = Math.trunc(canvas_left + canvas_width / 50.0 * 47.0); // テキストの描画位置（x座標）
     const txt_score1_y = Math.trunc(canvas_top + canvas_height / 10.0); // テキストの描画位置（y座標）
     const txt_score2 = score2;
@@ -236,8 +243,7 @@ function displayScore(score1, score2){
     const txt_score2_y = Math.trunc(canvas_top + canvas_height / 10.0 ); // テキストの描画位置（y座標）
 
 
-    console.log(txt_score1_x);
-    console.log(txt_score1_y);
+
 
     // フォントとスタイルを設定
     context.font = canvas_width / 20.0 + 'px Arial';
@@ -247,6 +253,28 @@ function displayScore(score1, score2){
     // テキストを描画
     context.fillText(txt_score2, txt_score2_x, txt_score2_y);
     context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
+
+
+
+    if (score1 >= score_match || score2 >= score_match) {
+        txt_win = "Win!";
+        txt_lose = "Lose!";
+        txt_win_x = 0;
+        txt_win_y = Math.trunc(canvas_top + canvas_height / 3.0 );
+        txt_lose_x = 0;
+        txt_lose_y = Math.trunc(canvas_top + canvas_height / 3.0 );
+        
+        if (score1 - score2 > 1) {
+            txt_win_x = Math.trunc(canvas_left + canvas_width / 50.0 * 33.0); // テキストの描画位置（x座標）
+            txt_lose_x = Math.trunc(canvas_left + canvas_width / 50.0 * 10.0); // テキストの描画位置（x座標）
+        } else if (score2 - score1 > 1){
+            txt_win_x = Math.trunc(canvas_left + canvas_width / 50.0 * 10.0); // テキストの描画位置（x座標）
+            txt_lose_x = Math.trunc(canvas_left + canvas_width / 50.0 * 33.0); // テキストの描画位置（x座標）
+        }
+        context.fillText(txt_win, txt_win_x, txt_win_y);
+        context.fillText(txt_lose, txt_lose_x, txt_lose_y);
+    }
+
 
     // 一定時間後にテキストを消去
     // setTimeout(() => {
@@ -303,20 +331,34 @@ function connect(roomName){
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 
-// window.addEventListener('click', (event) => {
-//     // クリックされた要素を取得
-//     var targetElement = event.target;
-//     // 要素が属性 page="ponggame" を持っているか確認
-//     if (targetElement.getAttribute('page') !== 'ponggame') {
-//         gameSocket.close();
-//     }
-// });
+window.addEventListener('click', (event) => {
+    // クリックされた要素を取得
+    var link = event.target;
+    while (link && link.tagName !== 'A') {
+        link = link.parentElement;
+    }
+    if (link != null && link.tagName === 'A') {
+        // 要素が属性 page="ponggame" を持っているか確認
+        if (link.getAttribute('page') && link.getAttribute('page') !== 'ponggame2') {
+            if (gameSocket) {
+                gameSocket.close();
+            }
+        }
+    }
+});
 
 window.addEventListener('beforeunload', () => {
     if (gameSocket) {
         gameSocket.close();
     }
 });
+
+window.addEventListener('popstate', function(event) {
+    if (gameSocket) {
+        gameSocket.close();
+    }
+});
+
 
 
 function startGame(gameid){
@@ -328,5 +370,6 @@ function startGame(gameid){
     if (gameSocket) {
         gameSocket.close();
     }
+    first_flag = true;
     connect(gameid);
 }

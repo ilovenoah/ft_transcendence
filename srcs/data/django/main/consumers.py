@@ -26,22 +26,20 @@ MAX_Y = 2000
 MIN_Y = -2000
 
 #1秒間に何回表示するか
-interval = 1 / 30.0
+interval = 1 / 60.0
 
 #点数が入ったときに何秒間停止するか
 sleep_sec = 3.0
-
 
 
 class PongConsumer(AsyncWebsocketConsumer):
     room_tasks = {}
 
     async def connect(self):
-        # self.room_name = "main"
-
-
+ # self.room_name = "main"
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'pong_{self.room_name}'
+        first_flag = True
 
         # aioredisを使ってRedisに接続
         # self.redis = await aioredis.create_redis_pool('redis://redis4242')
@@ -53,9 +51,18 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
+            # ゲームの状態をクライアントに送信
+            await self.channel_layer.group_send(         
+                self.room_group_name,
+                {
+                    "type": "game_update",
+                    "game_state": self.game_state
+                }
+            #    await self.send_game_state(game_state)
+            )   
         else:
             self.game_state = {
-                'ball': [0, 0, 50, math.pi / 4.0], # x, y , speed, angle
+                'ball': [0, 0, 100, math.pi / 4.0], # x, y , speed, angle
                 'paddle_1':[3800, 0, 600], # x, y, length
                 'paddle_2':[-3800, 0, 600],
                 'scores':[0, 0],
