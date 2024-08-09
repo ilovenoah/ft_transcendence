@@ -417,6 +417,7 @@ function toggleVisibility(login, username, elem) {
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('kr')">한국어</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('kk')">kk</a></li>
               </ul>
           </li>
       </ul>
@@ -447,6 +448,7 @@ function toggleVisibility(login, username, elem) {
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('ja')">日本語</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
                   <li><a class="dropdown-item" href="#" onclick="setLanguage('kr')">한국어</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setLanguage('kk')">kk</a></li>
               </ul>
           </li>
       </ul>
