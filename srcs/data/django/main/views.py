@@ -13,7 +13,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
 from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestActionForm, LoginForm
-from .forms import CustomizeGameForm, CustomizeSinglePlayForm
+from .forms import CustomizeGameForm, CustomizeSinglePlayForm, CustomizeTournamentForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -521,7 +521,7 @@ def process_post_data(request):
                         paddle_size = form.cleaned_data['paddle_size']
                         match_point = form.cleaned_data['match_point']
                         is_3d = form.cleaned_data['is_3d']
-                        Matchmaking.objects.create(user1=request.user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
+                        Matchmaking.objects.create(user1=user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
                         page = 'room'
                         response_data = {
                             'page': page,
@@ -571,17 +571,29 @@ def process_post_data(request):
                 user = request.user
                 if user.is_authenticated:
                     size = post_data.get('size')
-                    tournament = Tournament.objects.create(size=size, num_users=1)
-                    TournamentUser.objects.create(tournament=tournament, user=user)
-                    page = 'tournament'
-                    response_data = {
-                        'page': page,
-                        'content': read_file('tournament.html'),
-                        'title': 'tournament',
-                        'reload': page,
-                        'timeout' : '10000',
-                        'alert': '参加者を待っています',
-                    }
+                    form = CustomizeTournamentForm(data=post_data)
+                    if form.is_valid():
+                        ball_speed = form.cleaned_data['ball_speed']
+                        paddle_size = form.cleaned_data['paddle_size']
+                        match_point = form.cleaned_data['match_point']
+                        is_3d = form.cleaned_data['is_3d']
+                        tournament = Tournament.objects.create(size=size, num_users=1, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
+                        TournamentUser.objects.create(tournament=tournament, user=user)
+                        page = 'tournament'
+                        response_data = {
+                            'page': page,
+                            'content': read_file('tournament.html'),
+                            'title': 'tournament',
+                            'reload': page,
+                            'timeout' : '10000',
+                            'alert': '参加者を待っています',
+                        }
+                    else:
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('customize_tournament.html', {'form': form, 'size': size}),
+                            'title': 'customize game',
+                        }
                 else:
                     form = LoginForm(data=post_data)
                     response_data = {
@@ -650,7 +662,7 @@ def process_post_data(request):
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments}),
                         'title': 'Lobby',
                         'isValid': 'false',
-                        'elem': 'tourmanet'
+                        'elem': 'tournament'
                     }
                     return JsonResponse(response_data)
                 tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
@@ -834,7 +846,7 @@ def get_available_tournaments():
 def make_tournament_matches(tournament):
     num_levels = ceil(log2(tournament.size))  # level数を計算(決勝戦はlog2(tournament.size)、初戦は1)、cielは切上
     level = num_levels
-    final_match = Matchmaking.objects.create(tournament=tournament, user1=None, user2=None, level=level) #決勝戦
+    final_match = Matchmaking.objects.create(tournament=tournament, user1=None, user2=None, level=level, ball_speed=tournament.ball_speed, paddle_size=tournament.paddle_size, match_point=tournament.match_point, is_3d=tournament.is_3d) #決勝戦
     current_matches = []
     current_matches.append(final_match)
     next_matches = []
@@ -843,7 +855,7 @@ def make_tournament_matches(tournament):
         while current_matches:
             parent = current_matches.pop(0)
             for _ in range(2):# 親に対して2つのマッチを生成
-                match = Matchmaking.objects.create(tournament=tournament, parent=parent, user1=None, user2=None, level=level)
+                match = Matchmaking.objects.create(tournament=tournament, parent=parent, user1=None, user2=None, level=level, ball_speed=tournament.ball_speed, paddle_size=tournament.paddle_size, match_point=tournament.match_point, is_3d=tournament.is_3d)
                 next_matches.append(match)
         current_matches = next_matches
         next_matches = []
