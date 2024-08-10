@@ -97,5 +97,17 @@
     "lobby_button4": "今すぐプレー",
     "upload": "アップロードが成功しました\nこの画像を保存しますか？",
     "room_warning": "そのルームには入れません",
-    "tournament_warning": "そのトーナメントには参加できません"
+    "tournament_warning": "そのトーナメントには参加できません",
+    "custom_game_header": "ゲーム設定",
+    "custom_game_button": "保存",
+    "game_ball_speed": "ボールスピード",
+    "game_ball_speed_default": "標準",
+    "game_ball_speed_slow": "遅い",
+    "game_ball_speed_fast": "速い",
+    "game_paddle_size": "パドルサイズ",
+    "game_paddle_size_default": "標準",
+    "game_paddle_size_small": "小さい",
+    "game_paddle_size_large": "大きい",
+    "game_match_point": "マッチポイント",
+    "game_is_3d": "グラフィック"
 }

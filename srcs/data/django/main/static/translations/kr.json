@@ -97,5 +97,17 @@
     "lobby_button4": "지금 당장 플레이",
     "upload": "업로드가 성공했습니다\n이 이미지를 저장하시겠습니까?",
     "room_warning": "그 룸에는 들어갈 수 없습니다",
-    "tournament_warning": "그 토너먼트에는 참가할 수 없습니다"
+    "tournament_warning": "그 토너먼트에는 참가할 수 없습니다",
+    "custom_game_header": "게임 설정",
+    "custom_game_button": "보존",
+    "game_ball_speed": "볼 스피드",
+    "game_ball_speed_default": "표준",
+    "game_ball_speed_slow": "늦다",
+    "game_ball_speed_fast": " 빠르다",
+    "game_paddle_size": "패들 사이즈",
+    "game_paddle_size_default": "표준",
+    "game_paddle_size_small": "작다",
+    "game_paddle_size_large": "크다",
+    "game_match_point": "매치 포인트",
+    "game_is_3d": "그래픽"
 }
