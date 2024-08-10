@@ -17,7 +17,7 @@
         <h5 class="card-title text-light px-3 translations" id="lobby_room_list">　</h5>
         <ul class="table-responsive px-3">
             {% if rooms %}
-                <table class="table table-striped-columns table-dark">
+                <table class="table table-dark">
                     <thead>
                         <tr>
                             <th scope="col">　</th>
@@ -34,7 +34,7 @@
                             <td>
                                 <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations text-nowrap" data_url="process-post/" page="enter_room" room_id="{{ room.id }}" id="lobby_button2" style="width: 6rem;">　</a>
                             </td>
-                            <td>{{ room.user1 }}</td>
+                            <td>{{ room.user1.display_name }}</td>
                             <td>
                                 {% if room.ball_speed == 2 %}
                                     <div class="translations" id="room_ball_normal">　</div>
@@ -77,14 +77,57 @@
         <li class="mb-2"><a href="#" class="btn btn-primary btn-sm post-link btn-custom translations" data_url="process-post/" page="create_tournament" title="Create Tournament" size="8" id="lobby_8players">　</a></li>
         <li class="mb-3"><a href="#" class="btn btn-primary btn-sm post-link btn-custom translations" data_url="process-post/" page="create_tournament" title="Create Tournament" size="16" id="lobby_16players">　</a></li>
         <h5 class="card-title text-light px-3 translations" id="lobby_tournament_list">　</h5>
-        <ul>
+        <ul class="table-responsive px-3">
             {% if tournaments %}
-                <div class="card-text text-light translations" id="lobby_tournament_list_helper2"></div>
-                {% for tournament in tournaments %}
-                    <li class="card-text text-light mb-1">{{ tournament.size }}</li>
-                    <div id="tournamentAlertBlock"></div>
-                    <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations" data_url="process-post/" page="join_tournament" tournament_id="{{ tournament.id }}" id="lobby_button3">　</a>
-                {% endfor %}
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">　</th>
+                            <th scope="col" class="translations" id="lobby_tournament_list_helper2">　</th>
+                            <th scope="col" class="translations" id="lobby_tournament_list_helper3">　</th>
+                            <th scope="col" class="translations" id="lobby_tournament_list_helper4">　</th>
+                            <th scope="col" class="translations" id="lobby_tournament_list_helper5">　</th>
+                            <th scope="col" class="translations" id="lobby_tournament_list_helper6">　</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tournament in tournaments %}
+                        <tr>
+                            <td>
+                                <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations text-nowrap" data_url="process-post/" page="join_tournament" tournament_id="{{ tournament.id }}" id="lobby_button3" style="width: 6rem;">　</a>
+                            </td>
+                            <td>{{ tournament.size}}</td>
+                            <td>
+                                {% if tournament.ball_speed == 2 %}
+                                    <div class="translations" id="tournament_ball_normal">　</div>
+                                {% elif tournament.ball_speed == 1 %}
+                                    <div class="translations" id="tournament_ball_slow">　</div>
+                                {% else %}    
+                                    <div class="translations" id="tournament_ball_fast">　</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if tournament.paddle_size == 2 %}
+                                    <div class="translations" id="tournament_paddle_normal">　</div>
+                                {% elif tournament.paddle_size == 1 %}
+                                    <div class="translations" id="tournament_paddle_small">　</div>
+                                {% else %}    
+                                    <div class="translations" id="tournament_paddle_large">　</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ tournament.match_point }}</td>
+                            <td>
+                                {% if tournament.is_3d == True %}
+                                    3D
+                                {% else %}
+                                    2D
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div id="tournamentAlertBlock"></div>
             {% else %}
                 <div class="card-text text-light translations" id="lobby_tournament_list_helper1">　</div>
             {% endif %}
