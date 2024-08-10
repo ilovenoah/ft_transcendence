@@ -212,8 +212,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
                 self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
             # ランダム性を導入
-            if random.random() < 0.1:
-                self.game_state['paddle_2'][1] += random.randint(-400, 400)
+            if random.random() < 0.4:
+                self.game_state['paddle_2'][1] += random.randint(-200, 200)
 
 
             # ゲームの状態をクライアントに送信
