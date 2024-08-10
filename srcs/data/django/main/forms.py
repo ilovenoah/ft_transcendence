@@ -151,3 +151,4 @@ class FriendRequestForm(forms.Form):
 
 class FriendRequestActionForm(forms.Form):
     action = forms.ChoiceField(choices=[('accept', 'Accept')])
+

@@ -531,6 +531,8 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
+            elif page == 'game_custom':
+                user = request.user
             elif page == 'room':
                 user = request.user
                 room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
