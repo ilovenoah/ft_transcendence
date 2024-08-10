@@ -17,11 +17,60 @@
         <h5 class="card-title text-light px-3 translations" id="lobby_room_list">　</h5>
         <ul>
             {% if rooms %}
-                <div class="card-text text-light translations" id="lobby_room_list_helper2">　</div>
+            <table class="table table-striped-columns table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">　</th>
+                        <th scope="col" class="translations" id="lobby_room_list_helper2">　</th>
+                        <th scope="col" class="translations" id="lobby_room_list_helper3">　</th>
+                        <th scope="col" class="translations" id="lobby_room_list_helper4">　</th>
+                        <th scope="col" class="translations" id="lobby_room_list_helper5">　</th>
+                        <th scope="col" class="translations" id="lobby_room_list_helper6">　</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in rooms %}
+                    <tr>
+                        <td>
+                            <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations text-nowrap" data_url="process-post/" page="enter_room" room_id="{{ room.id }}" id="lobby_button2">　</a>
+                        </td>
+                        <td>{{ room.user1 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
                 {% for room in rooms %}
-                    <li class="card-text text-light">{{ room.user1 }}</li>
-                    <div id="roomAlertBlock"></div>
-                    <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations" data_url="process-post/" page="enter_room" room_id="{{ room.id }}" id="lobby_button2">　</a>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations" data_url="process-post/" page="enter_room" room_id="{{ room.id }}" id="lobby_button2">　</a>
+                        </div>
+                        <div class="card-text text-light col-sm-2">
+                            {{ room.user1 }}
+                        </div>
+                        {% if room.ball_speed == 2 %}
+                            <div class="card-text text-light col-sm-2">標準</div>
+                        {% elif room.ball_speed == 1 %}
+                            <div class="card-text text-light col-sm-2">遅い</div>
+                        {% else %}
+                            <div class="card-text text-light col-sm-2">遅い</div>
+                        {% endif %}
+                        {% if room.paddle_size == 2 %}
+                            <div class="card-text text-light col-sm-2">標準</div>
+                        {% elif room.paddle_size == 1 %}
+                            <div class="card-text text-light col-sm-2">短い</div>
+                        {% else %}
+                            <div class="card-text text-light col-sm-2">長い</div>
+                        {% endif %}
+                        <div class="card-text text-light col-sm-2">
+                            {{ room.match_point }}
+                        </div>
+                        {% if room.is_3d == True %}
+                            <div class="card-text text-light col-sm-2">3D</div>
+                        {% else %}
+                            <div class="card-text text-light col-sm-2">2D</div>
+                        {% endif %}
+                    </div>
+                        <div id="roomAlertBlock"></div>
                 {% endfor %}
             {% else %}
                 <div class="card-text text-light translations" id="lobby_room_list_helper1"></div>
