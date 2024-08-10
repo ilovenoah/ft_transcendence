@@ -2,6 +2,7 @@ import json
 import math
 import asyncio
 import aioredis
+import random
 #from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django_redis import get_redis_connection
@@ -115,13 +116,16 @@ class PongConsumer(AsyncWebsocketConsumer):
                     tmp1 = MIN_Y
                     # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
                 self.game_state['paddle_1'][1] = tmp1
-            tmp2 = text_data_json['player2_y']
-            if tmp2 != "":
-                if tmp2 > MAX_Y :
-                    tmp2 = MAX_Y
-                elif tmp2  < MIN_Y :
-                    tmp2 = MIN_Y 
-                self.game_state['paddle_2'][1] = tmp2
+            # tmp2 = text_data_json['player2_y']
+            # if tmp2 != "":
+            #     if tmp2 > MAX_Y :
+            #         tmp2 = MAX_Y
+            #     elif tmp2  < MIN_Y :
+            #         tmp2 = MIN_Y 
+            #     self.game_state['paddle_2'][1] = tmp2
+
+
+                
             # Redisに状態を保存
             # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
@@ -199,6 +203,19 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             self.game_state['info'] = 'all'
 
+
+
+            #AIブロック
+            # シンプルな追尾アルゴリズム
+            if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+                self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+            elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+                self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
+            # ランダム性を導入
+            if random.random() < 0.1:
+                self.game_state['paddle_2'][1] += random.randint(-400, 400)
+
+
             # ゲームの状態をクライアントに送信
             await self.channel_layer.group_send(         
                 self.room_group_name,
@@ -245,3 +262,16 @@ class PongConsumer(AsyncWebsocketConsumer):
     #     if ball.ycor() < -29:
     #         ball.sety(-29)
     #         self.game_state['ball'][1]_direction = self.game_state['ball'][1]_direction * -1
+
+
+    def ai_move(self):
+        # シンプルな追尾アルゴリズム
+        # if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+        #     self.game_state['paddle_2'][1] += min(5, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+        # elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+        #     self.game_state['paddle_2'][1] -= min(5, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+
+        # # ランダム性を導入
+        # if random.random() < 0.1:
+        #     self.game_state['paddle_2'][1] += random.randint(-10, 10)
+        return
