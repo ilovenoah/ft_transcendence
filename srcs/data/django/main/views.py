@@ -13,7 +13,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
 from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestActionForm, LoginForm
-from .forms import CustomizeGameForm
+from .forms import CustomizeGameForm, CustomizeSinglePlayForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -532,8 +532,6 @@ def process_post_data(request):
                             'alert': '対戦相手を待っています',
                         }
                     else:
-                        rooms = get_available_rooms()
-                        tournaments = get_available_tournaments()
                         response_data = {
                             'page': page,
                             'content': render_to_string('customize_game.html', {'form': form}),
@@ -686,7 +684,30 @@ def process_post_data(request):
                         'timeout' : '10000',
                         'alert': '参加者を待っています',
                     }
-            
+            elif page == 'single_play':
+                form = CustomizeSinglePlayForm(data=post_data)
+                if form.is_valid():
+                    ball_speed = form.cleaned_data['ball_speed']
+                    paddle_size = form.cleaned_data['paddle_size']
+                    match_point = form.cleaned_data['match_point']
+                    is_3d = form.cleaned_data['is_3d']
+                    ai = form.cleaned_data['ai']
+                    Matchmaking.objects.create(user1=request.user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d, ai=ai, is_single=True)
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('customize_single_play.html', {'form': form}),
+                        'title': 'customize single play'
+                    }
+
+
+
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {

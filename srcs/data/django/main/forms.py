@@ -180,8 +180,45 @@ class CustomizeGameForm(forms.ModelForm):
     ]
     is_3d = forms.ChoiceField(choices=IS_3D_CHOICES)
 
-
     class Meta:
         model = Matchmaking
         fields = ['ball_speed', 'paddle_size', 'match_point', 'is_3d']
     
+class CustomizeSinglePlayForm(forms.ModelForm):
+    BALL_SPEED_CHOICES = [
+        (2, '標準'),
+        (1, '遅い'),
+        (3, '速い'),
+    ]
+    ball_speed = forms.ChoiceField(choices=BALL_SPEED_CHOICES)
+
+    PADDLE_SIZE_CHOICES = [
+        (2, '標準'),
+        (1, '小さい'),
+        (3, '大きい'),
+    ]
+    paddle_size = forms.ChoiceField(choices=PADDLE_SIZE_CHOICES)
+
+    MATCH_POINT_CHOICES = [
+        (10, '10'),
+        (15, '15'),
+        (20, '20'),
+    ]
+    match_point = forms.ChoiceField(choices=MATCH_POINT_CHOICES)
+
+    IS_3D_CHOICES = [
+        (False, '2D'),
+        (True, '3D'),
+    ]
+    is_3d = forms.ChoiceField(choices=IS_3D_CHOICES)
+
+    AI_CHOICES = [
+        (2, "普通"),
+        (1, "弱い"),
+        (3, "強い"),
+    ]
+    ai = forms.ChoiceField(choices=AI_CHOICES)
+
+    class Meta:
+        model = Matchmaking
+        fields = ['ball_speed', 'paddle_size', 'match_point', 'is_3d', 'ai']

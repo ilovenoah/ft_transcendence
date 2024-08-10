@@ -63,5 +63,6 @@ class Matchmaking(models.Model):
     match_point = models.IntegerField(default=10)
     is_3d = models.BooleanField(default=False)
     ai = models.IntegerField(default=2)
+    is_single = models.BooleanField(default=False)
     def __str__(self):
         return f'Matchmaking ID {self.id} (Tournament: {self.tournament_id})'
