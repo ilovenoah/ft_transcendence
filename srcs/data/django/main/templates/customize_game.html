@@ -1,0 +1,6 @@
+<form class="ajax-form px-5" action="process-post/">
+    <input type="hidden" name="page" value="create_room">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>

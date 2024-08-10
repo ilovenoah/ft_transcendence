@@ -13,6 +13,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
 from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordChangeForm, ImageForm, FriendRequestForm, FriendRequestActionForm, LoginForm
+from .forms import CustomizeGameForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -514,16 +515,30 @@ def process_post_data(request):
             elif page == 'create_room':
                 user = request.user
                 if user.is_authenticated:
-                    Matchmaking.objects.create(user1=user)
-                    page = 'room'
-                    response_data = {
-                        'page': page,
-                        'content': read_file('room.html'),
-                        'title': 'Room',
-                        'reload': page,
-                        'timeout' : '10000',
-                        'alert': '対戦相手を待っています',
-                   }
+                    form = CustomizeGameForm(data=post_data)
+                    if form.is_valid():
+                        ball_speed = form.cleaned_data['ball_speed']
+                        paddle_size = form.cleaned_data['paddle_size']
+                        match_point = form.cleaned_data['match_point']
+                        is_3d = form.cleaned_data['is_3d']
+                        Matchmaking.objects.create(user1=request.user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
+                        page = 'room'
+                        response_data = {
+                            'page': page,
+                            'content': read_file('room.html'),
+                            'title': 'Room',
+                            'reload': page,
+                            'timeout' : '10000',
+                            'alert': '対戦相手を待っています',
+                        }
+                    else:
+                        rooms = get_available_rooms()
+                        tournaments = get_available_tournaments()
+                        response_data = {
+                            'page': page,
+                            'content': render_to_string('customize_game.html', {'form': form}),
+                            'title': 'customize game'
+                        }
                 else:
                     form = LoginForm(data=post_data)
                     response_data = {
@@ -531,8 +546,6 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                     }
-            elif page == 'game_custom':
-                user = request.user
             elif page == 'room':
                 user = request.user
                 room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
