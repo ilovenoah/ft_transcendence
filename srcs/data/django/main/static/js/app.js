@@ -563,7 +563,7 @@ function applyTranslations(translations) {
       var translationKey = element.id;
       if (translations[translationKey]) {
           element.textContent = translations[translationKey];
-          console.log(element.textContent)
+          // console.log(element.textContent)
       } 
   });
 }
@@ -581,7 +581,7 @@ function setLanguage(lang) {
           var translations = JSON.parse(xhr.responseText);
           applyTranslations(translations);
       } else if (xhr.readyState === 4) {
-          console.error('Error loading translations:', xhr.statusText);
+          // console.error('Error loading translations:', xhr.statusText);
       }
   };
 
