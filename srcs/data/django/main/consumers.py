@@ -32,7 +32,7 @@ interval = 1 / 60.0
 #点数が入ったときに何秒間停止するか
 sleep_sec = 3.0
 
-
+ 
 class PongConsumer(AsyncWebsocketConsumer):
     room_tasks = {}
 
@@ -50,6 +50,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         # Redisから状態を取得
         game_state_raw = await self.redis.get(self.room_group_name)
 
+        self.memory = []
+
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
             # ゲームの状態をクライアントに送信
@@ -63,7 +65,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             )   
         else:
             self.game_state = {
-                'ball': [0, 0, 100, math.pi / 4.0], # x, y , speed, angle
+                'ball': [0, 0, 70, math.pi / 4.0], # x, y , speed, angle
                 'paddle_1':[3800, 0, 600], # x, y, length
                 'paddle_2':[-3800, 0, 600],
                 'scores':[0, 0],
@@ -206,14 +208,45 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
             #AIブロック
-            # シンプルな追尾アルゴリズム
-            if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
-                self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-            elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
-                self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
-            # ランダム性を導入
-            if random.random() < 0.4:
-                self.game_state['paddle_2'][1] += random.randint(-200, 200)
+            #  # ランダム性を導入
+            # if random.random() < 0.4:
+            #     self.game_state['paddle_2'][1] += random.randint(-300, 300)
+            # # シンプルな追尾アルゴリズム
+            # if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+            #     self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+            # elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+            #     self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
+           
+
+            # 過去のボール位置を記憶
+            self.memory.append(self.game_state['ball'][1])
+            if len(self.memory) > 1000:  # メモリの長さを制限
+                self.memory.pop(0)
+        
+            # パターンを検出して動く
+            if len(set(self.memory)) == 1:  # 全て同じ位置ならそこに移動
+                target_y = self.memory[0]
+            else:
+                target_y = self.game_state['ball'][1]
+        
+            if target_y > self.game_state['paddle_2'][1]:
+                self.game_state['paddle_2'][1] += min(50, target_y - self.game_state['paddle_2'][1])
+            elif target_y < self.game_state['paddle_2'][1]:
+                self.game_state['paddle_2'][1] -= min(50, self.game_state['paddle_2'][1] - target_y)
+
+
+
+            # ボールの未来の位置を予測
+            # predicted_y = self.game_state['ball'][1] + math.sin(self.game_state['ball'][2]) * (self.game_state['paddle_2'][0] - self.game_state['ball'][0]) / math.cos(self.game_state['ball'][2])
+            # if predicted_y > self.game_state['paddle_2'][1]:
+            #     self.game_state['paddle_2'][1] += min(70, predicted_y - self.game_state['paddle_2'][1])
+            #     if self.game_state['paddle_2'][1] > MAX_Y :
+            #         self.game_state['paddle_2'][1] = MAX_Y
+            # elif predicted_y < self.game_state['paddle_2'][1]:
+            #     self.game_state['paddle_2'][1] -= min(70, self.game_state['paddle_2'][1] - predicted_y)
+            #     if self.game_state['paddle_2'][1] < MIN_Y :
+            #         self.game_state['paddle_2'][1] = MIN_Y
+
 
 
             # ゲームの状態をクライアントに送信
