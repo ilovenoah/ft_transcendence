@@ -831,6 +831,7 @@ def get_available_rooms():
         user2__isnull=True,
         timestamp__gte=thirty_seconds_ago,
         is_single=False,
+        level=-1,
     )
     return available_rooms
 
