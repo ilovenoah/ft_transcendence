@@ -42,6 +42,7 @@
     "profile_display_name": "ディスプレイネーム",
     "profile_email": "メールアドレス",
     "profile_button": "プロフィールの編集",
+    "profile_win_rate": "勝率",
     "edit_profile": "プロフィールの編集",
     "edit_email_header": "メールアドレス",
     "edit_email_helper": "メールアドレスを入力してください",

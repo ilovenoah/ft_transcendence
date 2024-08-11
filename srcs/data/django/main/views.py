@@ -829,7 +829,8 @@ def get_available_rooms():
     thirty_seconds_ago = current_time - timedelta(seconds=30)
     available_rooms = Matchmaking.objects.filter(
         user2__isnull=True,
-        timestamp__gte=thirty_seconds_ago
+        timestamp__gte=thirty_seconds_ago,
+        is_single=False,
     )
     return available_rooms
 
@@ -859,3 +860,5 @@ def make_tournament_matches(tournament):
                 next_matches.append(match)
         current_matches = next_matches
         next_matches = []
+
+# def calculate_win_rate(user):
