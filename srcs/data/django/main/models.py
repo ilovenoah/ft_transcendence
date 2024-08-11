@@ -44,6 +44,10 @@ class Tournament(models.Model):
     size = models.IntegerField(default=0)
     num_users = models.IntegerField(default=-1)
     timestamp = models.DateTimeField(auto_now=True)
+    ball_speed = models.IntegerField(default=2)
+    paddle_size = models.IntegerField(default=2)
+    match_point = models.IntegerField(default=10)
+    is_3d = models.BooleanField(default=False)
 
 class TournamentUser(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
@@ -58,5 +62,11 @@ class Matchmaking(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     level = models.IntegerField(default=-1)
+    ball_speed = models.IntegerField(default=2)
+    paddle_size = models.IntegerField(default=2)
+    match_point = models.IntegerField(default=10)
+    is_3d = models.BooleanField(default=False)
+    ai = models.IntegerField(default=2)
+    is_single = models.BooleanField(default=False)
     def __str__(self):
         return f'Matchmaking ID {self.id} (Tournament: {self.tournament_id})'

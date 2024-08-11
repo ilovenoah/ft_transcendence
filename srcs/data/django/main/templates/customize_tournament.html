@@ -1,0 +1,53 @@
+<div class="px-5">
+    <h1 class="mb-3 translations text-light" id="custom_tournament_header">　</h1>
+    <form class="ajax-form px-5" action="process-post/">
+        <input type="hidden" name="page" value="create_tournament">
+        <input type="hidden" name="size" value="{{ size }}">
+        {% csrf_token %}
+        <div class="form-group row mb-3">
+            <label for="id_ball_speed" class="col-sm-2 col-form-label translations text-light" id="tournament_ball_speed">　</label>
+            <div class="col-sm-3" style="width: 8rem;">
+                <select name="ball_speed" id="id_ball_speed" class="form-select bg-dark text-light">
+                    <option value="2" {% if form.ball_speed.value == "2" %}selected{% endif %} class="translations" id="tournament_ball_speed_normal">　</option>
+                    <option value="1" {% if form.ball_speed.value == "1" %}selected{% endif %} class="translations" id="tournament_ball_speed_slow">　</option>
+                    <option value="3" {% if form.ball_speed.value == "3" %}selected{% endif %} class="translations" id="tournament_ball_speed_fast">　</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row mb-3">
+            <label for="id_paddle_size" class="col-sm-2 col-form-label translations text-light" id="tournament_paddle_size">　</label>
+            <div class="col-sm-3" style="width: 8rem;">
+                <select name="paddle_size" id="id_paddle_size" class="form-select bg-dark text-light">
+                    <option value="2" {% if form.paddle_size.value == "2" %}selected{% endif %} class="translations" id="tournament_paddle_size_normal">　</option>
+                    <option value="1" {% if form.paddle_size.value == "1" %}selected{% endif %} class="translations" id="tournament_paddle_size_small">　</option>
+                    <option value="3" {% if form.paddle_size.value == "3" %}selected{% endif %} class="translations" id="tournament_paddle_size_large">　</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row mb-3">
+            <label for="id_match_point" class="col-sm-2 col-form-label translations text-light" id="tournament_match_point">　</label>
+            <div class="col-sm-3" style="width: 8rem;">
+                <select name="match_point" id="id_match_point" class="form-select bg-dark text-light">
+                    {% for value, label in form.match_point.field.choices %}
+                    <option value="{{ value }}" {% if form.match_point.value == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row mb-3">
+            <label for="id_is_3d" class="col-sm-2 col-form-label translations text-light" id="tournament_is_3d">　</label>
+            <div class="col-sm-3" style="width: 8rem;">
+                <select name="is_3d" id="id_is_3d" class="form-select bg-dark text-light">
+                    {% for value, label in form.is_3d.field.choices %}
+                    <option value="{{ value }}" {% if form.is_3d.value == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-5 mt-3 translations" id="custom_tournament_button">　</button>
+    </form>
+</div>

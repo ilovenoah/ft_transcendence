@@ -146,6 +146,8 @@ window.addEventListener("popstate", function(event) {
   if (event.state) {
     // 状態オブジェクトが存在する場合、表示内容を更新
     updateContent(event.state.data);
+
+
   }
 });
   
@@ -228,7 +230,12 @@ function updateContent(data) {
       // <foot> タグに新しいスクリプトタグを挿入
       foot.appendChild(arrayScript);
     }
+
+
   }
+
+
+  loadLanguage();
   
   // var links = document.getElementById('content').querySelectorAll(".post-link");  
   // links.forEach(function(link) {
@@ -558,7 +565,7 @@ function setLanguage(lang) {
           var translations = JSON.parse(xhr.responseText);
           applyTranslations(translations);
       } else if (xhr.readyState === 4) {
-          console.error('Error loading translations:', xhr.statusText);
+          // console.error('Error loading translations:', xhr.statusText);
       }
   };
 
