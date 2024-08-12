@@ -8,13 +8,13 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django_redis import get_redis_connection
 from asgiref.sync import sync_to_async  # sync_to_asyncをインポート
 
-import sys
-sys.path.append('/app/main')
-import game_ai
 
-#test用関数
-testmessage = game_ai.test("text")
-print(testmessage)
+import logging
+
+
+
+logger = logging.getLogger(__name__)
+
 
 
 #マッチスコア
@@ -46,6 +46,22 @@ class PongConsumer(AsyncWebsocketConsumer):
         # self.redis = await aioredis.create_redis_pool('redis://redis4242')
 
         self.redis = await aioredis.from_url('redis://redis4242:6379')
+
+        # ログインユーザーの取得
+        user = self.scope["user"]        
+        # ユーザーが認証されているかどうかを確認
+        if user.is_authenticated:
+            username = user.username
+        else:
+            username = ""
+
+        logger.debug(username)
+
+        
+
+
+
+
 
         # Redisから状態を取得
         game_state_raw = await self.redis.get(self.room_group_name)
