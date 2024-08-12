@@ -184,5 +184,8 @@
     "history_tournament_ball_normal": "표준",
     "history_tournament_ball_slow": "느리다",
     "history_tournament_ball_fast": "빠르다",
-    "history_tournament_paddle_size": "패들 사이즈"
+    "history_tournament_paddle_size": "패들 사이즈",
+    "history_tournament_paddle_normal": "표준",
+    "history_tournament_paddle_small": "작다",
+    "history_tournament_paddle_large": "크다"
 }
