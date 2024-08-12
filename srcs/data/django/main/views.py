@@ -209,9 +209,10 @@ def process_post_data(request):
             elif page == 'profile':
                 user = request.user
                 if user.is_authenticated:
+                    win_rate = calculate_win_rate(user)
                     response_data = {
                         'page': page,
-                        'content': render_to_string('profile.html', {'user': user}),
+                        'content': render_to_string('profile.html', {'user': user, 'win_rate': win_rate}),
                         'title': 'Profile',
                     }
                 else:
@@ -862,4 +863,14 @@ def make_tournament_matches(tournament):
         current_matches = next_matches
         next_matches = []
 
-# def calculate_win_rate(user):
+def calculate_win_rate(user):
+    count1 = Matchmaking.objects.filter(user1=user, is_single=False).exclude(winner__isnull=True).count()
+    count2 = Matchmaking.objects.filter(user2=user, is_single=False).exclude(winner__isnull=True).count()
+    logger.debug(f'count1: {count1}, count2: {count2}')
+    total = count1 + count2
+    if total == 0:
+        return int(0)
+    win_count = Matchmaking.objects.filter(winner=user).count()
+    win_rate = win_count * 100 / total
+    logger.debug(f'total: {total}, win_count: {win_count}, win_rate: {win_rate}')
+    return int(win_rate)
