@@ -41,6 +41,10 @@ def process_post_data(request):
             content = post_data.get('content') 
             gameid = post_data.get('gameid') 
 
+
+
+
+
             #送信データの作成
             if page == 'logout':
                 user = request.user
@@ -721,12 +725,14 @@ def process_post_data(request):
                     match_point = form.cleaned_data['match_point']
                     is_3d = form.cleaned_data['is_3d']
                     ai = form.cleaned_data['ai']
-                    Matchmaking.objects.create(user1=request.user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d, ai=ai, is_single=True)
+                    match = Matchmaking.objects.create(user1=request.user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d, ai=ai, is_single=True)
                     response_data = {
                         'page':page,
                         'content':read_file('ponggame.html'),
                         'title': title,
-                        'scriptfiles': '/static/js/game.js',
+                        'gameid': str(match.id), 
+                        # 生のjavascriptを埋め込みたいとき
+                        'rawscripts': 'startGame(' + str(match.id) + ')',
                     }
                 else:
                     response_data = {

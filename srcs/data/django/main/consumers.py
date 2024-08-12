@@ -91,7 +91,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         )
         # タスクをキャンセル
         # self.update_task.cancel()
-
         # Redis接続を閉じる
         self.redis.close()
         await self.redis.wait_closed()
@@ -259,13 +258,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             #    await self.send_game_state(game_state)
             )            
 
+            #Dueceを設定
             if self.game_state['scores'][0] == (score_match - 1) and self.game_state['scores'][1] == (score_match - 1) :
                 score_match += 1
-
-            # 一定の間隔でボールの位置を更新（例えば0.1秒）
+            #matchの終了判断
             if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
                 await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                 asyncio.create_task(disconnect_after_delay(self))
+                PongConsumer.room_tasks[self.room_group_name].cancel()
                 # await asyncio.sleep(3600)
             else:
                 await asyncio.sleep(interval)

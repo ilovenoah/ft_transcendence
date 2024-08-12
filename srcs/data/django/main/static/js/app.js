@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // エラー処理をここに追加します     
         }
         loadLanguage();
-        gameSocket.close();
+        // gameSocket.close();
 
       };
   
