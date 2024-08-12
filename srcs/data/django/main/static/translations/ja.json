@@ -165,5 +165,14 @@
     "1v1_date": "日付",
     "1v1_player1": "プレイヤー1",
     "1v1_player2": "プレイヤー2",
-    "1v1_winner": "勝者"
+    "1v1_score": "得点",
+    "1v1_winner": "勝者",
+    "1v1_ball_speed": "ボールスピード",
+    "1v1_ball_normal": "標準",
+    "1v1_ball_slow": "遅い",
+    "1v1_ball_fast": "速い",
+    "1v1_paddle_size": "パドルサイズ",
+    "1v1_paddle_normal": "標準",
+    "1v1_paddle_small": "小さい",
+    "1v1_paddle_large": "大きい"
 }

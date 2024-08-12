@@ -211,7 +211,10 @@ def process_post_data(request):
                 if user.is_authenticated:
                     win = Matchmaking.objects.filter(winner=user).count()
                     loss = calculate_loss(user, win)
-                    win_rate = int(win * 100 / (win + loss))
+                    if win + loss == 0:
+                        win_rate = 0
+                    else:
+                        win_rate = int(win * 100 / (win + loss))
                     response_data = {
                         'page': page,
                         'content': render_to_string('profile.html', {'user': user, 'win_rate': win_rate, 'win': win, 'loss': loss}),

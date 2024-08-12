@@ -165,5 +165,14 @@
     "1v1_date": "날짜",
     "1v1_player1": "플레이어1",
     "1v1_player2": "플레이어2",
-    "1v1_winner": "승자"
+    "1v1_score": "득점",
+    "1v1_winner": "승자",
+    "1v1_ball_speed": "볼 스피드",
+    "1v1_ball_normal": "표준",
+    "1v1_ball_slow": "느리다",
+    "1v1_ball_fast": "빠르다",
+    "1v1_paddle_size": "패들 사이즈",
+    "1v1_paddle_normal": "표준",
+    "1v1_paddle_small": "작다",
+    "1v1_paddle_large": "크다"
 }

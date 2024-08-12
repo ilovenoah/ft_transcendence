@@ -165,5 +165,14 @@
     "1v1_date": "Date",
     "1v1_player1": "Player1",
     "1v1_player2": "Player2",
-    "1v1_winner": "Winner"
+    "1v1_score": "Score",
+    "1v1_winner": "Winner",
+    "1v1_ball_speed": "Ball Speed",
+    "1v1_ball_normal": "Normal",
+    "1v1_ball_slow": "Slow",
+    "1v1_ball_fast": "Fast",
+    "1v1_paddle_size": "Paddle Size",
+    "1v1_paddle_normal": "Normale",
+    "1v1_paddle_small": "Small",
+    "1v1_paddle_large": "Large"
 }
