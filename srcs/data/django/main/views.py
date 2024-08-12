@@ -212,7 +212,6 @@ def process_post_data(request):
                     win = Matchmaking.objects.filter(winner=user).count()
                     loss = calculate_loss(user, win)
                     win_rate = int(win * 100 / (win + loss))
-                    logger.debug(f'win: {win}, loss: {loss}, win_rate: {win_rate}')
                     response_data = {
                         'page': page,
                         'content': render_to_string('profile.html', {'user': user, 'win_rate': win_rate, 'win': win, 'loss': loss}),
@@ -721,6 +720,14 @@ def process_post_data(request):
                         'content': render_to_string('customize_single_play.html', {'form': form}),
                         'title': 'customize single play'
                     }
+            elif page == 'match_history':
+                if request.user.is_authenticated:
+                    matches = Matchmaking.objects.filter(level=-1, is_single=False).exclude(winner__isnull=True)
+                    response_data = {
+                            'page': page,
+                            'content': render_to_string('match_history.html', {'matches': matches}),
+                            'title': 'customize single play'
+                        }
 
 
 

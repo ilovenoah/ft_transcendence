@@ -41,7 +41,8 @@
     "profile_username": "유저 네임",
     "profile_display_name": "디스플레이 네임",
     "profile_email": "이메일",
-    "profile_button": "프로필 편집",
+    "profile_button1": "프로필 편집",
+    "profile_button2": "매치 히스토리",
     "profile_win": "승리",
     "profile_loss": "패배",
     "profile_win_rate": "승률",
@@ -159,5 +160,10 @@
     "tournament_paddle_size_small": "작다",
     "tournament_paddle_size_large": "크다",
     "tournament_match_point": "승리 스코어",
-    "tournament_is_3d": "스타일"
+    "tournament_is_3d": "스타일",
+    "match_history_header": "매치 히스토리",
+    "1v1_date": "날짜",
+    "1v1_player1": "플레이어1",
+    "1v1_player2": "플레이어2",
+    "1v1_winner": "승자"
 }

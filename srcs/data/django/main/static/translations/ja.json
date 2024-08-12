@@ -41,7 +41,8 @@
     "profile_username": "ユーザーネーム",
     "profile_display_name": "ディスプレイネーム",
     "profile_email": "メールアドレス",
-    "profile_button": "プロフィールの編集",
+    "profile_button1": "プロフィールの編集",
+    "profile_button2": "マッチヒストリー",
     "profile_win": "勝ち",
     "profile_loss": "負け",
     "profile_win_rate": "勝率",
@@ -159,5 +160,10 @@
     "tournament_paddle_size_small": "小さい",
     "tournament_paddle_size_large": "大きい",
     "tournament_match_point": "勝利スコア",
-    "tournament_is_3d": "スタイル"
+    "tournament_is_3d": "スタイル",
+    "match_history_header": "マッチヒストリー",
+    "1v1_date": "日付",
+    "1v1_player1": "プレイヤー1",
+    "1v1_player2": "プレイヤー2",
+    "1v1_winner": "勝者"
 }

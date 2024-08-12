@@ -1,0 +1,24 @@
+<div class="px-5">
+    <h1 class="mb-3 translations" id="match_history_header">　</h1>
+    <h5 class="mb-3">1 v 1</h5>
+    <table class="table-dark">
+        <thead>
+            <tr>
+                <th scope="col" class="translations" id="1v1_date">　</th>
+                <th scope="col" class="translations" id="1v1_player1">　</th>
+                <th scope="col" class="translations" id="1v1_player2">　</th>
+                <th scope="col" class="translations" id="1v1_winner">　</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for match in matches %}
+            <tr>
+                <td>{{ match.timestamp }}</td>
+                <td>{{ match.user1.display_name}}</td>
+                <td>{{ match.user2.display_name}}</td>
+                <td>{{ match.winner.display_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
