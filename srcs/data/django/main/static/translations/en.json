@@ -42,6 +42,8 @@
     "profile_display_name": "Display Name",
     "profile_email": "Email",
     "profile_button": "Edit Profile",
+    "profile_win": "Wins",
+    "profile_loss": "Losses",
     "profile_win_rate": "Win Rate",
     "edit_profile": "Edit Profile",
     "edit_email_header": "Email",

@@ -42,6 +42,8 @@
     "profile_display_name": "디스플레이 네임",
     "profile_email": "이메일",
     "profile_button": "프로필 편집",
+    "profile_win": "승리",
+    "profile_loss": "패배",
     "profile_win_rate": "승률",
     "edit_profile": "프로필 편집",
     "edit_email_header": "이메일",
