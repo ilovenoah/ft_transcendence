@@ -16,7 +16,7 @@ from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordC
 from .forms import CustomizeGameForm, CustomizeSinglePlayForm, CustomizeTournamentForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Q, F
 from django.db import models
 from math import log2, ceil
 from PIL import Image as PilImage, Image
@@ -725,10 +725,12 @@ def process_post_data(request):
                     }
             elif page == 'match_history':
                 if request.user.is_authenticated:
-                    matches = Matchmaking.objects.filter(level=-1, is_single=False).exclude(winner__isnull=True)
+                    matches = Matchmaking.objects.filter(is_single=False).exclude(winner__isnull=True)
+                    tournaments = Tournament.objects.filter(size=F('num_users'))
+                    tournament_users = TournamentUser.objects.filter(is_complete=True)
                     response_data = {
                             'page': page,
-                            'content': render_to_string('match_history.html', {'matches': matches}),
+                            'content': render_to_string('match_history.html', {'matches': matches, 'tournaments': tournaments, 'tournament_users': tournament_users}),
                             'title': 'customize single play'
                         }
 

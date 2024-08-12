@@ -161,7 +161,8 @@
     "tournament_paddle_size_large": "Large",
     "tournament_match_point": "Match Point",
     "tournament_is_3d": "Style",
-    "match_history_header": "Match History",
+    "match_history_header1": "Match History",
+    "match_history_header2": "Tournament",
     "1v1_date": "Date",
     "1v1_player1": "Player1",
     "1v1_player2": "Player2",
@@ -174,5 +175,17 @@
     "1v1_paddle_size": "Paddle Size",
     "1v1_paddle_normal": "Normale",
     "1v1_paddle_small": "Small",
-    "1v1_paddle_large": "Large"
+    "1v1_paddle_large": "Large",
+    "history_tournament_date": "Date",
+    "history_tournament_size": "Size",
+    "history_tournament_players": "Players",
+    "history_tournament_winner": "Winner",
+    "history_tournament_ball_speed": "Ball Speed",
+    "history_tournament_ball_normal": "Normal",
+    "history_tournament_ball_slow": "Slow",
+    "history_tournament_ball_fast": "Fast",
+    "history_tournament_paddle_size": "Paddle Size",
+    "history_tournament_paddle_normal": "Normal",
+    "history_tournament_paddle_small": "Small",
+    "history_tournament_paddle_large": "Large"
 }
