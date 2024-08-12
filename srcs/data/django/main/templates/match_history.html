@@ -16,7 +16,7 @@
         <tbody>
             {% for match in matches %}
             <tr>
-                {% if match.level == -1 %}
+                {% if match.user1 == user or match.user2 == user %}
                     <td class="text-nowrap">{{ match.timestamp|date:"Y-n-j" }}</td>
                     <td class="text-nowrap">{{ match.user1.display_name}}</td>
                     <td class="text-nowrap">{{ match.user2.display_name}}</td>
@@ -60,36 +60,40 @@
         </thead>
             {% for match in matches %}
                 {% if match.level != -1 and not match.parent %}
-                <tr>
-                    <td class="text-nowrap">{{ match.timestamp|date:"Y-n-j" }}</td>
-                    <td class="text-nowrap">{{ match.tournament.size }}</td>
-                    <td class="text-nowrap">
                     {% for tournament_user in tournament_users %}
-                        {% if tournament_user.tournament == match.tournament %}
-                            {{ tournament_user.user.display_name }}
+                        {% if tournament_user.tournament == match.tournament and tournament_user.user == user %}
+                        <tr>
+                            <td class="text-nowrap">{{ match.timestamp|date:"Y-n-j" }}</td>
+                            <td class="text-nowrap">{{ match.tournament.size }}</td>
+                            <td class="text-nowrap">
+                            {% for tournament_user in tournament_users %}
+                                {% if tournament_user.tournament == match.tournament %}
+                                    {{ tournament_user.user.display_name }}
+                                {% endif %}
+                            {% endfor %}
+                            </td>
+                            <td class="text-nowrap">{{ match.winner.display_name }}</td>
+                            <td>
+                                {% if match.ball_speed == 2 %}
+                                    <div class="translations text-nowrap" id="history_tournament_ball_normal">　</div>
+                                {% elif match.ball_speed == 1 %}
+                                    <div class="translations text-nowrap" id="history_tournament_ball_slow">　</div>
+                                {% else %}
+                                    <div class="translations text-nowrap" id="history_tournament_ball_fast">　</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if match.paddle_size == 2 %}
+                                    <div class="translations text-nowrap" id="history_tournament_paddle_normal">　</div>
+                                {% elif match.paddle_size == 1 %}
+                                    <div class="translations text-nowrap" id="history_tournament_paddle_small">　</div>
+                                {% else %}
+                                    <div class="translations text-nowrap" id="history_tournament_paddle_large">　</div>
+                                {% endif %}
+                            </td>
+                        </tr>  
                         {% endif %}
                     {% endfor %}
-                    </td>
-                    <td class="text-nowrap">{{ match.winner.display_name }}</td>
-                    <td>
-                        {% if match.ball_speed == 2 %}
-                            <div class="translations text-nowrap" id="history_tournament_ball_normal">　</div>
-                        {% elif match.ball_speed == 1 %}
-                            <div class="translations text-nowrap" id="history_tournament_ball_slow">　</div>
-                        {% else %}
-                            <div class="translations text-nowrap" id="history_tournament_ball_fast">　</div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if match.paddle_size == 2 %}
-                            <div class="translations text-nowrap" id="history_tournament_paddle_normal">　</div>
-                        {% elif match.paddle_size == 1 %}
-                            <div class="translations text-nowrap" id="history_tournament_paddle_small">　</div>
-                        {% else %}
-                            <div class="translations text-nowrap" id="history_tournament_paddle_large">　</div>
-                        {% endif %}
-                    </td>
-                </tr>  
                 {% endif %}
             {% endfor %}
     </table>

@@ -724,13 +724,14 @@ def process_post_data(request):
                         'title': 'customize single play'
                     }
             elif page == 'match_history':
-                if request.user.is_authenticated:
+                user = request.user
+                if user.is_authenticated:
                     matches = Matchmaking.objects.filter(is_single=False).exclude(winner__isnull=True)
                     tournaments = Tournament.objects.filter(size=F('num_users'))
                     tournament_users = TournamentUser.objects.filter(is_complete=True)
                     response_data = {
                             'page': page,
-                            'content': render_to_string('match_history.html', {'matches': matches, 'tournaments': tournaments, 'tournament_users': tournament_users}),
+                            'content': render_to_string('match_history.html', {'user': user, 'matches': matches, 'tournaments': tournaments, 'tournament_users': tournament_users}),
                             'title': 'customize single play'
                         }
 
