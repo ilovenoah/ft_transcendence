@@ -156,7 +156,7 @@ LOGGING = {
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'ja'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Asia/Tokyo'
 
@@ -167,8 +167,8 @@ USE_TZ = True
 from django.utils.translation import gettext_lazy as _
 
 LANGUAGES = [
-    ('ja', _('Japanese')),
     ('en', _('English')),
+    ('ja', _('Japanese')),
 ]
 
 LOCALE_PATHS = (

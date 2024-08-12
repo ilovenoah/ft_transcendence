@@ -4,39 +4,39 @@
     <table class="table-dark table">
         <thead>
             <tr>
-                <th scope="col" class="translations" id="1v1_date">　</th>
-                <th scope="col" class="translations" id="1v1_player1">　</th>
-                <th scope="col" class="translations" id="1v1_player2">　</th>
-                <th scope="col" class="translations" id="1v1_score">　</th>
-                <th scope="col" class="translations" id="1v1_winner">　</th>
-                <th scope="col" class="translations" id="1v1_ball_speed">　</th>
-                <th scope="col" class="translations" id="1v1_paddle_size">　</th>
+                <th scope="col" class="translations text-nowrap" id="1v1_date">　</th>
+                <th scope="col" class="translations text-nowrap" id="1v1_player1">　</th>
+                <th scope="col" class="translations text-nowrap" id="1v1_player2">　</th>
+                <th scope="col" class="translations text-nowrap" id="1v1_score">　</th>
+                <th scope="col" class="translations text-nowrap" id="1v1_winner">　</th>
+                <th scope="col" class="translations text-nowrap" id="1v1_ball_speed">　</th>
+                <th scope="col" class="translations text-nowrap" id="1v1_paddle_size">　</th>
             </tr>
         </thead>
         <tbody>
             {% for match in matches %}
             <tr>
-                <td>{{ match.timestamp }}</td>
-                <td>{{ match.user1.display_name}}</td>
-                <td>{{ match.user2.display_name}}</td>
-                <td>{{ match.point1 }} - {{ match.point2 }}</td>
-                <td>{{ match.winner.display_name }}</td>
+                <td class="text-nowrap">{{ match.timestamp|date:"Y-n-j" }}</td>
+                <td class="text-nowrap">{{ match.user1.display_name}}</td>
+                <td class="text-nowrap">{{ match.user2.display_name}}</td>
+                <td class="text-nowrap">{{ match.point1 }} - {{ match.point2 }}</td>
+                <td class="text-nowrap">{{ match.winner.display_name }}</td>
                 <td>
                     {% if match.1v1_ball_speed == 2 %}
-                        <div class="translations" id="1v1_ball_normal">　</div>
+                        <div class="translations text-nowrap" id="1v1_ball_normal">　</div>
                     {% elif match.1v1_ball_speed == 1 %}
-                        <div class="translations" id="1v1_ball_slow">　</div>
+                        <div class="translations text-nowrap" id="1v1_ball_slow">　</div>
                     {% else %}
-                        <div class="translations" id="1v1_ball_fast">　</div>
+                        <div class="translations text-nowrap" id="1v1_ball_fast">　</div>
                     {% endif %}
                 </td>
                 <td>
                     {% if match.1v1_paddle_size == 2 %}
-                        <div class="translations" id="1v1_paddle_normal">　</div>
+                        <div class="translations text-nowrap" id="1v1_paddle_normal">　</div>
                     {% elif match.1v1_paddle_size == 1 %}
-                        <div class="translations" id="1v1_paddle_small">　</div>
+                        <div class="translations text-nowrap" id="1v1_paddle_small">　</div>
                     {% else %}
-                        <div class="translations" id="1v1_paddle_large">　</div>
+                        <div class="translations text-nowrap" id="1v1_paddle_large">　</div>
                     {% endif %}
                 </td>
             </tr>
