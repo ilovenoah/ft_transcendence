@@ -532,7 +532,7 @@ def process_post_data(request):
                         page = 'room'
                         response_data = {
                             'page': page,
-                            'content': render_to_string('room.html'),
+                            'content': read_file('waiting.html'),
                             'title': 'Room',
                             'reload': page,
                             'timeout' : '10000',
@@ -561,7 +561,7 @@ def process_post_data(request):
                         room.save()
                         response_data = {
                             'page': page,
-                            'content': render_to_string('room.html', {'room': room}),
+                            'content': read_file('waiting.html'),
                             'title': 'Room',
                             'reload': page,
                             'timeout' : '10000',
@@ -586,10 +586,11 @@ def process_post_data(request):
                         is_3d = form.cleaned_data['is_3d']
                         tournament = Tournament.objects.create(size=size, num_users=1, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
                         TournamentUser.objects.create(tournament=tournament, user=user)
+                        request.session['tournament_id'] = tournament.id
                         page = 'tournament'
                         response_data = {
                             'page': page,
-                            'content': read_file('tournament.html'),
+                            'content': read_file('waiting.html'),
                             'title': 'tournament',
                             'reload': page,
                             'timeout' : '10000',
@@ -610,8 +611,9 @@ def process_post_data(request):
                     }
             elif page == 'tournament':
                 user = request.user
+                tournament_id = request.session.get('tournament_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
-                tournament_user = TournamentUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago).first()
+                tournament_user = TournamentUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, tournament=tournament_id).first()
                 tournament_user.timestamp = timezone.now()
                 tournament_user.save()
                 tournament = tournament_user.tournament
@@ -637,7 +639,7 @@ def process_post_data(request):
                 else:
                     response_data = {
                         'page': page,
-                        'content': read_file('tournament.html'),
+                        'content': read_file('waiting.html'),
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
@@ -697,7 +699,7 @@ def process_post_data(request):
                     page = 'tournament'
                     response_data = {
                         'page': page,
-                        'content': read_file('tournament.html'),
+                        'content': read_file('waiting.html'),
                         'title': 'tournament',
                         'reload': page,
                         'timeout' : '10000',
