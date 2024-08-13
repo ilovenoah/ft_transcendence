@@ -528,11 +528,11 @@ def process_post_data(request):
                         match_point = form.cleaned_data['match_point']
                         is_3d = form.cleaned_data['is_3d']
                         room = Matchmaking.objects.create(user1=user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
-                        logger.debug(f'room: {room}')
+                        request.session['room_id'] = room.id
                         page = 'room'
                         response_data = {
                             'page': page,
-                            'content': render_to_string('room.html', {'room': room}),
+                            'content': render_to_string('room.html'),
                             'title': 'Room',
                             'reload': page,
                             'timeout' : '10000',
@@ -553,15 +553,12 @@ def process_post_data(request):
                     }
             elif page == 'room':
                 user = request.user
-                room_id = post_data.get('room_id')
-                logger.debug('here')
-                logger.debug(f'room: {room}')
-                # room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30), user1=user).first()
+                room_id = request.session.get('room_id')
+                room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30), id=room_id).first()
                 if room: 
                     if not room.user2:
                         room.timestamp = timezone.now()
                         room.save()
-                        # page = 'room'
                         response_data = {
                             'page': page,
                             'content': render_to_string('room.html', {'room': room}),
