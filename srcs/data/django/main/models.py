@@ -58,6 +58,8 @@ class TournamentUser(models.Model):
 class Matchmaking(models.Model):
     user1 = models.ForeignKey(CustomUser, related_name='matchmaking_user1', on_delete=models.CASCADE, null=True, blank=True)
     user2 = models.ForeignKey(CustomUser, related_name='matchmaking_user2', on_delete=models.CASCADE, null=True, blank=True)
+    # user3 = models.ForeignKey(CustomUser, related_name='matchmaking_user3', on_delete=models.CASCADE, null=True, blank=True)
+    # user4 = models.ForeignKey(CustomUser, related_name='matchmaking_user4', on_delete=models.CASCADE, null=True, blank=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True, blank=True)  # トーナメントID
     timestamp = models.DateTimeField(auto_now=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
@@ -73,3 +75,4 @@ class Matchmaking(models.Model):
     winner = models.ForeignKey(CustomUser, related_name='winner', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return f'Matchmaking ID {self.id} (Tournament: {self.tournament_id})'
+
