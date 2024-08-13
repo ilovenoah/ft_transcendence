@@ -89,6 +89,8 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("redis4242", 6379)],
+            "capacity": 1000,  # メッセージバッファの容量（デフォルトは100）
+            "expiry": 10,  # メッセージがどのくらいの時間、バッファに留まるか（秒）
         },
     },
 }

@@ -1,3 +1,9 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'team_my2.settings')
+django.setup()
+
 import json
 import math
 import asyncio
@@ -9,8 +15,9 @@ from django_redis import get_redis_connection
 from asgiref.sync import sync_to_async  # sync_to_asyncをインポート
 
 
+from django.db import models
+from .models import Matchmaking
 import logging
-
 
 
 logger = logging.getLogger(__name__)
@@ -42,25 +49,28 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'pong_{self.room_name}'
         first_flag = True
 
+        match = await sync_to_async(self.get_match)()
+        # logger.debug(match.user1_id)
+        user = self.scope["user"]
+        # ユーザーが認証されているかどうかを確認
+        if user.is_authenticated:
+            self.display_name = user.display_name
+            self.userid = user.id
+            self.user1 =  match.user1_id
+            self.user2 =  match.user2_id
+            if match.user2_id is None and match.is_single is False :
+                self.user2 = self.userid
+                match.user2_id = self.userid
+                await sync_to_async( match.save()) 
+        else:
+            self.display_name = ""
+            self.userid = ""
+
+
         # aioredisを使ってRedisに接続
         # self.redis = await aioredis.create_redis_pool('redis://redis4242')
 
         self.redis = await aioredis.from_url('redis://redis4242:6379')
-
-        # ログインユーザーの取得
-        user = self.scope["user"]        
-        # ユーザーが認証されているかどうかを確認
-        if user.is_authenticated:
-            username = user.username
-        else:
-            username = ""
-
-        logger.debug(username)
-
-        
-
-
-
 
 
         # Redisから状態を取得
@@ -70,15 +80,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
-            # ゲームの状態をクライアントに送信
-            await self.channel_layer.group_send(         
-                self.room_group_name,
-                {
-                    "type": "game_update",
-                    "game_state": self.game_state
-                }
-            #    await self.send_game_state(game_state)
-            )   
+
         else:
             self.game_state = {
                 'ball': [0, 0, 70, math.pi / 4.0], # x, y , speed, angle
@@ -96,11 +98,13 @@ class PongConsumer(AsyncWebsocketConsumer):
        # ボールの位置を定期的に更新する非同期タスクを開始
 
         # self.update_task = asyncio.create_task(self.update_ball_position())
-        # if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
-        PongConsumer.room_tasks[self.room_group_name] = asyncio.create_task(self.update_ball_position())
-        
+        if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
+            PongConsumer.room_tasks[self.room_group_name] = asyncio.create_task(self.update_ball_position())
+        # 接続されたクライアントに現在のゲーム状態を送信
+        await self.send(text_data=json.dumps(self.game_state))
 
     async def disconnect(self, close_code):
+        await self.redis.set(self.room_group_name, json.dumps(self.game_state)) 
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -108,7 +112,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         # タスクをキャンセル
         # self.update_task.cancel()
         # Redis接続を閉じる
-        self.redis.close()
+        await self.redis.close()
         await self.redis.wait_closed()
 
     async def server_disconnect(self):
@@ -123,23 +127,25 @@ class PongConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
-        if message == 'update_position':             
-            tmp1 = text_data_json['player1_y']
-            if tmp1 != "":
-                if tmp1 > MAX_Y :
-                    tmp1 = MAX_Y
-                    # tmp1 = MAX_Y - self.game_state['paddle_1'][2] / 10
-                elif tmp1 < MIN_Y:
-                    tmp1 = MIN_Y
-                    # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
-                self.game_state['paddle_1'][1] = tmp1
-            # tmp2 = text_data_json['player2_y']
-            # if tmp2 != "":
-            #     if tmp2 > MAX_Y :
-            #         tmp2 = MAX_Y
-            #     elif tmp2  < MIN_Y :
-            #         tmp2 = MIN_Y 
-            #     self.game_state['paddle_2'][1] = tmp2
+        if message == 'update_position':
+            if self.user1 == self.userid :
+                tmp1 = text_data_json['player1_y']
+                if tmp1 != "":
+                    if tmp1 > MAX_Y :
+                        tmp1 = MAX_Y
+                        # tmp1 = MAX_Y - self.game_state['paddle_1'][2] / 10
+                    elif tmp1 < MIN_Y:
+                        tmp1 = MIN_Y
+                        # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
+                    self.game_state['paddle_1'][1] = tmp1
+            elif self.user2 == self.userid :
+                tmp2 = text_data_json['player2_y']
+                if tmp2 != "":
+                    if tmp2 > MAX_Y :
+                        tmp2 = MAX_Y
+                    elif tmp2  < MIN_Y :
+                        tmp2 = MIN_Y 
+                    self.game_state['paddle_2'][1] = tmp2
 
 
                 
@@ -271,18 +277,20 @@ class PongConsumer(AsyncWebsocketConsumer):
                     "type": "game_update",
                     "game_state": self.game_state
                 }
-            #    await self.send_game_state(game_state)
-            )            
+            )          
+
 
             #Dueceを設定
             if self.game_state['scores'][0] == (score_match - 1) and self.game_state['scores'][1] == (score_match - 1) :
                 score_match += 1
             #matchの終了判断
             if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
+                PongConsumer.room_tasks[self.room_group_name].cancel()
                 await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                 asyncio.create_task(disconnect_after_delay(self))
-                PongConsumer.room_tasks[self.room_group_name].cancel()
                 # await asyncio.sleep(3600)
+
+
             else:
                 await asyncio.sleep(interval)
 
@@ -293,9 +301,18 @@ class PongConsumer(AsyncWebsocketConsumer):
     #     await self.send(text_data=json.dumps(game_state))
 
     async def game_update(self, event):
-        # self.game_state = event["game_state"]
+        self.game_state = event["game_state"]
         await self.send(text_data=json.dumps(self.game_state))
 
+        # game_state = event['game_state']
+        # # クライアントにゲーム状態を送信
+        # await self.send(text_data=json.dumps({
+        #     'game_state': game_state
+        # }))
+
+    def get_match(self):
+        # 同期的なDjango ORM操作＿
+        return Matchmaking.objects.get(pk=self.room_name)
 
     # def game_start(self, event):
     #     //ここでゲームスタートの初期設定

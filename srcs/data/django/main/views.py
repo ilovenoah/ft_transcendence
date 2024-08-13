@@ -39,10 +39,6 @@ def process_post_data(request):
             content = post_data.get('content') 
             gameid = post_data.get('gameid') 
 
-
-
-
-
             #送信データの作成
             if page == 'logout':
                 user = request.user
@@ -520,8 +516,9 @@ def process_post_data(request):
                         response_data = {
                             'page':page,
                             'content':read_file('ponggame.html'),
-                            'title': title,
-                            'scriptfiles': '/static/js/game.js',
+                            'title': 'Pong Gmae ' + str(room.id),
+                            # 生のjavascriptを埋め込みたいとき
+                            'rawscripts': 'startGame(' + str(room.id) + ')',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -532,7 +529,7 @@ def process_post_data(request):
                         'title': 'Lobby',
                     }
             elif page == 'create_room':
-                user = request.user
+                user = request.user   
                 if user.is_authenticated:
                     form = CustomizeGameForm(data=post_data)
                     if form.is_valid():
@@ -540,12 +537,13 @@ def process_post_data(request):
                         paddle_size = form.cleaned_data['paddle_size']
                         match_point = form.cleaned_data['match_point']
                         is_3d = form.cleaned_data['is_3d']
-                        Matchmaking.objects.create(user1=user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
+                        match = Matchmaking.objects.create(user1=user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d)
                         page = 'room'
                         response_data = {
                             'page': page,
                             'content': read_file('room.html'),
-                            'title': 'Room',
+                            'title': 'Pong Gmae ' + str(match.id),
+                            'gameid': str(match.id),
                             'reload': page,
                             'timeout' : '10000',
                             'alert': '対戦相手を待っています',
@@ -574,17 +572,23 @@ def process_post_data(request):
                         response_data = {
                             'page': page,
                             'content': read_file('room.html'),
-                            'title': 'Room',
+                            'title': 'Pong Gmae ' + str(room.id),
                             'reload': page,
                             'timeout' : '10000',
                             'alert': '対戦相手を待っています',
                     }
                     else:
                         response_data = {
+                            # 'page':page,
+                            # 'content':read_file('ponggame.html'),
+                            # 'title': title,
+                            # 'scriptfiles': '/static/js/game.js',
                             'page':page,
                             'content':read_file('ponggame.html'),
-                            'title': title,
-                            'scriptfiles': '/static/js/game.js',
+                            'title': 'Pong Gmae ' + str(room.id),
+                            'gameid': str(room.id), 
+                            # 生のjavascriptを埋め込みたいとき
+                            'rawscripts': 'startGame(' + str(room.id) + ')',
                         }
             elif page == 'create_tournament':
                 user = request.user
@@ -727,7 +731,7 @@ def process_post_data(request):
                     response_data = {
                         'page':page,
                         'content':read_file('ponggame.html'),
-                        'title': title,
+                        'title': 'Pong Gmae ' + str(match.id),
                         'gameid': str(match.id), 
                         # 生のjavascriptを埋め込みたいとき
                         'rawscripts': 'startGame(' + str(match.id) + ')',

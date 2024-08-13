@@ -164,11 +164,19 @@ function animate() {
             paddle2.position.y -= 0.1 * speedrate;
         }
 
-        gameSocket.send(JSON.stringify({
-            'message': 'update_position',
-            'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
-            'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
-        }));
+
+        if (gameSocket.readyState === WebSocket.OPEN) {
+
+            gameSocket.send(JSON.stringify({
+                'message': 'update_position',
+                'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
+                'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
+            }));
+        } else {
+            // 接続が確立されるまで再試行
+            // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
+        }
+
     }
         
     // } else {
