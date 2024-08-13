@@ -16,7 +16,7 @@ from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordC
 from .forms import CustomizeGameForm, CustomizeSinglePlayForm, CustomizeTournamentForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Q, F
 from django.db import models
 from math import log2, ceil
 from PIL import Image as PilImage, Image
@@ -209,9 +209,15 @@ def process_post_data(request):
             elif page == 'profile':
                 user = request.user
                 if user.is_authenticated:
+                    win = Matchmaking.objects.filter(winner=user).count()
+                    loss = calculate_loss(user, win)
+                    if win + loss == 0:
+                        win_rate = 0
+                    else:
+                        win_rate = int(win * 100 / (win + loss))
                     response_data = {
                         'page': page,
-                        'content': render_to_string('profile.html', {'user': user}),
+                        'content': render_to_string('profile.html', {'user': user, 'win_rate': win_rate, 'win': win, 'loss': loss}),
                         'title': 'Profile',
                     }
                 else:
@@ -717,6 +723,17 @@ def process_post_data(request):
                         'content': render_to_string('customize_single_play.html', {'form': form}),
                         'title': 'customize single play'
                     }
+            elif page == 'match_history':
+                user = request.user
+                if user.is_authenticated:
+                    matches = Matchmaking.objects.filter(is_single=False).exclude(winner__isnull=True)
+                    tournaments = Tournament.objects.filter(size=F('num_users'))
+                    tournament_users = TournamentUser.objects.filter(is_complete=True)
+                    response_data = {
+                            'page': page,
+                            'content': render_to_string('match_history.html', {'user': user, 'matches': matches, 'tournaments': tournaments, 'tournament_users': tournament_users}),
+                            'title': 'customize single play'
+                        }
 
 
 
@@ -829,7 +846,9 @@ def get_available_rooms():
     thirty_seconds_ago = current_time - timedelta(seconds=30)
     available_rooms = Matchmaking.objects.filter(
         user2__isnull=True,
-        timestamp__gte=thirty_seconds_ago
+        timestamp__gte=thirty_seconds_ago,
+        is_single=False,
+        level=-1,
     )
     return available_rooms
 
@@ -859,3 +878,10 @@ def make_tournament_matches(tournament):
                 next_matches.append(match)
         current_matches = next_matches
         next_matches = []
+
+def calculate_loss(user, win):
+    count1 = Matchmaking.objects.filter(user1=user, is_single=False).exclude(winner__isnull=True).count()
+    count2 = Matchmaking.objects.filter(user2=user, is_single=False).exclude(winner__isnull=True).count()
+    loss = count1 + count2 - win
+    return loss
+
