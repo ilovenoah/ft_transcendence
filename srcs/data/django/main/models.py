@@ -68,5 +68,8 @@ class Matchmaking(models.Model):
     is_3d = models.BooleanField(default=False)
     ai = models.IntegerField(default=2)
     is_single = models.BooleanField(default=False)
+    point1 = models.IntegerField(default=0)
+    point2 = models.IntegerField(default=0)
+    winner = models.ForeignKey(CustomUser, related_name='winner', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return f'Matchmaking ID {self.id} (Tournament: {self.tournament_id})'

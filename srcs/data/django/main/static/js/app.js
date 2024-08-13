@@ -563,7 +563,7 @@ function applyTranslations(translations) {
       var translationKey = element.id;
       if (translations[translationKey]) {
           element.textContent = translations[translationKey];
-          console.log(element.textContent)
+          // console.log(element.textContent)
       } 
   });
 }

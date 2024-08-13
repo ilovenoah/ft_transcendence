@@ -1,4 +1,3 @@
-{% load i18n %}
 <div class="px-5">
     <h1 class="mb-4 translations" id="profile_header">　</h1>
     <div class="card border-primary text-bg-dark mb-2" style="max-width: 540px;">
@@ -14,7 +13,15 @@
                     <p class="card-text">{{ user.display_name }}</p>
                     <h5 class="card-title translations" id="profile_email">　</h5>
                     <p class="card-text">{{ user.email }}</p>
-                    <a href="#" class="btn btn-primary card-link post-link translations" data_url="process-post/" page="edit_profile" title="Edit Profile" id="profile_button">　</a>
+                    <a href="#" class="btn btn-primary card-link post-link translations" data_url="process-post/" page="edit_profile" title="Edit Profile" id="profile_button1">　</a>
+                    <hr>
+                    <h5 class="card-title translations mt-3" id="profile_win">　</h5>
+                    <p class="card-text">{{ win }}</p>
+                    <h5 class="card-title translations mt-3" id="profile_loss">　</h5>
+                    <p class="card-text">{{ loss }}</p>
+                    <h5 class="card-title translations mt-3" id="profile_win_rate">　</h5>
+                    <p class="card-text">{{ win_rate }}%</p>
+                    <a href="#" class="btn btn-primary card-link post-link translations" data_url="process-post/" page="match_history" title="Edit Profile" id="profile_button2">　</a>
                 </div>
             </div>
         </div>
