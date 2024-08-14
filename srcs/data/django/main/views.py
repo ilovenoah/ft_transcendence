@@ -813,7 +813,7 @@ def process_post_data(request):
                     doubles_user.save()
                     doubles = doubles_user.doubles
                     num_users = DoublesUser.objects.filter(doubles=doubles, timestamp__gte=thirty_seconds_ago).count()
-                    logger.debug(f'num_users: {num_users}')
+                    # logger.debug(f'num_users: {num_users}')
                     doubles.num_users = num_users
                     doubles.save()
                     if num_users == 4:
@@ -862,7 +862,7 @@ def process_post_data(request):
                 if doubles:
                     doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user)
                     if doubles_user: #ダブルス内に同じユーザーがいる
-                        logger.debug('hogehoge')
+                        # logger.debug('hogehoge')
                         rooms = get_available_rooms()
                         tournaments = get_available_tournaments()
                         doubles = get_available_doubles()
@@ -878,7 +878,7 @@ def process_post_data(request):
                     rooms = get_available_rooms()
                     tournaments = get_available_tournaments()
                     doubles = get_available_doubles()
-                    logger.debug('hoge')
+                    # logger.debug('hoge')
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
@@ -1032,7 +1032,7 @@ def get_available_doubles():
         num_users__lt=4,
         timestamp__gte=thirty_seconds_ago
     )
-    logger.debug(f'available_doubles: {available_doubles}')
+    # logger.debug(f'available_doubles: {available_doubles}')
     return available_doubles
 
     

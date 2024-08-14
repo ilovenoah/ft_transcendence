@@ -184,12 +184,12 @@ function updateContent(data) {
   }
   if (typeof data.login !== 'undefined') {
     
-    console.log(data.login)
-    console.log(data.elem)
+    // console.log(data.login)
+    // console.log(data.elem)
     toggleVisibility(data.login, data.username, data.elem)
   }
   if (typeof data.isValid !== 'undefined') {
-    console.log('defined')
+    // console.log('defined')
     displayAlert(data.elem)
   }
   if (typeof data.title !== 'undefined') {     
@@ -406,7 +406,7 @@ function setIdValue(id, setvalue) {
 function toggleVisibility(login, username, elem) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
-  console.log(elem)
+  // console.log(elem)
   if (login === 'false') {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto" id="navbar_before_login">
@@ -483,7 +483,7 @@ function toggleVisibility(login, username, elem) {
 }
 
 function displayAlert(elem) {
-  console.log(elem);
+  // console.log(elem);
   lang = getCookie('language') || 'ja';
   if (elem === 'room') {
     const alert = document.getElementById('roomAlertBlock');
@@ -573,7 +573,7 @@ function applyTranslations(translations) {
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
 
-  console.log(lang)
+  // console.log(lang)
   
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/static/translations/' + lang + '.json', true);
