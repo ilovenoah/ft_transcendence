@@ -55,10 +55,27 @@ class TournamentUser(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_complete = models.BooleanField(default=False)
 
+class Doubles(models.Model):
+    num_users = models.IntegerField(default=-1)
+    timestamp = models.DateTimeField(auto_now=True)
+    ball_speed = models.IntegerField(default=2)
+    paddle_size = models.IntegerField(default=2)
+    match_point = models.IntegerField(default=10)
+    is_3d = models.BooleanField(default=False)
+
+class DoublesUser(models.Model):
+    doubles = models.ForeignKey(Doubles, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_complete = models.BooleanField(default=False)
+
 class Matchmaking(models.Model):
     user1 = models.ForeignKey(CustomUser, related_name='matchmaking_user1', on_delete=models.CASCADE, null=True, blank=True)
     user2 = models.ForeignKey(CustomUser, related_name='matchmaking_user2', on_delete=models.CASCADE, null=True, blank=True)
+    user3 = models.ForeignKey(CustomUser, related_name='matchmaking_user3', on_delete=models.CASCADE, null=True, blank=True)
+    user4 = models.ForeignKey(CustomUser, related_name='matchmaking_user4', on_delete=models.CASCADE, null=True, blank=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True, blank=True)  # トーナメントID
+    doubles = models.ForeignKey(Doubles, on_delete=models.CASCADE, null=True, blank=True) #ダブルス
     timestamp = models.DateTimeField(auto_now=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     level = models.IntegerField(default=-1)
@@ -73,3 +90,5 @@ class Matchmaking(models.Model):
     winner = models.ForeignKey(CustomUser, related_name='winner', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return f'Matchmaking ID {self.id} (Tournament: {self.tournament_id})'
+
+

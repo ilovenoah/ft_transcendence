@@ -184,12 +184,12 @@ function updateContent(data) {
   }
   if (typeof data.login !== 'undefined') {
     
-    console.log(data.login)
-    console.log(data.elem)
+    // console.log(data.login)
+    // console.log(data.elem)
     toggleVisibility(data.login, data.username, data.elem)
   }
   if (typeof data.isValid !== 'undefined') {
-    console.log('defined')
+    // console.log('defined')
     displayAlert(data.elem)
   }
   if (typeof data.title !== 'undefined') {     
@@ -406,7 +406,7 @@ function setIdValue(id, setvalue) {
 function toggleVisibility(login, username, elem) {
   const nav = document.getElementById('navbarCollapse');
   nav.innerHTML = '';
-  console.log(elem)
+  // console.log(elem)
   if (login === 'false') {
     nav.innerHTML = `
       <ul class="navbar-nav ms-auto" id="navbar_before_login">
@@ -483,7 +483,7 @@ function toggleVisibility(login, username, elem) {
 }
 
 function displayAlert(elem) {
-  console.log(elem);
+  // console.log(elem);
   lang = getCookie('language') || 'ja';
   if (elem === 'room') {
     const alert = document.getElementById('roomAlertBlock');
@@ -517,7 +517,25 @@ function displayAlert(elem) {
         <div id="tournament_warning" class="card-text text-warning translations">그 토너먼트에는 참가할 수 없습니다</div>
       `;
     }
+  } else if (elem === 'doubles') {
+    console.debug('im here')
+    const alert = document.getElementById('doublesAlertBlock');
+    alert.innerHTML = '';
+    if (lang === 'ja') {
+      alert.innerHTML = `
+        <div id="doubles_warning" class="card-text text-warning translations">そのダブルスには参加できません</div>
+      `;
+    } else if (lang === 'en') {
+      alert.innerHTML = `
+        <div id="doubles_warning" class="card-text text-warning translations">You cannot join the doubles</div>
+      `;
+    } else {
+      alert.innerHTML = `
+        <div id="doubles_warning" class="card-text text-warning translations">그 더블스에는 참가할 수 없습니다</div>
+      `;
+    }
   }
+
 }
 
 function setCookie(name, value, days) {
@@ -527,7 +545,7 @@ function setCookie(name, value, days) {
       date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
       expires = "; expires=" + date.toUTCString();
   }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Strict";
 }
 
 function getCookie(name) {
@@ -555,7 +573,7 @@ function applyTranslations(translations) {
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
 
-  console.log(lang)
+  // console.log(lang)
   
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/static/translations/' + lang + '.json', true);
