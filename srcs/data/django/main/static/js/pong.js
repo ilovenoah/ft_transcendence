@@ -5,11 +5,12 @@ let paddle1length = 6;
 let paddle2length = 6;
 let gameSocket;
 
+let playerid = 0;
 
-let moveUpX = false;
-let moveDownX = false;
-let moveUpY = false;
-let moveDownY = false;
+let moveUp1 = false;
+let moveDown1 = false;
+let moveUp2 = false;
+let moveDown2 = false;
 let wrate = 0.0;
 
 let score_player1;
@@ -28,10 +29,11 @@ let reconnectInterval = 100; // 再接続の間隔
 
 let first_flag;
 
-function init() {
+function init(playid) {
 
-    wwidth = window.innerWidth * 0.85;
-    wheight = window.innerHeight * 0.85;
+    playerid = playid;
+    wwidth = window.innerWidth * 0.8;
+    wheight = window.innerHeight * 0.8;
     // console.log (wwidth);
     // console.log(wheight);
     if ( wwidth >= 2 * wheight)
@@ -52,7 +54,7 @@ function init() {
     overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'overlayCanvas';
     overlayCanvas.width = screen.width;
-    overlayCanvas.height = window.innerHeight;
+    overlayCanvas.height = window.innerHeight * 0.9;
     document.getElementById('gameCanvas').appendChild(overlayCanvas);    
 
         
@@ -154,24 +156,34 @@ function init() {
 function animate() {
 
     if (paddleflag > 0){
-        if (moveUpX) {
+        if (moveUp1 && playerid == 1) {
             paddle1.position.y += 0.1 * speedrate;
-        } else if (moveDownX) {
+        } else if (moveDown1 && playerid == 1) {
             paddle1.position.y -= 0.1 * speedrate;
-        } else if (moveUpY) {
+        } else if (moveUp2 && playerid == 2) {
             paddle2.position.y += 0.1 * speedrate;
-        } else if (moveDownY) {
+        } else if (moveDown2 && playerid == 2) {
             paddle2.position.y -= 0.1 * speedrate;
         }
 
 
         if (gameSocket.readyState === WebSocket.OPEN) {
+            if (playerid == 1) {
+                gameSocket.send(JSON.stringify({
+                    'message': 'update_position',
+                    'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
+                }));
+            }
+            else if (playerid == 2) {
+                gameSocket.send(JSON.stringify({
+                    'message': 'update_position',
+                    'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
+                }));
+            }
 
-            gameSocket.send(JSON.stringify({
-                'message': 'update_position',
-                'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
-                'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
-            }));
+
+
+
         } else {
             // 接続が確立されるまで再試行
             // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
@@ -190,6 +202,8 @@ function animate() {
 function updateGameState(data) {
    //#endregion console.log(data);
     paddleflag = 1;
+
+
     if (data.info === 'paddle'){
         paddle1.position.y = data.paddle_1[1] / 100;
         paddle2.position.y = data.paddle_2[1] / 100;    
@@ -291,26 +305,26 @@ function displayScore(score1, score2){
 }
 
 function onKeyDown(e) {
-    if (e.key === 'ArrowUp') {
-        moveUpX = true;
-    } else if (e.key === 'ArrowDown') {
-        moveDownX = true;
-    } else if (e.key === 'a' || e.key === 'A') {
-        moveUpY = true;
-    } else if (e.key === 'z' || e.key === 'Z') {
-        moveDownY = true;
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+        moveUp1 = true;
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+        moveDown1 = true;
+    } else if (e.key === 's' || e.key === 'S' || e.key === 'c' || e.key === 'C') {
+        moveUp2 = true;
+    } else if (e.key === 'x' || e.key === 'X' || e.key === 'z' || e.key === 'Z') {
+        moveDown2 = true;
     }
 }
 
 function onKeyUp(e) {
     if (e.key === 'ArrowUp') {
-        moveUpX = false;
+        moveUp1 = false;
     } else if (e.key === 'ArrowDown') {
-        moveDownX = false;
-    } else if (e.key === 'a' || e.key === 'A') {
-        moveUpY = false;
-    } else if (e.key === 'z' || e.key === 'Z') {
-        moveDownY = false;
+        moveDown1 = false;
+    } else if (e.key === 's' || e.key === 'S' || e.key === 'c' || e.key === 'C') {
+        moveUp2 = false;
+    } else if (e.key === 'x' || e.key === 'X' || e.key === 'z' || e.key === 'Z') {
+        moveDown2 = false;
     }
 }
 
@@ -367,8 +381,8 @@ window.addEventListener('popstate', function(event) {
 
 
 
-function startGame(gameid){
-    init();
+function startGame(gameid, playid){
+    init(playid);
 
     // let regexp = /\?gameid=(\d+)/
     // let match = document.currentScript.src.match(regexp);

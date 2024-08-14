@@ -284,7 +284,7 @@ function send_ajax(data)
   const csrfToken = getCSRFToken();
 
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", data.data_url, true);
+  xhr.open("POST", data.data_url+= "?t=" + new Date().getTime(), true);
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xhr.setRequestHeader("X-CSRFToken", csrfToken);  // CSRFトークンをヘッダーに設定
   xhr.onreadystatechange = function() {

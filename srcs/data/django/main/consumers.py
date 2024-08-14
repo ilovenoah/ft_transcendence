@@ -58,6 +58,9 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.userid = user.id
             self.user1 =  match.user1_id
             self.user2 =  match.user2_id
+            self.oneplay = match.is_single
+        
+
             if match.user2_id is None and match.is_single is False :
                 self.user2 = self.userid
                 match.user2_id = self.userid
@@ -226,47 +229,41 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             self.game_state['info'] = 'all'
 
-
-
             #AIブロック
-            #  # ランダム性を導入
-            # if random.random() < 0.4:
-            #     self.game_state['paddle_2'][1] += random.randint(-300, 300)
-            # # シンプルな追尾アルゴリズム
-            # if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
-            #     self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-            # elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
-            #     self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
+            if self.oneplay :
+                 # ランダム性を導入
+                if random.random() < 0.4:
+                    self.game_state['paddle_2'][1] += random.randint(-300, 300)
+                # シンプルな追尾アルゴリズム
+                if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+                    self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+                elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+                    self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
            
-
-            # 過去のボール位置を記憶
-            self.memory.append(self.game_state['ball'][1])
-            if len(self.memory) > 1000:  # メモリの長さを制限
-                self.memory.pop(0)
-        
-            # パターンを検出して動く
-            if len(set(self.memory)) == 1:  # 全て同じ位置ならそこに移動
-                target_y = self.memory[0]
-            else:
-                target_y = self.game_state['ball'][1]
-        
-            if target_y > self.game_state['paddle_2'][1]:
-                self.game_state['paddle_2'][1] += min(50, target_y - self.game_state['paddle_2'][1])
-            elif target_y < self.game_state['paddle_2'][1]:
-                self.game_state['paddle_2'][1] -= min(50, self.game_state['paddle_2'][1] - target_y)
-
-
-
-            # ボールの未来の位置を予測
-            # predicted_y = self.game_state['ball'][1] + math.sin(self.game_state['ball'][2]) * (self.game_state['paddle_2'][0] - self.game_state['ball'][0]) / math.cos(self.game_state['ball'][2])
-            # if predicted_y > self.game_state['paddle_2'][1]:
-            #     self.game_state['paddle_2'][1] += min(70, predicted_y - self.game_state['paddle_2'][1])
-            #     if self.game_state['paddle_2'][1] > MAX_Y :
-            #         self.game_state['paddle_2'][1] = MAX_Y
-            # elif predicted_y < self.game_state['paddle_2'][1]:
-            #     self.game_state['paddle_2'][1] -= min(70, self.game_state['paddle_2'][1] - predicted_y)
-            #     if self.game_state['paddle_2'][1] < MIN_Y :
-            #         self.game_state['paddle_2'][1] = MIN_Y
+                #別のアルゴリズム
+                # 過去のボール位置を記憶
+                # self.memory.append(self.game_state['ball'][1])
+                # if len(self.memory) > 1000:  # メモリの長さを制限
+                #     self.memory.pop(0)        
+                # # パターンを検出して動く
+                # if len(set(self.memory)) == 1:  # 全て同じ位置ならそこに移動
+                #     target_y = self.memory[0]
+                # else:
+                #     target_y = self.game_state['ball'][1]
+                # if target_y > self.game_state['paddle_2'][1]:
+                #     self.game_state['paddle_2'][1] += min(50, target_y - self.game_state['paddle_2'][1])
+                # elif target_y < self.game_state['paddle_2'][1]:
+                #     self.game_state['paddle_2'][1] -= min(50, self.game_state['paddle_2'][1] - target_y)
+                # ボールの未来の位置を予測
+                # predicted_y = self.game_state['ball'][1] + math.sin(self.game_state['ball'][2]) * (self.game_state['paddle_2'][0] - self.game_state['ball'][0]) / math.cos(self.game_state['ball'][2])
+                # if predicted_y > self.game_state['paddle_2'][1]:
+                #     self.game_state['paddle_2'][1] += min(70, predicted_y - self.game_state['paddle_2'][1])
+                #     if self.game_state['paddle_2'][1] > MAX_Y :
+                #         self.game_state['paddle_2'][1] = MAX_Y
+                # elif predicted_y < self.game_state['paddle_2'][1]:
+                #     self.game_state['paddle_2'][1] -= min(70, self.game_state['paddle_2'][1] - predicted_y)
+                #     if self.game_state['paddle_2'][1] < MIN_Y :
+                #         self.game_state['paddle_2'][1] = MIN_Y
 
 
 
@@ -277,8 +274,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     "type": "game_update",
                     "game_state": self.game_state
                 }
-            )          
-
+            )
 
             #Dueceを設定
             if self.game_state['scores'][0] == (score_match - 1) and self.game_state['scores'][1] == (score_match - 1) :
@@ -289,7 +285,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                 asyncio.create_task(disconnect_after_delay(self))
                 # await asyncio.sleep(3600)
-
 
             else:
                 await asyncio.sleep(interval)

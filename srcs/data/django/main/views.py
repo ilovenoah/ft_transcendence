@@ -524,7 +524,7 @@ def process_post_data(request):
                             'content':read_file('ponggame.html'),
                             'title': 'Pong Gmae ' + str(room.id),
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ')',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 2)',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -594,7 +594,7 @@ def process_post_data(request):
                             'title': 'Pong Gmae ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ')',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1)',
                         }
             elif page == 'create_tournament':
                 user = request.user
@@ -740,7 +740,7 @@ def process_post_data(request):
                         'title': 'Pong Gmae ' + str(match.id),
                         'gameid': str(match.id), 
                         # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(match.id) + ')',
+                        'rawscripts': 'startGame(' + str(match.id) + ', 1)',
                     }
                 else:
                     response_data = {
