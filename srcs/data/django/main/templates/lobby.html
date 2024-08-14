@@ -133,8 +133,62 @@
             {% endif %}
         </ul>
     </div>
-    <!-- <div class="card border-primary bg-dark mb-3">
+    <div class="card border-primary bg-dark mb-3">
         <h5 class="card-title text-light px-3 mt-3 translations" id="lobby_doubles">　</h5>
         <li class="mb-2 px-3"><a href="#" class="btn btn-primary btn-sm post-link mb-3 btn-custom translations" data_url="process-post/" page="create_doubles" title="Create Doubles" id="lobby_button5" style="width: 10rem;">　</a></li>
-    </div> -->
+        <h5 class="card-title text-light px-3 translations" id="lobby_doubles_list">　</h5>
+        <ul class="table-responsive px-3">
+            {% if doubles %}
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">　</th>
+                            <th scope="col" class="translations" id="lobby_doubles_helper2">　</th>
+                            <th scope="col" class="translations" id="lobby_doubles_helper3">　</th>
+                            <th scope="col" class="translations" id="lobby_doubles_helper4">　</th>
+                            <th scope="col" class="translations" id="lobby_doubles_helper5">　</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for double in doubles %}
+                        <tr>
+                            <td>
+                                <a href="#" class="btn btn-primary btn-sm post-link btn-custom translations text-nowrap" data_url="process-post/" page="join_doubles" doubles_id="{{ double.id }}" id="lobby_button6" style="width: 6rem;">　</a>
+                            </td>
+                            <td>
+                                {% if double.ball_speed == 2 %}
+                                    <div class="translations" id="doubles_ball_normal">　</div>
+                                {% elif double.ball_speed == 1 %}
+                                    <div class="translations" id="doubles_ball_slow">　</div>
+                                {% else %}    
+                                    <div class="translations" id="doubles_ball_fast">　</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if double.paddle_size == 2 %}
+                                    <div class="translations" id="doubles_paddle_normal">　</div>
+                                {% elif double.paddle_size == 1 %}
+                                    <div class="translations" id="doubles_paddle_small">　</div>
+                                {% else %}    
+                                    <div class="translations" id="doubles_paddle_large">　</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ double.match_point }}</td>
+                            <td>
+                                {% if double.is_3d == True %}
+                                    3D
+                                {% else %}
+                                    2D
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div id="doublesAlertBlock"></div>
+            {% else %}
+                <div class="card-text text-light translations" id="lobby_doubles_helper1">　</div>
+            {% endif %}
+        </ul>
+    </div>
 </div>

@@ -517,7 +517,25 @@ function displayAlert(elem) {
         <div id="tournament_warning" class="card-text text-warning translations">그 토너먼트에는 참가할 수 없습니다</div>
       `;
     }
+  } else if (elem === 'doubles') {
+    console.debug('im here')
+    const alert = document.getElementById('doublesAlertBlock');
+    alert.innerHTML = '';
+    if (lang === 'ja') {
+      alert.innerHTML = `
+        <div id="doubles_warning" class="card-text text-warning translations">そのダブルスには参加できません</div>
+      `;
+    } else if (lang === 'en') {
+      alert.innerHTML = `
+        <div id="doubles_warning" class="card-text text-warning translations">You cannot join the doubles</div>
+      `;
+    } else {
+      alert.innerHTML = `
+        <div id="doubles_warning" class="card-text text-warning translations">그 더블스에는 참가할 수 없습니다</div>
+      `;
+    }
   }
+
 }
 
 function setCookie(name, value, days) {
