@@ -13,6 +13,10 @@ let moveUp1 = false;
 let moveDown1 = false;
 let moveUp2 = false;
 let moveDown2 = false;
+let moveUp3 = false;
+let moveDown3 = false;
+let moveUp4 = false;
+let moveDown4 = false;
 let wrate = 0.0;
 
 let score_player1;
@@ -156,13 +160,13 @@ function init() {
 function animate() {
 
     if (paddleflag > 0){
-        if (moveUp1 && player_id == 1) {
+        if (moveUp1 && player_no == 1) {
             paddle1.position.y += 0.1 * speedrate;
-        } else if (moveDown1 && player_id == 1) {
+        } else if (moveDown1 && player_no == 1) {
             paddle1.position.y -= 0.1 * speedrate;
-        } else if (moveUp2 && player_id == 2) {
+        } else if (moveUp2 && player_no == 2) {
             paddle2.position.y += 0.1 * speedrate;
-        } else if (moveDown2 && player_id == 2) {
+        } else if (moveDown2 && player_no == 2) {
             paddle2.position.y -= 0.1 * speedrate;
         }
 
@@ -306,24 +310,27 @@ function displayScore(score1, score2){
 
 function onKeyDown(e) {
     if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
-        moveUp1 = true;
+        moveUp3 = true;
     } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+        moveDown3 = true;
+    } else if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
+        moveUp1 = true;
+    } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
         moveDown1 = true;
-    } else if (e.key === 's' || e.key === 'S' || e.key === 'c' || e.key === 'C') {
+    } else if (e.key === 'w' || e.key === 'W' || e.key === 'd' || e.key === 'D') {
         moveUp2 = true;
-    } else if (e.key === 'x' || e.key === 'X' || e.key === 'z' || e.key === 'Z') {
+    } else if (e.key === 's' || e.key === 'S' || e.key === 'a' || e.key === 'A') {
         moveDown2 = true;
-    }
-}
+    }}
 
 function onKeyUp(e) {
-    if (e.key === 'ArrowUp') {
+    if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
         moveUp1 = false;
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
         moveDown1 = false;
-    } else if (e.key === 's' || e.key === 'S' || e.key === 'c' || e.key === 'C') {
+    } else if (e.key === 'w' || e.key === 'W' || e.key === 'd' || e.key === 'D') {
         moveUp2 = false;
-    } else if (e.key === 'x' || e.key === 'X' || e.key === 'z' || e.key === 'Z') {
+    } else if (e.key === 's' || e.key === 'S' || e.key === 'a' || e.key === 'A') {
         moveDown2 = false;
     }
 }
