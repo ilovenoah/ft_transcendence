@@ -215,5 +215,11 @@
     "history_tournament_paddle_size": "패들 사이즈",
     "history_tournament_paddle_normal": "표준",
     "history_tournament_paddle_small": "작다",
-    "history_tournament_paddle_large": "크다"
+    "history_tournament_paddle_large": "크다",
+    "match_history_button": "모든 유저의 성적",
+    "game_stats_header": "모든 유저의 성적",
+    "game_stats_user": "유저",
+    "game_stats_wins": "승리",
+    "game_stats_losses": "패배",
+    "game_stats_win_rate": "승률(%)"
 }

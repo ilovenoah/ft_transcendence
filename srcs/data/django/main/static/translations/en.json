@@ -215,5 +215,11 @@
     "history_tournament_paddle_size": "Paddle Size",
     "history_tournament_paddle_normal": "Normal",
     "history_tournament_paddle_small": "Small",
-    "history_tournament_paddle_large": "Large"
+    "history_tournament_paddle_large": "Large",
+    "match_history_button": "All Users' Stats",
+    "game_stats_header": "All Users' Stats",
+    "game_stats_user": "User",
+    "game_stats_wins": "Wins",
+    "game_stats_losses": "Losses",
+    "game_stats_win_rate": "Win Rate(%)"
 }
