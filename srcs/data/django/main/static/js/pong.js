@@ -1,4 +1,4 @@
-let scene, camera, renderer, overlayCanvas, paddle1, paddle2, ball, score;
+let scene, camera, renderer, overlayCanvas, paddle1, paddle2, paddle3, paddle4, ball, score;
 // let player1Y = 0;
 // let player2Y = 0;
 let paddle1length = 6;
@@ -191,6 +191,18 @@ function animate() {
             paddle2.position.y += 0.1 * speedrate;
         } else if (moveDown2 && player_no == 2) {
             paddle2.position.y -= 0.1 * speedrate;
+        } else if (moveUp1 && player_no == 2) {
+            paddle2.position.y += 0.1 * speedrate;
+        } else if (moveDown1 && player_no == 2) {
+            paddle2.position.y -= 0.1 * speedrate;
+        } else if (moveUp1 && player_no == 3) {
+            paddle3.position.y += 0.1 * speedrate;
+        } else if (moveDown1 && player_no == 3) {
+            paddle3.position.y -= 0.1 * speedrate;
+        } else if (moveUp1 && player_no == 4) {
+            paddle4.position.y += 0.1 * speedrate;
+        } else if (moveDown1 && player_no == 4) {
+            paddle4.position.y -= 0.1 * speedrate;
         }
 
 
@@ -205,6 +217,18 @@ function animate() {
                 gameSocket.send(JSON.stringify({
                     'message': 'update_position',
                     'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
+                }));
+            }
+            else if (player_no == 3) {
+                gameSocket.send(JSON.stringify({
+                    'message': 'update_position',
+                    'player3_y': paddle3.position.y * 100,  // サーバーでのスケーリングを考慮        
+                }));
+            }
+            else if (player_no == 4) {
+                gameSocket.send(JSON.stringify({
+                    'message': 'update_position',
+                    'player4_y': paddle4.position.y * 100,  // サーバーでのスケーリングを考慮        
                 }));
             }
 

@@ -169,6 +169,27 @@ class PongConsumer(AsyncWebsocketConsumer):
                     elif tmp2  < MIN_Y :
                         tmp2 = MIN_Y 
                     self.game_state['paddle_2'][1] = tmp2
+            elif self.user3 == user.id :
+                tmp2 = text_data_json['player3_y']
+                if tmp2 != "":
+                    if tmp2 > MAX_Y :
+                        tmp2 = MAX_Y
+                    elif tmp2  < MIN_Y :
+                        tmp2 = MIN_Y 
+                    self.game_state['paddle_3'][1] = tmp2
+            elif self.user4 == user.id :
+                tmp2 = text_data_json['player4_y']
+                if tmp2 != "":
+                    if tmp2 > MAX_Y :
+                        tmp2 = MAX_Y
+                    elif tmp2  < MIN_Y :
+                        tmp2 = MIN_Y 
+                    self.game_state['paddle_4'][1] = tmp2
+
+
+
+
+
         elif message == 'ready_state' :
             logger.debug(f'ユーザーID: {user.id}')
             logger.debug(f'11: {self.user1}')
