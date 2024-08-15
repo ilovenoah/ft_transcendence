@@ -24,6 +24,8 @@ let score_player2;
 
 let speedrate = 5.0;
 
+let game_state = 0;
+
 let score_match = 10;
 let paddleflag = 0;
 
@@ -229,6 +231,8 @@ function updateGameState(data) {
         
         ball.position.x = data.ball[0] / 100;
         ball.position.y = data.ball[1] / 100;
+
+        game_state = data.status;
         
         if (first_flag) {
             score_player1 = data.scores[0];
@@ -351,7 +355,9 @@ function connect(roomName){
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
         // 自動再接続
-        setTimeout( connect(game_id), reconnectInterval);
+        if (game_state < 2){
+            setTimeout( connect(game_id), reconnectInterval);
+        }
     };
 }
 

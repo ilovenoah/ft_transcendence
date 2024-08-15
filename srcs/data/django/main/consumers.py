@@ -59,13 +59,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.user3 =  self.match.user3_id
             self.user4 =  self.match.user4_id
 
-            self.user1state =  0
-            self.user2state =  0
-            self.user3state =  0
-            self.user4state =  0
-
-            self.ball_start = 0
-
             self.oneplay = self.match.is_single
             self.single = self.match.is_single
             self.doubles = self.match.doubles_id
@@ -76,7 +69,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.match.user2_id = user.id
                 await sync_to_async(self.match.save()) 
      
-
 
         # aioredisを使ってRedisに接続
         # self.redis = await aioredis.create_redis_pool('redis://redis4242')
@@ -99,6 +91,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'paddle_2':[-3800, 0, 600],
                 'scores':[0, 0],
                 'count_sleep': 0,
+                'user_status':[0,0,0,0,0],
            }
 
         await self.channel_layer.group_add(
@@ -142,7 +135,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         message = text_data_json['message']
         user = self.scope["user"]
 
-        logger.debug(f'受信データ: {user.id}')
 
         if message == 'update_position':
             if self.user1 == user.id :
@@ -164,23 +156,30 @@ class PongConsumer(AsyncWebsocketConsumer):
                         tmp2 = MIN_Y 
                     self.game_state['paddle_2'][1] = tmp2
         elif message == 'ready_state' :
+            logger.debug(f'ユーザーID: {user.id}')
+            logger.debug(f'11: {self.user1}')
+            logger.debug(f'22: {self.user2}')
+            logger.debug(f'dd: {self.doubles}')
+
             if self.user1 == user.id :
-                self.user1state = 1
+                self.game_state['user_status'][1] = 1
             elif self.user2 == user.id :
-                self.user2state = 1
+                self.game_state['user_status'][2] = 1
             elif self.user3 == user.id :
-                self.user3state = 1
+                self.game_state['user_status'][3] = 1
             elif self.user4 == user.id :
-                self.user4state = 1            
+                self.game_state['user_status'][4] = 1
+
+
             if self.doubles is None :
-                if self.user1state == 1 and self.user2state == 1:
-                    self.ball_start = 1
+                if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1:
+                    self.game_state['user_status'][0] = 1
             else:
-                if self.user1state == 1 and self.user2state == 1 and  self.user3state == 1 and self.user4state == 1:
-                    self.ball_start = 1
+                if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1 and  self.game_state['user_status'][3] == 1 and self.game_state['user_status'][4] == 1:
+                    self.game_state['user_status'][0] = 1
 
-            self.ball_start = 1
 
+            
             # Redisに状態を保存
             # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
@@ -206,11 +205,11 @@ class PongConsumer(AsyncWebsocketConsumer):
         global score_match, sleep_sec, interval
         try:
             while True:
-                if self.ball_start > 0 and self.game_state['count_sleep'] > 0 :
+                if self.game_state['user_status'][0] == 1 and self.game_state['count_sleep'] > 0 :
                     self.game_state['count_sleep'] -= interval
                     self.game_state['ball'][0] = 0
                     self.game_state['ball'][1] = 0
-                elif self.ball_start > 0 :
+                elif self.game_state['user_status'][0] == 1 :
                     # ボールの位置を更新
                     self.game_state['ball'][0] += self.game_state['ball'][2] * math.cos(self.game_state['ball'][3])
                     self.game_state['ball'][1] += self.game_state['ball'][2] * math.sin(self.game_state['ball'][3])
@@ -295,6 +294,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                     #         self.game_state['paddle_2'][1] = MIN_Y
 
 
+                if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
+                    self.game_state['status'] = 2
     
      
                 # ゲームの状態をクライアントに送信
