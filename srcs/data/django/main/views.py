@@ -133,24 +133,24 @@ def process_post_data(request):
                     'content': content,
                     'title': title,
                 }
-            elif page == 'ponggame':
-                response_data = {
-                    'page':page,
-                    'content':read_file('ponggame.html'),
-                    'title': title,
-                    'gameid': gameid, 
-                    # javascriptのファイルを指定するとき
-                    'scriptfiles': '/static/js/sspong.js?gameid=' + gameid,
-                }
-            elif page == 'ponggame2':
-                response_data = {
-                    'page':page,
-                    'content':read_file('ponggame.html'),
-                    'title': title,
-                    'gameid': gameid, 
-                    # 生のjavascriptを埋め込みたいとき
-                    'rawscripts': 'startGame(' + gameid + '42,' +  str(request.user.id) + ')',
-                }
+            # elif page == 'ponggame':
+            #     response_data = {
+            #         'page':page,
+            #         'content':read_file('ponggame.html'),
+            #         'title': title,
+            #         'gameid': gameid, 
+            #         # javascriptのファイルを指定するとき
+            #         'scriptfiles': '/static/js/sspong.js?gameid=' + gameid,
+            #     }
+            # elif page == 'ponggame2':
+            #     response_data = {
+            #         'page':page,
+            #         'content':read_file('ponggame.html'),
+            #         'title': title,
+            #         'gameid': gameid, 
+            #         # 生のjavascriptを埋め込みたいとき
+            #         'rawscripts': 'startGame(' + gameid + '42,' +  str(request.user.id) + ')',
+            #     }
             elif page == 'gamelist':
                 response_data = {
                     'page':page,
@@ -527,7 +527,7 @@ def process_post_data(request):
                             'content':read_file('ponggame.html'),
                             'title': 'Pong Game ' + str(room.id),
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ')',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0)',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -601,7 +601,7 @@ def process_post_data(request):
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ')',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -674,7 +674,7 @@ def process_post_data(request):
                             'content':read_file('ponggame.html'),
                             'title': 'Pong Game ' + str(room.id),
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ')',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',
                         }
 
                     else:
@@ -749,7 +749,7 @@ def process_post_data(request):
                         'title': 'Pong Game ' + str(room.id),
                         'gameid': str(room.id), 
                         # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ')',            
+                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',            
                     }
                 else:
                     page = 'tournament'
@@ -776,7 +776,7 @@ def process_post_data(request):
                         'title': 'Pong Game ' + str(match.id),
                         'gameid': str(match.id), 
                         # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(match.id) + ', 1,' + str(request.user.id) + ')',
+                        'rawscripts': 'startGame(' + str(match.id) + ', 1,' + str(request.user.id) + ', 0)',
                     }
                 else:
                     response_data = {
@@ -853,15 +853,20 @@ def process_post_data(request):
                         doubles_user.is_complete = True
                         doubles_user.save()
                         room = Matchmaking.objects.filter(doubles=doubles).first()
+                        user_no = 0
                         if not room:
-                            Matchmaking.objects.create(user1=user, doubles=doubles)
+                            room = Matchmaking.objects.create(user1=user, doubles=doubles)
+                            user_no = 1
                         else:
                             if not room.user2:
                                 room.user2 = user
+                                user_no = 2
                             elif not room.user3:
                                 room.user3 = user
+                                user_no = 3
                             else:
                                 room.user4 = user
+                                user_no = 4
                             room.save()
                         response_data = {
                             'page':page,
@@ -869,7 +874,7 @@ def process_post_data(request):
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ')',                        
+                            'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1)',                        
                         }
                     else:
                         response_data = {
@@ -933,8 +938,6 @@ def process_post_data(request):
                     'timeout' : '10000',
                     'alert': '参加者を待っています',
                 }
-
-
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {

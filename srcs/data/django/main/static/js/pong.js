@@ -3,11 +3,14 @@ let scene, camera, renderer, overlayCanvas, paddle1, paddle2, ball, score;
 // let player2Y = 0;
 let paddle1length = 6;
 let paddle2length = 6;
+let paddle3length = 6;
+let paddle4length = 6;
 let gameSocket;
 
 let player_id = 0;
 let player_no = 0;
 let game_id;
+let is_doubles = 0;
 
 let moveUp1 = false;
 let moveDown1 = false;
@@ -100,7 +103,6 @@ function init() {
 
     const paddle1Geometry = new THREE.BoxGeometry(0.5, paddle1length, 0.5);
     const paddle1Material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-    
     paddle1 = new THREE.Mesh(paddle1Geometry, paddle1Material);
     paddle1.position.x = 38.75;
     scene.add(paddle1);
@@ -110,6 +112,25 @@ function init() {
     paddle2 = new THREE.Mesh(paddle2Geometry, paddle2Material);
     paddle2.position.x = -38.75;
     scene.add(paddle2);
+
+    const paddle3Geometry = new THREE.BoxGeometry(0.5, paddle3length, 0.5);
+    const paddle3Material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    paddle3 = new THREE.Mesh(paddle3Geometry, paddle3Material);
+    paddle3.position.x = 18.75;
+    if (is_doubles == 1){
+        scene.add(paddle3);
+    }
+
+    const paddle4Geometry = new THREE.BoxGeometry(0.5, paddle4length, 0.5);
+    const paddle4Material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+    paddle4 = new THREE.Mesh(paddle4Geometry, paddle4Material);
+    paddle4.position.x = -18.75;
+    if (is_doubles == 1){
+        scene.add(paddle4);
+    }
+    
+
+
 
     const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
     const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
@@ -402,10 +423,11 @@ window.addEventListener('popstate', function(event) {
 
 
 
-function startGame(gameid, playno, playid){
+function startGame(gameid, playno, playid, dobules_flag){
     game_id = gameid;
     player_id = playid;
     player_no = playno;
+    is_doubles = dobules_flag;
     init();
 
     

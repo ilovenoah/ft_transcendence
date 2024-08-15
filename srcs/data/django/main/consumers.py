@@ -59,7 +59,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.user3 =  self.match.user3_id
             self.user4 =  self.match.user4_id
 
-            self.oneplay = self.match.is_single
             self.single = self.match.is_single
             self.doubles = self.match.doubles_id
 
@@ -83,7 +82,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
 
-        else:
+        elif self.doubles is None:
             self.game_state = {
                 'ball': [0, 0, 70, math.pi / 4.0], # x, y , speed, angle
                 'paddle_1':[3800, 0, 600], # x, y, length
@@ -92,6 +91,19 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'count_sleep': 0,
                 'user_status':[0,0,0,0,0],
            }
+        else :
+            self.game_state = {
+                'ball': [0, 0, 70, math.pi / 4.0], # x, y , speed, angle
+                'paddle_1':[3800, 0, 600], # x, y, length
+                'paddle_2':[-3800, 0, 600],
+                'paddle_3':[1800, 0, 600], # x, y, length
+                'paddle_4':[-1800, 0, 600],
+                'scores':[0, 0],
+                'count_sleep': 0,
+                'user_status':[0,0,0,0,0],
+           }
+
+
 
         if self.single is True :
             self.game_state['user_status'][2] = 1
@@ -233,7 +245,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                         self.game_state['scores'][0] += 1
                         self.game_state['count_sleep'] = sleep_sec
                         self.game_state['ball'][0] = 0
-                        self.game_state['ball'][1] = 0
+                        self.game_state['ball'][1] = 0                    
                     elif self.game_state['ball'][0] >= self.game_state['paddle_1'][0] and self.game_state['ball'][0] <= self.game_state['paddle_1'][0] + 100:
                         if self.game_state['ball'][1] > self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2:
                             self.game_state['ball'][3] = math.pi / 3 * 2
@@ -256,13 +268,37 @@ class PongConsumer(AsyncWebsocketConsumer):
                             self.game_state['ball'][3] = math.pi / 3 * 5
                         elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
                             self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                    if self.doubles is not None :
+                        if self.game_state['ball'][0] >= self.game_state['paddle_3'][0] and self.game_state['ball'][0] <= self.game_state['paddle_3'][0] + 100:
+                            if self.game_state['ball'][1] > self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 2:
+                                self.game_state['ball'][3] = math.pi / 3 * 2
+                            elif self.game_state['ball'][1] > self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 5 and self.game_state['ball'][1] < self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 5 * 2:
+                                self.game_state['ball'][3] = math.pi / 4 * 3
+                            elif self.game_state['ball'][1] < self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 5 and self.game_state['ball'][1] > self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 5 * 2:
+                                self.game_state['ball'][3] = math.pi / 4 * 5
+                            elif self.game_state['ball'][1] < self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 2:
+                                self.game_state['ball'][3] = math.pi / 3 * 4
+                            elif self.game_state['ball'][1] < self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 2:
+                                self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                        elif self.game_state['ball'][0] <= self.game_state['paddle_4'][0] and self.game_state['ball'][0] >= self.game_state['paddle_4'][0] - 100:
+                            if self.game_state['ball'][1] > self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 2:
+                                self.game_state['ball'][3] = math.pi / 3 
+                            elif  self.game_state['ball'][1] > self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 5 and self.game_state['ball'][1] < self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 5 * 2:
+                                self.game_state['ball'][3] = math.pi / 4    
+                            elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 5 and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 5 * 2:
+                                self.game_state['ball'][3] = math.pi / 4 * 7
+                            elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 2:
+                                self.game_state['ball'][3] = math.pi / 3 * 5
+                            elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 2:
+                                self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                      
 
                 self.game_state['info'] = 'all'
 
                 #AIブロック
-                if self.oneplay :
+                if self.single is True :
                      # ランダム性を導入
-                    if random.random() < 0.4:
+                    if random.random() < 0.6:
                         self.game_state['paddle_2'][1] += random.randint(-300, 300)
                     # シンプルな追尾アルゴリズム
                     if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
