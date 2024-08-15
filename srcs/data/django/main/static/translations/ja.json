@@ -215,6 +215,11 @@
     "history_tournament_paddle_size": "パドルサイズ",
     "history_tournament_paddle_normal": "標準",
     "history_tournament_paddle_small": "小さい",
-    "history_tournament_paddle_large": "大きい"
-    
+    "history_tournament_paddle_large": "大きい",
+    "match_history_button": "全てのユーザーの成績",
+    "game_stats_header": "全てのユーザーの成績",
+    "game_stats_user": "ユーザー",
+    "game_stats_wins": "勝ち",
+    "game_stats_losses": "負け",
+    "game_stats_win_rate": "勝率(%)"
 }

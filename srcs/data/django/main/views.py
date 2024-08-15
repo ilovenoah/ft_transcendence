@@ -754,6 +754,10 @@ def process_post_data(request):
             elif page == 'match_history':
                 user = request.user
                 if user.is_authenticated:
+                    user_id = post_data.get('user_id')
+                    if user_id:
+                        user = CustomUser.objects.filter(id=user_id).first()
+                        # logger.debug(f'user: {user}') 
                     matches = Matchmaking.objects.filter(is_single=False).exclude(winner__isnull=True)
                     tournaments = Tournament.objects.filter(size=F('num_users'))
                     tournament_users = TournamentUser.objects.filter(is_complete=True)
@@ -898,6 +902,15 @@ def process_post_data(request):
                     'timeout' : '10000',
                     'alert': '参加者を待っています',
                 }
+            elif page == 'game_stats':
+                user = request.user
+                if user.is_authenticated:
+                    users = CustomUser.objects.exclude(display_name__isnull=True)
+                    response_data = {
+                        'page': page,
+                        'content': render_to_string('game_stats.html', {'users': users}),
+                        'title': 'game stats',
+                    }
 
 
             else:
