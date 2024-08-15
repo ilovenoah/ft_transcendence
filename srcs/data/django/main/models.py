@@ -28,6 +28,25 @@ class CustomUser(AbstractUser):
         friend_request.save()
         return friend_request
 
+    @property
+    def wins(self):
+        return Matchmaking.objects.filter(winner=self).count()
+
+    @property
+    def losses(self):
+        return Matchmaking.objects.filter(
+            Q(user1=self) | Q(user2=self),
+            ~Q(winner=self),
+            winner__isnull=False
+        ).count()
+
+    @property
+    def win_rate(self):
+        total_matches = self.wins + self.losses
+        if total_matches > 0:
+            return int((self.wins / total_matches) * 100)
+        return 0
+
 class Image(models.Model):
     image = models.ImageField(upload_to='avatars/', validators=[validate_file_size])
 
