@@ -746,8 +746,8 @@ def process_post_data(request):
                     response_data = {
                         'page':page,
                         'content':read_file('ponggame.html'),
-                        'title': 'Pong Game ' + str(match.id),
-                        'gameid': str(match.id), 
+                        'title': 'Pong Game ' + str(room.id),
+                        'gameid': str(room.id), 
                         # 生のjavascriptを埋め込みたいとき
                         'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ')',            
                     }
@@ -866,8 +866,8 @@ def process_post_data(request):
                         response_data = {
                             'page':page,
                             'content':read_file('ponggame.html'),
-                            'title': 'Pong Game ' + str(match.id),
-                            'gameid': str(match.id), 
+                            'title': 'Pong Game ' + str(room.id),
+                            'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
                             'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ')',                        
                         }

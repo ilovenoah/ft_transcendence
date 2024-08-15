@@ -62,8 +62,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.oneplay = self.match.is_single
             self.single = self.match.is_single
             self.doubles = self.match.doubles_id
-            if self.single is True :
-                self.user2state = 1
+
             if self.match.user2_id is None and self.match.is_single is False :
                 self.user2 = user.id
                 self.match.user2_id = user.id
@@ -93,6 +92,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'count_sleep': 0,
                 'user_status':[0,0,0,0,0],
            }
+
+        if self.single is True :
+            self.game_state['user_status'][2] = 1
 
         await self.channel_layer.group_add(
             self.room_group_name,
