@@ -172,11 +172,6 @@ LOGGING = {
         #     'level': 'DEBUG',
         #     'propagate': True,
         # },
-        'main': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
         'main': {  
             'handlers': ['file'],
             'level': 'DEBUG',

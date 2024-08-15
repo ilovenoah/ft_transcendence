@@ -5,7 +5,9 @@ let paddle1length = 6;
 let paddle2length = 6;
 let gameSocket;
 
-let playerid = 0;
+let player_id = 0;
+let player_no = 0;
+let game_id;
 
 let moveUp1 = false;
 let moveDown1 = false;
@@ -26,12 +28,10 @@ const updateInterval = 1000;  // 1秒
 const animationInterval = 100;  // 10ms
 
 let reconnectInterval = 100; // 再接続の間隔
-
 let first_flag;
 
-function init(playid) {
-
-    playerid = playid;
+function init() {
+    
     wwidth = window.innerWidth * 0.8;
     wheight = window.innerHeight * 0.8;
     // console.log (wwidth);
@@ -156,25 +156,25 @@ function init(playid) {
 function animate() {
 
     if (paddleflag > 0){
-        if (moveUp1 && playerid == 1) {
+        if (moveUp1 && player_id == 1) {
             paddle1.position.y += 0.1 * speedrate;
-        } else if (moveDown1 && playerid == 1) {
+        } else if (moveDown1 && player_id == 1) {
             paddle1.position.y -= 0.1 * speedrate;
-        } else if (moveUp2 && playerid == 2) {
+        } else if (moveUp2 && player_id == 2) {
             paddle2.position.y += 0.1 * speedrate;
-        } else if (moveDown2 && playerid == 2) {
+        } else if (moveDown2 && player_id == 2) {
             paddle2.position.y -= 0.1 * speedrate;
         }
 
 
         if (gameSocket.readyState === WebSocket.OPEN) {
-            if (playerid == 1) {
+            if (player_no == 1) {
                 gameSocket.send(JSON.stringify({
                     'message': 'update_position',
                     'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
                 }));
             }
-            else if (playerid == 2) {
+            else if (player_no == 2) {
                 gameSocket.send(JSON.stringify({
                     'message': 'update_position',
                     'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
@@ -344,7 +344,7 @@ function connect(roomName){
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
         // 自動再接続
-        //setTimeout(connect, reconnectInterval);
+        setTimeout( connect(game_id), reconnectInterval);
     };
 }
 
@@ -358,8 +358,16 @@ window.addEventListener('click', (event) => {
         link = link.parentElement;
     }
     if (link != null && link.tagName === 'A') {
+        if (link.getAttribute('ready') && link.getAttribute('ready') == '1') {
+            event.preventDefault();
+            const message = {
+                'message': 'ready_state',
+                'data': player_id
+            };
+            gameSocket.send(JSON.stringify(message));
+        }
         // 要素が属性 page="ponggame" を持っているか確認
-        if (link.getAttribute('page') && link.getAttribute('page') !== 'ponggame2') {
+        else if (link.getAttribute('page') && link.getAttribute('page') !== 'ponggame2') {
             if (gameSocket) {
                 gameSocket.close();
             }
@@ -381,8 +389,15 @@ window.addEventListener('popstate', function(event) {
 
 
 
-function startGame(gameid, playid){
-    init(playid);
+function startGame(gameid, playno, playid){
+    game_id = gameid;
+    player_id = playid;
+    player_no = playno;
+    init();
+
+    
+    console.log(playno);
+    console.log(playid);
 
     // let regexp = /\?gameid=(\d+)/
     // let match = document.currentScript.src.match(regexp);
@@ -391,5 +406,5 @@ function startGame(gameid, playid){
         gameSocket.close();
     }
     first_flag = true;
-    connect(gameid);
+    connect(game_id);
 }

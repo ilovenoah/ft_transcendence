@@ -149,7 +149,7 @@ def process_post_data(request):
                     'title': title,
                     'gameid': gameid, 
                     # 生のjavascriptを埋め込みたいとき
-                    'rawscripts': 'startGame(' + gameid + ')',
+                    'rawscripts': 'startGame(' + gameid + '42,' +  str(request.user.id) + ')',
                 }
             elif page == 'gamelist':
                 response_data = {
@@ -527,7 +527,7 @@ def process_post_data(request):
                             'content':read_file('ponggame.html'),
                             'title': 'Pong Gmae ' + str(room.id),
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 2)',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ')',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -601,7 +601,7 @@ def process_post_data(request):
                             'title': 'Pong Gmae ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1)',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ')',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -771,7 +771,7 @@ def process_post_data(request):
                         'title': 'Pong Gmae ' + str(match.id),
                         'gameid': str(match.id), 
                         # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(match.id) + ', 1)',
+                        'rawscripts': 'startGame(' + str(match.id) + ', 1,' + str(request.user.id) + ')',
                     }
                 else:
                     response_data = {

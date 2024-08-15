@@ -439,17 +439,6 @@ function toggleVisibility(login, username, elem) {
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="lobby">Pong Lobby</a>
         </li>
       </ul>
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a href="#" class="nav-link active post-link" data_url="process-post/" page="ponggame" title="Pong Game">Ponggame</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a href="#" class="nav-link active post-link" data_url="process-post/" page="gamelist2" title="Game List 2">GameList2</a>
-        </li>
-      </ul>
-
 
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
@@ -551,7 +540,6 @@ function displayAlert(elem) {
       `;
     }
   }
-
 }
 
 function setCookie(name, value, days) {

@@ -14,15 +14,15 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django_redis import get_redis_connection
 from asgiref.sync import sync_to_async  # sync_to_asyncをインポート
 
+from channels.db import database_sync_to_async
 
 from django.db import models
 from .models import Matchmaking
 import logging
 
 
-logger = logging.getLogger(__name__)
-
-
+# logger = logging.getLogger(__name__)
+logger = logging.getLogger('main')
 
 #マッチスコア
 score_match = 10
@@ -47,27 +47,35 @@ class PongConsumer(AsyncWebsocketConsumer):
  # self.room_name = "main"
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'pong_{self.room_name}'
-        first_flag = True
+        # first_flag = True
 
-        match = await sync_to_async(self.get_match)()
+        self.match = await sync_to_async(self.get_match)()
         # logger.debug(match.user1_id)
         user = self.scope["user"]
         # ユーザーが認証されているかどうかを確認
         if user.is_authenticated:
-            self.display_name = user.display_name
-            self.userid = user.id
-            self.user1 =  match.user1_id
-            self.user2 =  match.user2_id
-            self.oneplay = match.is_single
-        
+            self.user1 =  self.match.user1_id
+            self.user2 =  self.match.user2_id
+            self.user3 =  self.match.user3_id
+            self.user4 =  self.match.user4_id
 
-            if match.user2_id is None and match.is_single is False :
-                self.user2 = self.userid
-                match.user2_id = self.userid
-                await sync_to_async( match.save()) 
-        else:
-            self.display_name = ""
-            self.userid = ""
+            self.user1state =  0
+            self.user2state =  0
+            self.user3state =  0
+            self.user4state =  0
+
+            self.ball_start = 0
+
+            self.oneplay = self.match.is_single
+            self.single = self.match.is_single
+            self.doubles = self.match.doubles_id
+            if self.single is True :
+                self.user2state = 1
+            if self.match.user2_id is None and self.match.is_single is False :
+                self.user2 = user.id
+                self.match.user2_id = user.id
+                await sync_to_async(self.match.save()) 
+     
 
 
         # aioredisを使ってRedisに接続
@@ -98,11 +106,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-       # ボールの位置を定期的に更新する非同期タスクを開始
 
-        # self.update_task = asyncio.create_task(self.update_ball_position())
+        # ボールの位置を定期的に更新する非同期タスクを開始
+               
         if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
             PongConsumer.room_tasks[self.room_group_name] = asyncio.create_task(self.update_ball_position())
+
+
+
         # 接続されたクライアントに現在のゲーム状態を送信
         await self.send(text_data=json.dumps(self.game_state))
 
@@ -129,9 +140,12 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        user = self.scope["user"]
+
+        logger.debug(f'受信データ: {user.id}')
 
         if message == 'update_position':
-            if self.user1 == self.userid :
+            if self.user1 == user.id :
                 tmp1 = text_data_json['player1_y']
                 if tmp1 != "":
                     if tmp1 > MAX_Y :
@@ -141,7 +155,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                         tmp1 = MIN_Y
                         # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
                     self.game_state['paddle_1'][1] = tmp1
-            elif self.user2 == self.userid :
+            elif self.user2 == user.id :
                 tmp2 = text_data_json['player2_y']
                 if tmp2 != "":
                     if tmp2 > MAX_Y :
@@ -149,9 +163,24 @@ class PongConsumer(AsyncWebsocketConsumer):
                     elif tmp2  < MIN_Y :
                         tmp2 = MIN_Y 
                     self.game_state['paddle_2'][1] = tmp2
+        elif message == 'ready_state' :
+            if self.user1 == user.id :
+                self.user1state = 1
+            elif self.user2 == user.id :
+                self.user2state = 1
+            elif self.user3 == user.id :
+                self.user3state = 1
+            elif self.user4 == user.id :
+                self.user4state = 1            
+            if self.doubles is None :
+                if self.user1state == 1 and self.user2state == 1:
+                    self.ball_start = 1
+            else:
+                if self.user1state == 1 and self.user2state == 1 and  self.user3state == 1 and self.user4state == 1:
+                    self.ball_start = 1
 
+            self.ball_start = 1
 
-                
             # Redisに状態を保存
             # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
@@ -175,125 +204,150 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def update_ball_position(self):
         global score_match, sleep_sec, interval
-
-        while True:
-            if self.game_state['count_sleep'] > 0 :
-                self.game_state['count_sleep'] -= interval
-                self.game_state['ball'][0] = 0
-                self.game_state['ball'][1] = 0
-            else :
-                # ボールの位置を更新
-                self.game_state['ball'][0] += self.game_state['ball'][2] * math.cos(self.game_state['ball'][3])
-                self.game_state['ball'][1] += self.game_state['ball'][2] * math.sin(self.game_state['ball'][3])
-
-                # ボールが上下の壁に当たった場合、Y方向のアングルを反転
-                if self.game_state['ball'][1] >= MAX_Y or self.game_state['ball'][1] <= MIN_Y:
-                    self.game_state['ball'][3] = -1 * self.game_state['ball'][3]
-
-                # ボールが左右の壁に当たった場合、ゲームオーバーとして適切な処理を行うか、
-                # 速度を反転して反射させる
-                if self.game_state['ball'][0] >= MAX_X:
-                    # self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
-                    self.game_state['scores'][1] += 1
-                    self.game_state['count_sleep'] = sleep_sec
+        try:
+            while True:
+                if self.ball_start > 0 and self.game_state['count_sleep'] > 0 :
+                    self.game_state['count_sleep'] -= interval
                     self.game_state['ball'][0] = 0
                     self.game_state['ball'][1] = 0
-                elif self.game_state['ball'][0] <= MIN_X:
-                    # self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
-                    self.game_state['scores'][0] += 1
-                    self.game_state['count_sleep'] = sleep_sec
-                    self.game_state['ball'][0] = 0
-                    self.game_state['ball'][1] = 0
-                elif self.game_state['ball'][0] >= self.game_state['paddle_1'][0] and self.game_state['ball'][0] <= self.game_state['paddle_1'][0] + 100:
-                    if self.game_state['ball'][1] > self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2:
-                        self.game_state['ball'][3] = math.pi / 3 * 2
-                    elif self.game_state['ball'][1] > self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 and self.game_state['ball'][1] < self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 * 2:
-                        self.game_state['ball'][3] = math.pi / 4 * 3
-                    elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 5 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 5 * 2:
-                        self.game_state['ball'][3] = math.pi / 4 * 5
-                    elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 2:
-                        self.game_state['ball'][3] = math.pi / 3 * 4
-                    elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 2:
-                        self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
-                elif self.game_state['ball'][0] <= self.game_state['paddle_2'][0] and self.game_state['ball'][0] >= self.game_state['paddle_2'][0] - 100:
-                    if self.game_state['ball'][1] > self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2:
-                        self.game_state['ball'][3] = math.pi / 3 
-                    elif  self.game_state['ball'][1] > self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 5 and self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 5 * 2:
-                        self.game_state['ball'][3] = math.pi / 4    
-                    elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 5 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 5 * 2:
-                        self.game_state['ball'][3] = math.pi / 4 * 7
-                    elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
-                        self.game_state['ball'][3] = math.pi / 3 * 5
-                    elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
-                        self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                elif self.ball_start > 0 :
+                    # ボールの位置を更新
+                    self.game_state['ball'][0] += self.game_state['ball'][2] * math.cos(self.game_state['ball'][3])
+                    self.game_state['ball'][1] += self.game_state['ball'][2] * math.sin(self.game_state['ball'][3])
 
-            self.game_state['info'] = 'all'
+                    # ボールが上下の壁に当たった場合、Y方向のアングルを反転
+                    if self.game_state['ball'][1] >= MAX_Y or self.game_state['ball'][1] <= MIN_Y:
+                        self.game_state['ball'][3] = -1 * self.game_state['ball'][3]
 
-            #AIブロック
-            if self.oneplay :
-                 # ランダム性を導入
-                if random.random() < 0.4:
-                    self.game_state['paddle_2'][1] += random.randint(-300, 300)
-                # シンプルな追尾アルゴリズム
-                if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
-                    self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-                elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
-                    self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
-           
-                #別のアルゴリズム
-                # 過去のボール位置を記憶
-                # self.memory.append(self.game_state['ball'][1])
-                # if len(self.memory) > 1000:  # メモリの長さを制限
-                #     self.memory.pop(0)        
-                # # パターンを検出して動く
-                # if len(set(self.memory)) == 1:  # 全て同じ位置ならそこに移動
-                #     target_y = self.memory[0]
-                # else:
-                #     target_y = self.game_state['ball'][1]
-                # if target_y > self.game_state['paddle_2'][1]:
-                #     self.game_state['paddle_2'][1] += min(50, target_y - self.game_state['paddle_2'][1])
-                # elif target_y < self.game_state['paddle_2'][1]:
-                #     self.game_state['paddle_2'][1] -= min(50, self.game_state['paddle_2'][1] - target_y)
-                # ボールの未来の位置を予測
-                # predicted_y = self.game_state['ball'][1] + math.sin(self.game_state['ball'][2]) * (self.game_state['paddle_2'][0] - self.game_state['ball'][0]) / math.cos(self.game_state['ball'][2])
-                # if predicted_y > self.game_state['paddle_2'][1]:
-                #     self.game_state['paddle_2'][1] += min(70, predicted_y - self.game_state['paddle_2'][1])
-                #     if self.game_state['paddle_2'][1] > MAX_Y :
-                #         self.game_state['paddle_2'][1] = MAX_Y
-                # elif predicted_y < self.game_state['paddle_2'][1]:
-                #     self.game_state['paddle_2'][1] -= min(70, self.game_state['paddle_2'][1] - predicted_y)
-                #     if self.game_state['paddle_2'][1] < MIN_Y :
-                #         self.game_state['paddle_2'][1] = MIN_Y
+                    # ボールが左右の壁に当たった場合、ゲームオーバーとして適切な処理を行うか、
+                    # 速度を反転して反射させる
+                    if self.game_state['ball'][0] >= MAX_X:
+                        # self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                        self.game_state['scores'][1] += 1
+                        self.game_state['count_sleep'] = sleep_sec
+                        self.game_state['ball'][0] = 0
+                        self.game_state['ball'][1] = 0
+                    elif self.game_state['ball'][0] <= MIN_X:
+                        # self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                        self.game_state['scores'][0] += 1
+                        self.game_state['count_sleep'] = sleep_sec
+                        self.game_state['ball'][0] = 0
+                        self.game_state['ball'][1] = 0
+                    elif self.game_state['ball'][0] >= self.game_state['paddle_1'][0] and self.game_state['ball'][0] <= self.game_state['paddle_1'][0] + 100:
+                        if self.game_state['ball'][1] > self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2:
+                            self.game_state['ball'][3] = math.pi / 3 * 2
+                        elif self.game_state['ball'][1] > self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 and self.game_state['ball'][1] < self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 * 2:
+                            self.game_state['ball'][3] = math.pi / 4 * 3
+                        elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 5 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 5 * 2:
+                            self.game_state['ball'][3] = math.pi / 4 * 5
+                        elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 2:
+                            self.game_state['ball'][3] = math.pi / 3 * 4
+                        elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 2:
+                            self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                    elif self.game_state['ball'][0] <= self.game_state['paddle_2'][0] and self.game_state['ball'][0] >= self.game_state['paddle_2'][0] - 100:
+                        if self.game_state['ball'][1] > self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2:
+                            self.game_state['ball'][3] = math.pi / 3 
+                        elif  self.game_state['ball'][1] > self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 5 and self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 5 * 2:
+                            self.game_state['ball'][3] = math.pi / 4    
+                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 5 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 5 * 2:
+                            self.game_state['ball'][3] = math.pi / 4 * 7
+                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
+                            self.game_state['ball'][3] = math.pi / 3 * 5
+                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
+                            self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+
+                self.game_state['info'] = 'all'
+
+                #AIブロック
+                if self.oneplay :
+                     # ランダム性を導入
+                    if random.random() < 0.4:
+                        self.game_state['paddle_2'][1] += random.randint(-300, 300)
+                    # シンプルな追尾アルゴリズム
+                    if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+                        self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+                    elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+                        self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
+
+                    #別のアルゴリズム
+                    # 過去のボール位置を記憶
+                    # self.memory.append(self.game_state['ball'][1])
+                    # if len(self.memory) > 1000:  # メモリの長さを制限
+                    #     self.memory.pop(0)        
+                    # # パターンを検出して動く
+                    # if len(set(self.memory)) == 1:  # 全て同じ位置ならそこに移動
+                    #         target_y = self.memory[0]
+                    # else:
+                    #     target_y = self.game_state['ball'][1]
+                    # if target_y > self.game_state['paddle_2'][1]:
+                    #         self.game_state['paddle_2'][1] += min(50, target_y - self.game_state['paddle_2'][1])
+                    # elif target_y < self.game_state['paddle_2'][1]:
+                    #     self.game_state['paddle_2'][1] -= min(50, self.game_state['paddle_2'][1] - target_y)
+                    # ボールの未来の位置を予測
+                    # predicted_y = self.game_state['ball'][1] + math.sin(self.game_state['ball'][2]) * (self.game_state['paddle_2'][0] - self.game_state['ball'][0]) / math.cos(self.game_state['ball'][2])
+                    # if     predicted_y > self.game_state['paddle_2'][1]:
+                    #     self.game_state['paddle_2'][1] += min(70, predicted_y - self.game_state['paddle_2'][1])
+                    #     if self.game_state['paddle_2'][1] > MAX_Y :
+                    #         self.game_state['paddle_2'][1] = MAX_Y
+                    # elif predicted_y < self.game_state['paddle_2'][1]:
+                    #     self.game_state['paddle_2'][1] -= min(70, self.game_state['paddle_2'][1] - predicted_y)
+                    #     if self.game_state['paddle_2'][1] < MIN_Y :
+                    #         self.game_state['paddle_2'][1] = MIN_Y
 
 
+    
+     
+                # ゲームの状態をクライアントに送信
+                await self.channel_layer.group_send(         
+                    self.room_group_name,
+                    {
+                        "type": "game_update",
+                        "game_state": self.game_state
+                    }
+                )
 
-            # ゲームの状態をクライアントに送信
-            await self.channel_layer.group_send(         
-                self.room_group_name,
-                {
-                    "type": "game_update",
-                    "game_state": self.game_state
-                }
-            )
+                #Dueceを設定
+                if self.game_state['scores'][0] == (score_match - 1) and self.game_state['scores'][1] == (score_match - 1) :
+                    score_match += 1
+                #matchの終了判断
+                if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
+                    
+                    # logger = logger.debug("dango")
+                    # logger = logger.debug(self.match.point1)
+                   # logger = logger.debug(self.match.point2)
 
-            #Dueceを設定
-            if self.game_state['scores'][0] == (score_match - 1) and self.game_state['scores'][1] == (score_match - 1) :
-                score_match += 1
-            #matchの終了判断
-            if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
-                PongConsumer.room_tasks[self.room_group_name].cancel()
+                    # await self.send(text_data=json.dumps({
+                    #     'error': 'User not found'
+                    # }))
+
+                    self.match.point1 = self.game_state['scores'][0]
+                    self.match.point2 = self.game_state['scores'][1]        
+                    #シングルプレイ、ダブルスのときはwinnerを設定しない
+                    if self.single is True or self.doubles is not None:
+                        self.match.point1 = self.game_state['scores'][0]
+                    #それ以外のときは、winnerを設定する
+                    else:
+                        if self.game_state['scores'][0] > self.game_state['scores'][1] :
+                            self.match.winner_id = self.user1 
+                        else:
+                            self.match.winner_id = self.user2 
+                    await database_sync_to_async(self.match.save)()  # 非同期で保存
+                    # await sync_to_async(self.match.save)()
+
+                    await asyncio.sleep(3600)
+                    PongConsumer.room_tasks[self.room_group_name].cancel()
+                    asyncio.create_task(disconnect_after_delay(self))
+
+                else:
+                    await asyncio.sleep(interval)
+
+                # Redisに状態を保存
                 await self.redis.set(self.room_group_name, json.dumps(self.game_state))
-                asyncio.create_task(disconnect_after_delay(self))
-                # await asyncio.sleep(3600)
 
-            else:
-                await asyncio.sleep(interval)
-
-            # Redisに状態を保存
-            await self.redis.set(self.room_group_name, json.dumps(self.game_state))
-
-    # async def send_game_state(self, game_state):
-    #     await self.send(text_data=json.dumps(game_state))
+        # async def send_game_state(self, game_state):
+        #     await self.send(text_data=json.dumps(game_state))
+        except Exception as e:
+            print(f"Error in update_ball_position: {e}")
 
     async def game_update(self, event):
         self.game_state = event["game_state"]
@@ -308,6 +362,8 @@ class PongConsumer(AsyncWebsocketConsumer):
     def get_match(self):
         # 同期的なDjango ORM操作＿
         return Matchmaking.objects.get(pk=self.room_name)
+
+
 
     # def game_start(self, event):
     #     //ここでゲームスタートの初期設定
