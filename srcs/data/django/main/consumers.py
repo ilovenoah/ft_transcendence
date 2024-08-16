@@ -107,6 +107,15 @@ class PongConsumer(AsyncWebsocketConsumer):
            }
 
 
+    
+        if self.match.ball_speed == 1 :
+            self.game_state['ball'][2] = 50
+        elif self.match.ball_speed == 2 :
+            self.game_state['ball'][2] = 70
+        elif self.match.ball_speed == 3 :
+            self.game_state['ball'][2] = 90
+    
+
 
         if self.single is True :
             self.game_state['user_status'][2] = 1
