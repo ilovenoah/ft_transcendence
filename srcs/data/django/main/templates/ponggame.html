@@ -5,13 +5,19 @@
 <div class="container text-center">
     <div class="row">
         <div id="player2title" class="col">
-            Player 2
+            {% if room.user2 %}
+                Player 2
+            {% endif %}
         </div>
         <div id="player4title" class="col">
-            Player 4
+            {% if room.user4 %}
+                Player 4
+            {% endif %}
         </div>
         <div id="player3title" class="col">
-            Player 3
+            {% if room.user3 %}
+                Player 3
+            {% endif %}
         </div>
         <div id="player4title" class="col">
           Player 1
