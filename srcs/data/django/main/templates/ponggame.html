@@ -5,17 +5,17 @@
 <div class="container text-center">
     <div class="row">
         <div id="player2title" class="col">
-            {% if room.user2 %}
+            {% if room.is_single == False %}
                 Player 2
             {% endif %}
         </div>
         <div id="player4title" class="col">
-            {% if room.user4 %}
+            {% if room.doubles %}
                 Player 4
             {% endif %}
         </div>
         <div id="player3title" class="col">
-            {% if room.user3 %}
+            {% if room.doubles %}
                 Player 3
             {% endif %}
         </div>
