@@ -19,14 +19,24 @@
     </div>
     <div class="row">
         <div id="player2name" class="col">
-            teko
+            {% if room.user2 %}
+                {{ room.user2.display_name }}
+            {% endif %}
         </div>
         <div id="player4name" class="col">
+            {% if room.user4 %}
+                {{ room.user4.display_name }}
+            {% endif %}
         </div>
         <div id="player3name" class="col">
+            {% if room.user3 %}
+                {{ room.user3.display_name }}
+            {% endif %}
         </div>
         <div id="player1name" class="col">
-            tete
+            {% if room.user1 %}
+                {{ room.user1.display_name }}
+            {% endif %}
         </div>
     </div>
     <div class="row">
