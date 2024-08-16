@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
     while (link && link.tagName !== 'A') {
       link = link.parentElement;
     }
-    if (link.tagName === 'A') {
+    if (link && link.tagName === 'A') {
       event.preventDefault();
       // 属性を取得し、オブジェクトに変換
       var postData = {};
@@ -289,10 +289,14 @@ function send_ajax(data)
       if (xhr.status === 200) {
         var response = JSON.parse(xhr.responseText);
         //データを更新する
-        updateContent(response);
-        loadLanguage();
-        //履歴にページを登録
-        history.pushState({ data: response }, response.title, '');
+        if (typeof response.nocontent == 'undefined') {    
+          updateContent(response);
+          loadLanguage();
+          //履歴にページを登録
+          history.pushState({ data: response }, response.title, '');
+        } else {
+          noloadAjax(response.reload, response.timeout);
+        }
       } else {
         console.error('There was a problem with the request:', xhr.statusText);
       }
@@ -353,6 +357,22 @@ function reloadAjax(page, timeout) {
       } 
   }, timeout)
 }
+
+function noloadAjax(page, timeout) {
+  setTimeout(() => {
+    if (currentPage == page)
+      {
+        var postData = {};
+        postData['page'] = page;
+        postData['nocontent'] = 'yes';
+        postData['data_url']= 'process-post/';
+        send_ajax(postData);
+      } 
+  }, timeout)
+}
+
+
+
 
 function popupAlert(mesg) {
   alertBox = document.getElementById('custom-alert');

@@ -38,7 +38,8 @@ def process_post_data(request):
             post_data = json.loads(request.body)
             page = post_data.get('page')   
             title = post_data.get('title') 
-            content = post_data.get('content') 
+            content = post_data.get('content')
+
 
             #送信データの作成
             if page == 'logout':
@@ -567,10 +568,20 @@ def process_post_data(request):
                     }
             elif page == 'room':
                 user = request.user
+                nocontent = post_data.get('nocontent') 
                 room_id = request.session.get('room_id')
                 room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30), id=room_id).first()
                 if room: 
-                    if not room.user2:
+                    if nocontent is not None :
+                        room.timestamp = timezone.now()
+                        room.save()
+                        response_data = {
+                            'page':page,
+                            'nocontent': 'yes',
+                            'reload': page,
+                            'timeout' : '10000',
+                        }
+                    elif not room.user2:
                         room.timestamp = timezone.now()
                         room.save()
                         response_data = {
@@ -580,7 +591,7 @@ def process_post_data(request):
                             'reload': page,
                             'timeout' : '10000',
                             'alert': '対戦相手を待っています',
-                    }
+                        }
                     else:
                         response_data = {
                             'page':page,
@@ -829,8 +840,18 @@ def process_post_data(request):
                 user = request.user
                 doubles_id = request.session.get('doubles_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
-                doubles_user = DoublesUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, doubles=doubles_id).first()
-                if doubles_user:
+                doubles_user = DoublesUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, doubles=doubles_id).first()            
+                nocontent = post_data.get('nocontent')
+                if nocontent is not None :
+                    doubles_user.timestamp = timezone.now()
+                    doubles_user.save()
+                    response_data = {
+                        'page':page,
+                        'nocontent': 'yes',
+                        'reload': page,
+                        'timeout' : '10000',
+                    }
+                elif doubles_user:
                     doubles_user.timestamp = timezone.now()
                     doubles_user.save()
                     doubles = doubles_user.doubles
