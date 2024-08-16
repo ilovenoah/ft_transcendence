@@ -5,13 +5,19 @@
 <div class="container text-center">
     <div class="row">
         <div id="player2title" class="col">
-            Player 2
+            {% if room.is_single == False %}
+                Player 2
+            {% endif %}
         </div>
         <div id="player4title" class="col">
-            Player 4
+            {% if room.doubles %}
+                Player 4
+            {% endif %}
         </div>
         <div id="player3title" class="col">
-            Player 3
+            {% if room.doubles %}
+                Player 3
+            {% endif %}
         </div>
         <div id="player4title" class="col">
           Player 1
@@ -19,14 +25,24 @@
     </div>
     <div class="row">
         <div id="player2name" class="col">
-            teko
+            {% if room.user2 %}
+                {{ room.user2.display_name }}
+            {% endif %}
         </div>
         <div id="player4name" class="col">
+            {% if room.user4 %}
+                {{ room.user4.display_name }}
+            {% endif %}
         </div>
         <div id="player3name" class="col">
+            {% if room.user3 %}
+                {{ room.user3.display_name }}
+            {% endif %}
         </div>
         <div id="player1name" class="col">
-            tete
+            {% if room.user1 %}
+                {{ room.user1.display_name }}
+            {% endif %}
         </div>
     </div>
     <div class="row">

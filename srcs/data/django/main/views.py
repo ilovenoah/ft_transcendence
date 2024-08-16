@@ -524,7 +524,7 @@ def process_post_data(request):
                         room.save()
                         response_data = {
                             'page':page,
-                            'content':read_file('ponggame.html'),
+                            'content':render_to_string('ponggame.html', {'room': room}),
                             'title': 'Pong Game ' + str(room.id),
                             # 生のjavascriptを埋め込みたいとき
                             'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0)',
@@ -597,7 +597,7 @@ def process_post_data(request):
                             # 'title': title,
                             # 'scriptfiles': '/static/js/game.js',
                             'page':page,
-                            'content':read_file('ponggame.html'),
+                            'content':render_to_string('ponggame.html', {'room': room}),
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
@@ -668,7 +668,7 @@ def process_post_data(request):
                             room.save()
                             response_data = {
                                 'page':page,
-                                'content':read_file('ponggame.html'),
+                                'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
                                 'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',
@@ -679,7 +679,7 @@ def process_post_data(request):
                             room.save()
                             response_data = {
                                 'page':page,
-                                'content':read_file('ponggame.html'),
+                                'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
                                 'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0)',
@@ -749,7 +749,7 @@ def process_post_data(request):
                         room.save()
                         response_data = {
                             'page':page,
-                            'content':read_file('ponggame.html'),
+                            'content':render_to_string('ponggame.html', {'room': room}),
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
@@ -761,7 +761,7 @@ def process_post_data(request):
                         room.save()
                         response_data = {
                             'page':page,
-                            'content':read_file('ponggame.html'),
+                            'content':render_to_string('ponggame.html', {'room': room}),
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
@@ -785,14 +785,14 @@ def process_post_data(request):
                     match_point = form.cleaned_data['match_point']
                     is_3d = form.cleaned_data['is_3d']
                     ai = form.cleaned_data['ai']
-                    match = Matchmaking.objects.create(user1=request.user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d, ai=ai, is_single=True)
+                    room = Matchmaking.objects.create(user1=request.user, ball_speed=ball_speed, paddle_size=paddle_size, match_point=match_point, is_3d=is_3d, ai=ai, is_single=True)
                     response_data = {
                         'page':page,
-                        'content':read_file('ponggame.html'),
-                        'title': 'Pong Game ' + str(match.id),
-                        'gameid': str(match.id), 
+                        'content':render_to_string('ponggame.html', {'room': room}),
+                        'title': 'Pong Game ' + str(room.id),
+                        'gameid': str(room.id), 
                         # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(match.id) + ', 1,' + str(request.user.id) + ', 0)',
+                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' + str(request.user.id) + ', 0)',
                     }
                 else:
                     response_data = {
@@ -870,31 +870,45 @@ def process_post_data(request):
                     doubles.num_users = num_users
                     doubles.save()
                     if num_users == 4:
-                        doubles_user.is_complete = True
                         doubles_user.save()
                         room = Matchmaking.objects.filter(doubles=doubles).first()
                         user_no = 0
                         if not room:
                             room = Matchmaking.objects.create(user1=user, doubles=doubles)
-                            user_no = 1
                         else:
                             if not room.user2:
                                 room.user2 = user
-                                user_no = 2
                             elif not room.user3:
                                 room.user3 = user
-                                user_no = 3
                             else:
                                 room.user4 = user
-                                user_no = 4
                             room.save()
-                        response_data = {
-                            'page':page,
-                            'content':read_file('ponggame.html'),
-                            'title': 'Pong Game ' + str(room.id),
-                            'gameid': str(room.id), 
-                            # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1)',                        
+                        if room.user1 and room.user2 and room.user3 and room.user4:
+                            doubles_user.is_complete = True
+                            if user == room.user1:
+                                user_no = 1
+                            elif user == room.user2:
+                                user_no = 2
+                            elif user == room.user3:
+                                user_no = 3
+                            else:
+                                user_no = 4
+                            response_data = {
+                                'page':page,
+                                'content':render_to_string('ponggame.html', {'room': room}),
+                                'title': 'Pong Game ' + str(room.id),
+                                'gameid': str(room.id), 
+                                # 生のjavascriptを埋め込みたいとき
+                                'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1)',                        
+                            }
+                        else:
+                            response_data = {
+                            'page': page,
+                            'content': read_file('waiting.html'),
+                            'title': 'doubles room',
+                            'reload': page,
+                            'timeout' : '10000',
+                            'alert': '参加者を待っています',
                         }
                     else:
                         response_data = {
