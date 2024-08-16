@@ -151,7 +151,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
         if message == 'update_position':
-            if self.user1 == user.id :
+            # if self.user1 == user.id :
+
+            if 'player1_y' in text_data_json:
                 tmp1 = text_data_json['player1_y']
                 if tmp1 != "":
                     if tmp1 > MAX_Y :
@@ -161,40 +163,43 @@ class PongConsumer(AsyncWebsocketConsumer):
                         tmp1 = MIN_Y
                         # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
                     self.game_state['paddle_1'][1] = tmp1
-            elif self.user2 == user.id :
+            # elif self.user2 == user.id :
+            if 'player2_y' in text_data_json:
                 tmp2 = text_data_json['player2_y']
                 if tmp2 != "":
                     if tmp2 > MAX_Y :
                         tmp2 = MAX_Y
-                    elif tmp2  < MIN_Y :
+                    elif tmp2 < MIN_Y :
                         tmp2 = MIN_Y 
                     self.game_state['paddle_2'][1] = tmp2
-            elif self.user3 == user.id :
-                tmp2 = text_data_json['player3_y']
-                if tmp2 != "":
-                    if tmp2 > MAX_Y :
-                        tmp2 = MAX_Y
-                    elif tmp2  < MIN_Y :
-                        tmp2 = MIN_Y 
-                    self.game_state['paddle_3'][1] = tmp2
-            elif self.user4 == user.id :
-                tmp2 = text_data_json['player4_y']
-                if tmp2 != "":
-                    if tmp2 > MAX_Y :
-                        tmp2 = MAX_Y
-                    elif tmp2  < MIN_Y :
-                        tmp2 = MIN_Y 
-                    self.game_state['paddle_4'][1] = tmp2
+            # elif self.user3 == user.id :
+            if 'player3_y' in text_data_json:
+                tmp3 = text_data_json['player3_y']
+                if tmp3 != "":
+                    if tmp3 > MAX_Y :
+                        tmp3 = MAX_Y
+                    elif tmp3 < MIN_Y :
+                        tmp3 = MIN_Y 
+                    self.game_state['paddle_3'][1] = tmp3
+            # elif self.user4 == user.id :
+            if 'player4_y' in text_data_json:
+                tmp4 = text_data_json['player4_y']
+                if tmp4 != "":
+                    if tmp4 > MAX_Y :
+                        tmp4 = MAX_Y
+                    elif tmp4 < MIN_Y :
+                        tmp4 = MIN_Y 
+                    self.game_state['paddle_4'][1] = tmp4
 
 
 
 
 
         elif message == 'ready_state' :
-            logger.debug(f'ユーザーID: {user.id}')
-            logger.debug(f'11: {self.user1}')
-            logger.debug(f'22: {self.user2}')
-            logger.debug(f'dd: {self.doubles}')
+            # logger.debug(f'ユーザーID: {user.id}')
+            # logger.debug(f'11: {self.user1}')
+            # logger.debug(f'22: {self.user2}')
+            # logger.debug(f'dd: {self.doubles}')
 
             if self.user1 == user.id :
                 self.game_state['user_status'][1] = 1
@@ -289,6 +294,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                             self.game_state['ball'][3] = math.pi / 3 * 5
                         elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
                             self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
+                    #ダブルスのとき パドルが４つあるときの対応
                     if self.doubles is not None :
                         if self.game_state['ball'][0] >= self.game_state['paddle_3'][0] and self.game_state['ball'][0] <= self.game_state['paddle_3'][0] + 100:
                             if self.game_state['ball'][1] > self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 2:

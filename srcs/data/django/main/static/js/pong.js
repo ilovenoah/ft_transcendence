@@ -258,6 +258,12 @@ function updateGameState(data) {
     if (data.info === 'paddle'){
         paddle1.position.y = data.paddle_1[1] / 100;
         paddle2.position.y = data.paddle_2[1] / 100;    
+        if (data.paddle_3){
+            paddle3.position.y = data.paddle_3[1] / 100;
+        }
+        if (data.paddle_4){
+            paddle4.position.y = data.paddle_4[1] / 100;
+        }
     } else if (data.info === 'ball'){        
         ball.position.x = data.ball[0] / 100;
         ball.position.y = data.ball[1] / 100;
@@ -273,6 +279,12 @@ function updateGameState(data) {
     } else {
         paddle1.position.y = data.paddle_1[1] / 100;
         paddle2.position.y = data.paddle_2[1] / 100;
+        if (data.paddle_3){
+            paddle3.position.y = data.paddle_3[1] / 100;
+        }
+        if (data.paddle_4){
+            paddle4.position.y = data.paddle_4[1] / 100;
+        }
         
         ball.position.x = data.ball[0] / 100;
         ball.position.y = data.ball[1] / 100;
