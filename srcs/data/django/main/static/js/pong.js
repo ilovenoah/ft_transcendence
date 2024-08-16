@@ -382,9 +382,11 @@ function onKeyDown(e) {
         moveUp3 = true;
     } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
         moveDown3 = true;
-    } else if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
+    } else if (e.key === 'k' || e.key === 'K' || e.key === 'l' || e.key === 'L') {
+    // } else if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
         moveUp1 = true;
-    } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
+    } else if (e.key === 'j' || e.key === 'J') {
+    // } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
         moveDown1 = true;
     } else if (e.key === 'w' || e.key === 'W' || e.key === 'd' || e.key === 'D') {
         moveUp2 = true;
@@ -393,9 +395,11 @@ function onKeyDown(e) {
     }}
 
 function onKeyUp(e) {
-    if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
+    if (e.key === 'k' || e.key === 'K' || e.key === 'l' || e.key === 'L') {
+    // } else if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
         moveUp1 = false;
-    } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
+    } else if (e.key === 'j' || e.key === 'J') {
+    // } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
         moveDown1 = false;
     } else if (e.key === 'w' || e.key === 'W' || e.key === 'd' || e.key === 'D') {
         moveUp2 = false;
