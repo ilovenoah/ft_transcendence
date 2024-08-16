@@ -256,12 +256,16 @@ function updateGameState(data) {
 
 
     if (data.info === 'paddle'){
-        paddle1.position.y = data.paddle_1[1] / 100;
-        paddle2.position.y = data.paddle_2[1] / 100;    
-        if (data.paddle_3){
+        if (player_no != 1){
+            paddle1.position.y = data.paddle_1[1] / 100;
+        }
+        if (player_no != 2){
+            paddle2.position.y = data.paddle_2[1] / 100;    
+        }
+        if (player_no != 3 && data.paddle_3){
             paddle3.position.y = data.paddle_3[1] / 100;
         }
-        if (data.paddle_4){
+        if (player_no != 4 && data.paddle_4){
             paddle4.position.y = data.paddle_4[1] / 100;
         }
     } else if (data.info === 'ball'){        
@@ -277,12 +281,16 @@ function updateGameState(data) {
             displayScore(score_player1,score_player2);
         }
     } else {
-        paddle1.position.y = data.paddle_1[1] / 100;
-        paddle2.position.y = data.paddle_2[1] / 100;
-        if (data.paddle_3){
+        if (player_no != 1){
+            paddle1.position.y = data.paddle_1[1] / 100;
+        }
+        if (player_no != 2){
+            paddle2.position.y = data.paddle_2[1] / 100;
+        }
+        if (player_no != 3 && data.paddle_3){
             paddle3.position.y = data.paddle_3[1] / 100;
         }
-        if (data.paddle_4){
+        if (player_no != 4 && data.paddle_4){
             paddle4.position.y = data.paddle_4[1] / 100;
         }
         
