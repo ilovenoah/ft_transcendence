@@ -665,18 +665,25 @@ def process_post_data(request):
                         room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
                         if room: #tournamentとlevelが同じでuser1が不在のroom
                             room.user1 = user
+                            room.save()
+                            response_data = {
+                                'page':page,
+                                'content':read_file('ponggame.html'),
+                                'title': 'Pong Game ' + str(room.id),
+                                # 生のjavascriptを埋め込みたいとき
+                                'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',
+                            }
                         else: #tournamentとlevelが同じでuser1が存在しuser2が不在のroom
                             room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
                             room.user2 = user
-                        room.save()
-                        response_data = {
-                            'page':page,
-                            'content':read_file('ponggame.html'),
-                            'title': 'Pong Game ' + str(room.id),
-                            # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',
-                        }
-
+                            room.save()
+                            response_data = {
+                                'page':page,
+                                'content':read_file('ponggame.html'),
+                                'title': 'Pong Game ' + str(room.id),
+                                # 生のjavascriptを埋め込みたいとき
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0)',
+                            }    
                     else:
                         response_data = {
                             'page': page,
@@ -739,18 +746,27 @@ def process_post_data(request):
                     room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
                     if room:
                         room.user1 = user
+                        room.save()
+                        response_data = {
+                            'page':page,
+                            'content':read_file('ponggame.html'),
+                            'title': 'Pong Game ' + str(room.id),
+                            'gameid': str(room.id), 
+                            # 生のjavascriptを埋め込みたいとき
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',            
+                        }
                     else:
                         room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
                         room.user2 = user
-                    room.save()
-                    response_data = {
-                        'page':page,
-                        'content':read_file('ponggame.html'),
-                        'title': 'Pong Game ' + str(room.id),
-                        'gameid': str(room.id), 
-                        # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0)',            
-                    }
+                        room.save()
+                        response_data = {
+                            'page':page,
+                            'content':read_file('ponggame.html'),
+                            'title': 'Pong Game ' + str(room.id),
+                            'gameid': str(room.id), 
+                            # 生のjavascriptを埋め込みたいとき
+                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0)',            
+                        }
                 else:
                     page = 'tournament'
                     response_data = {
