@@ -493,16 +493,16 @@ def process_post_data(request):
                 room = Matchmaking.objects.filter(id=room_id, user2__isnull=True, timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
                 if room:
                     if room.user1 == request.user: #user1とuser2が同一
-                        rooms = get_available_rooms()
-                        tournaments = get_available_tournaments()
-                        doubles = get_available_doubles()
+                        room.timestamp = timezone.now()
+                        room.save()
                         response_data = {
                             'page': page,
-                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
-                            'title': 'Lobby',
-                            'isValid': 'False',
-                            'elem': 'room'
-                        }
+                            'content': read_file('waiting.html'),
+                            'title': 'Room',
+                            'reload': page,
+                            'timeout' : '10000',
+                            'alert': '対戦相手を待っています',
+                    }
                     else:
                         room.user2 = request.user
                         room.save()
@@ -672,21 +672,7 @@ def process_post_data(request):
                 tournament_id = post_data.get('tournament_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 tournament = Tournament.objects.filter(id=tournament_id, timestamp__gte=thirty_seconds_ago).first()
-                if tournament:
-                    tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user)
-                    if tournament_user: #トーナメント内に同一のユーザーがいる
-                        rooms = get_available_rooms()
-                        tournaments = get_available_tournaments()
-                        doubles = get_available_doubles()
-                        response_data = {
-                            'page': page,
-                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
-                            'title': 'Lobby',
-                            'isValid': 'False',
-                            'elem': 'tournament'
-                        }
-                        return JsonResponse(response_data)
-                else: #存在しないはずのトーナメント
+                if not tournament:
                     rooms = get_available_rooms()
                     tournaments = get_available_tournaments()
                     doubles = get_available_doubles()
@@ -698,7 +684,13 @@ def process_post_data(request):
                         'elem': 'tournament'
                     }
                     return JsonResponse(response_data)
-                tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
+
+                tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user).first()
+                if tournament_user: #トーナメント内に同一のユーザーがいる
+                    tournament_user.timestamp = timezone.now()
+                    tournament_user.save()
+                else:
+                    tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
                 num_users = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
                 tournament.num_users = num_users 
                 tournament.save()
