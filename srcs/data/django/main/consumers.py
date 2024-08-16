@@ -33,6 +33,9 @@ MIN_X = -4000
 MAX_Y = 2000
 MIN_Y = -2000
 
+#当たり判定のマージン
+HIT_MARGIN = 10 
+
 #1秒間に何回表示するか
 interval = 1 / 60.0
 
@@ -281,7 +284,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                             self.game_state['ball'][3] = math.pi / 4 * 5
                         elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 2:
                             self.game_state['ball'][3] = math.pi / 3 * 4
-                        elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 2:
+                        elif self.game_state['ball'][1] < self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2 + HIT_MARGIN and self.game_state['ball'][1] > self.game_state['paddle_1'][1] - self.game_state['paddle_1'][2] / 2 - HIT_MARGIN:
                             self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                     elif self.game_state['ball'][0] <= self.game_state['paddle_2'][0] and self.game_state['ball'][0] >= self.game_state['paddle_2'][0] - 100:
                         if self.game_state['ball'][1] > self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2:
@@ -292,7 +295,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                             self.game_state['ball'][3] = math.pi / 4 * 7
                         elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
                             self.game_state['ball'][3] = math.pi / 3 * 5
-                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2:
+                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1] + self.game_state['paddle_2'][2] / 2 + HIT_MARGIN and self.game_state['ball'][1] > self.game_state['paddle_2'][1] - self.game_state['paddle_2'][2] / 2 - HIT_MARGIN:
                             self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                     #ダブルスのとき パドルが４つあるときの対応
                     if self.doubles is not None :
@@ -305,7 +308,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                                 self.game_state['ball'][3] = math.pi / 4 * 5
                             elif self.game_state['ball'][1] < self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 2:
                                 self.game_state['ball'][3] = math.pi / 3 * 4
-                            elif self.game_state['ball'][1] < self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 2:
+                            elif self.game_state['ball'][1] < self.game_state['paddle_3'][1] + self.game_state['paddle_3'][2] / 2 + HIT_MARGIN and self.game_state['ball'][1] > self.game_state['paddle_3'][1] - self.game_state['paddle_3'][2] / 2  - HIT_MARGIN:
                                 self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                         elif self.game_state['ball'][0] <= self.game_state['paddle_4'][0] and self.game_state['ball'][0] >= self.game_state['paddle_4'][0] - 100:
                             if self.game_state['ball'][1] > self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 2:
@@ -316,7 +319,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                                 self.game_state['ball'][3] = math.pi / 4 * 7
                             elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 5 * 2 and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 2:
                                 self.game_state['ball'][3] = math.pi / 3 * 5
-                            elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 2 and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 2:
+                            elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 2  + HIT_MARGIN and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 2 - HIT_MARGIN:
                                 self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                       
 

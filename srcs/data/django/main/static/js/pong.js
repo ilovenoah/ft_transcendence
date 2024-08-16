@@ -22,6 +22,9 @@ let moveUp4 = false;
 let moveDown4 = false;
 let wrate = 0.0;
 
+const MAXY = 20;
+const MINY = -20;
+
 let score_player1;
 let score_player2;
 
@@ -185,24 +188,54 @@ function animate() {
     if (paddleflag > 0){
         if (moveUp1 && player_no == 1) {
             paddle1.position.y += 0.1 * speedrate;
+            if (paddle1.position.y > MAXY){
+                paddle1.position.y = MAXY;
+            }
         } else if (moveDown1 && player_no == 1) {
             paddle1.position.y -= 0.1 * speedrate;
+            if (paddle1.position.y < MINY){
+                paddle1.position.y = MINY;
+            }
         } else if (moveUp2 && player_no == 2) {
             paddle2.position.y += 0.1 * speedrate;
+            if (paddle2.position.y > MAXY){
+                paddle2.position.y = MAXY;
+            }
         } else if (moveDown2 && player_no == 2) {
             paddle2.position.y -= 0.1 * speedrate;
+            if (paddle2.position.y < MINY){
+                paddle2.position.y = MINY;
+            }
         } else if (moveUp1 && player_no == 2) {
             paddle2.position.y += 0.1 * speedrate;
+            if (paddle2.position.y > MAXY){
+                paddle2.position.y = MAXY;
+            }
         } else if (moveDown1 && player_no == 2) {
             paddle2.position.y -= 0.1 * speedrate;
+            if (paddle2.position.y < MINY){
+                paddle2.position.y = MINY;
+            }
         } else if (moveUp1 && player_no == 3) {
             paddle3.position.y += 0.1 * speedrate;
+            if (paddle3.position.y > MAXY){
+                paddle3.position.y = MAXY;
+            }
         } else if (moveDown1 && player_no == 3) {
             paddle3.position.y -= 0.1 * speedrate;
+            if (paddle3.position.y < MINY){
+                paddle3.position.y = MINY;
+            }
         } else if (moveUp1 && player_no == 4) {
             paddle4.position.y += 0.1 * speedrate;
+            if (paddle4.position.y > MAXY){
+                paddle4.position.y = MAXY;
+            }
         } else if (moveDown1 && player_no == 4) {
             paddle4.position.y -= 0.1 * speedrate;
+            if (paddle4.position.y < MINY){
+                paddle4.position.y = MINY;
+            }
         }
 
 
@@ -420,7 +453,10 @@ function connect(roomName){
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
         // 自動再接続
-        setTimeout( connect(game_id), reconnectInterval);
+        if (game_state > 1){
+            setTimeout( connect(game_id), reconnectInterval);
+        }
+
     };
 }
 
@@ -445,6 +481,7 @@ window.addEventListener('click', (event) => {
         // 要素が属性 page="ponggame" を持っているか確認
         else if (link.getAttribute('page') && link.getAttribute('page') !== 'ponggame2') {
             if (gameSocket) {
+                game_state = 3;
                 gameSocket.close();
             }
         }
@@ -453,12 +490,16 @@ window.addEventListener('click', (event) => {
 
 window.addEventListener('beforeunload', () => {
     if (gameSocket) {
+
+        game_state = 3;
         gameSocket.close();
     }
 });
 
 window.addEventListener('popstate', function(event) {
     if (gameSocket) {
+
+        game_state = 3;
         gameSocket.close();
     }
 });
@@ -480,6 +521,8 @@ function startGame(gameid, playno, playid, dobules_flag){
     // let match = document.currentScript.src.match(regexp);
     // let gameid = match[1];
     if (gameSocket) {
+
+        game_state = 3;
         gameSocket.close();
     }
     first_flag = true;
