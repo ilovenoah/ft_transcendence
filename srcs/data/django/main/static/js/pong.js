@@ -1,6 +1,9 @@
 let scene, camera, renderer, overlayCanvas, paddle1, paddle2, paddle3, paddle4, ball, score;
 // let player1Y = 0;
 // let player2Y = 0;
+
+let paddle_length = 6;
+
 let paddle1length = 6;
 let paddle2length = 6;
 let paddle3length = 6;
@@ -30,6 +33,8 @@ let score_player2;
 
 let speedrate = 5.0;
 
+let is_3d;
+
 let game_state = 0;
 
 let score_match = 10;
@@ -54,7 +59,22 @@ function init() {
         wheight = wwidth * 0.5;        
 
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 20, 60);
+    if (is_3d == 1){
+        camera = new THREE.PerspectiveCamera(60, wwidth / wheight, 0.1, 200);
+
+        // カメラの位置を設定（右側から見る）
+        camera.position.set(55, 0, 0);  // x を右に30の位置に
+        camera.position.z = 10;  // z を30に設定
+        
+        // カメラの上方向を回転させる
+        camera.up.set(0, 0, 1);  // 上方向を元の左方向に設定
+        // カメラが平面の中心を向くようにする
+        camera.lookAt(new THREE.Vector3(0, 0, -10));  // 平面の中心(0, 0, 0)を向く
+
+    } else {
+        camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 20, 60);
+        camera.position.z = 30;
+    }
 //    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
 
     renderer = new THREE.WebGLRenderer();
@@ -69,6 +89,10 @@ function init() {
     overlayCanvas.height = window.innerHeight * 0.9;
     document.getElementById('gameCanvas').appendChild(overlayCanvas);    
 
+    paddle1length = paddle_length;
+    paddle2length = paddle_length;
+    paddle3length = paddle_length;
+    paddle4length = paddle_length;
         
     wrate = wwidth * 0.001;
     wrate = 1;
@@ -145,7 +169,6 @@ function init() {
     const light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1.0);
     scene.add(light);
 
-    camera.position.z = 30;
 
 //    scene.fog = new THREE.fog(0xFFFFFF, 100, 200);
 
@@ -506,16 +529,28 @@ window.addEventListener('popstate', function(event) {
 
 
 
-function startGame(gameid, playno, playid, dobules_flag){
+function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d){
     game_id = gameid;
     player_id = playid;
     player_no = playno;
     is_doubles = dobules_flag;
+    if (paddle_size == 1){
+        paddle_length = 4;
+    } else if (paddle_size == 2){
+        paddle_length = 6;
+    } else if (paddle_size == 3){
+        paddle_length = 8;
+    }
+    if (flag3d == 'True'){
+        is_3d = 1;
+    } else {
+        is_3d = 0;
+    }
+
+
     init();
 
     
-    console.log(playno);
-    console.log(playid);
 
     // let regexp = /\?gameid=(\d+)/
     // let match = document.currentScript.src.match(regexp);

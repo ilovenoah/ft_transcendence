@@ -24,8 +24,6 @@ import logging
 # logger = logging.getLogger(__name__)
 logger = logging.getLogger('main')
 
-#マッチスコア
-score_match = 10
 
 #コートの大きさ
 MAX_X = 4000
@@ -106,16 +104,41 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'user_status':[0,0,0,0,0],
            }
 
-
+        #パドルサイズ
+        if self.match.paddle_size == 1 :
+            self.game_state['paddle_1'][2] = 400
+            self.game_state['paddle_2'][2] = 400
+            if self.doubles is not None:
+                self.game_state['paddle_3'][2] = 400
+                self.game_state['paddle_4'][2] = 400
+        elif self.match.paddle_size == 2 :
+            self.game_state['paddle_1'][2] = 600
+            self.game_state['paddle_2'][2] = 600
+            if self.doubles is not None:
+                self.game_state['paddle_3'][2] = 600
+                self.game_state['paddle_4'][2] = 600
+        elif self.match.paddle_size == 3 :
+            self.game_state['paddle_1'][2] = 800
+            self.game_state['paddle_2'][2] = 800
+            if self.doubles is not None:
+                self.game_state['paddle_3'][2] = 800
+                self.game_state['paddle_4'][2] = 800
     
+        #ボールスピード
         if self.match.ball_speed == 1 :
             self.game_state['ball'][2] = 50
         elif self.match.ball_speed == 2 :
             self.game_state['ball'][2] = 70
         elif self.match.ball_speed == 3 :
-            self.game_state['ball'][2] = 90
-    
+            self.game_state['ball'][2] = 100
 
+        #マッチポイント
+        self.game_state['match_point'] = self.match.match_point
+
+        #aiの強さ
+        self.game_state['ai'] = self.match.ai
+ 
+    
 
         if self.single is True :
             self.game_state['user_status'][2] = 1
@@ -205,8 +228,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
 
-
-
         elif message == 'ready_state' :
             # logger.debug(f'ユーザーID: {user.id}')
             # logger.debug(f'11: {self.user1}')
@@ -254,7 +275,7 @@ class PongConsumer(AsyncWebsocketConsumer):
  
 
     async def update_ball_position(self):
-        global score_match, sleep_sec, interval
+        global sleep_sec, interval
         try:
             while True:
                 if self.game_state['user_status'][0] == 1 and self.game_state['count_sleep'] > 0 :
@@ -371,7 +392,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     #         self.game_state['paddle_2'][1] = MIN_Y
 
 
-                if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
+                if self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point'] :
                     self.game_state['status'] = 2
     
      
@@ -385,10 +406,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 )
 
                 #Dueceを設定
-                if self.game_state['scores'][0] == (score_match - 1) and self.game_state['scores'][1] == (score_match - 1) :
-                    score_match += 1
+                if self.game_state['scores'][0] == (self.game_state['match_point']  - 1) and self.game_state['scores'][1] == (self.game_state['match_point']  - 1) :
+                    self.game_state['match_point']  += 1
                 #matchの終了判断
-                if self.game_state['scores'][0] >= score_match or self.game_state['scores'][1] >= score_match:
+                if self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point'] :
                     
                     # logger = logger.debug("dango")
                     # logger = logger.debug(self.match.point1)
