@@ -420,9 +420,7 @@ function connect(roomName){
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
         // 自動再接続
-        if (game_state < 2){
-            setTimeout( connect(game_id), reconnectInterval);
-        }
+        setTimeout( connect(game_id), reconnectInterval);
     };
 }
 
