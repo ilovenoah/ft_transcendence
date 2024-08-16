@@ -672,7 +672,7 @@ def process_post_data(request):
                 tournament_id = post_data.get('tournament_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 tournament = Tournament.objects.filter(id=tournament_id, timestamp__gte=thirty_seconds_ago).first()
-                if not tournament:
+                if not tournament: #存在しないトーナメント
                     rooms = get_available_rooms()
                     tournaments = get_available_tournaments()
                     doubles = get_available_doubles()
@@ -684,12 +684,11 @@ def process_post_data(request):
                         'elem': 'tournament'
                     }
                     return JsonResponse(response_data)
-
                 tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user).first()
                 if tournament_user: #トーナメント内に同一のユーザーがいる
                     tournament_user.timestamp = timezone.now()
                     tournament_user.save()
-                else:
+                else: #トーナメント内に新たなユーザーが参加
                     tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
                 num_users = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
                 tournament.num_users = num_users 
@@ -855,22 +854,7 @@ def process_post_data(request):
                 doubles_id = post_data.get('doubles_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 doubles = Doubles.objects.filter(id=doubles_id, timestamp__gte=thirty_seconds_ago).first()
-                if doubles:
-                    doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user)
-                    if doubles_user: #ダブルス内に同じユーザーがいる
-                        # logger.debug('hogehoge')
-                        rooms = get_available_rooms()
-                        tournaments = get_available_tournaments()
-                        doubles = get_available_doubles()
-                        response_data = {
-                            'page': page,
-                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
-                            'title': 'Lobby',
-                            'isValid': 'False',
-                            'elem': 'doubles'
-                        }
-                        return JsonResponse(response_data)
-                else: #存在しないはずのダブルス
+                if not doubles: #存在しないはずのダブルス
                     rooms = get_available_rooms()
                     tournaments = get_available_tournaments()
                     doubles = get_available_doubles()
@@ -883,7 +867,13 @@ def process_post_data(request):
                         'elem': 'doubles'
                     }
                     return JsonResponse(response_data)
-                doubles_user = DoublesUser.objects.create(doubles=doubles, user=user)
+
+                doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user).first()
+                if doubles_user: #ダブルス内に同じユーザーがいる
+                    doubles_user.timestamp = timezone.now()
+                    doubles_user.save()
+                else:
+                    doubles_user = DoublesUser.objects.create(doubles=doubles, user=user)
                 request.session['doubles_id'] = doubles.id
                 page = 'doubles_room'
                 response_data = {
