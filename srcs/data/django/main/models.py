@@ -18,6 +18,7 @@ class CustomUser(AbstractUser):
     last_active = models.DateTimeField(default=timezone.now)  # 最後にアクティブだった時間
     display_name = models.CharField(max_length=255, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True)
+    language = models.CharField(default='ja')
 
     def send_friend_request(self, to_user):
         if self == to_user:
