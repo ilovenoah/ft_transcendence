@@ -60,16 +60,22 @@ function init() {
 
     scene = new THREE.Scene();
     if (is_3d == 1){
-        camera = new THREE.PerspectiveCamera(60, wwidth / wheight, 0.1, 200);
+        camera = new THREE.PerspectiveCamera(45, wwidth / wheight, 0.1, 200);
+        if (player_no == 1 || player_no == 3){
+            // カメラの位置を設定（右側から見る）
+            camera.position.set(60, 0, 0);  // x を右に60の位置に
+            // カメラの上方向を回転させる
+            camera.up.set(0, 0, 1);  // 上方向を元の左方向に設定
+        } else {
+            // カメラの位置を設定（右側から見る）
+            camera.position.set(-60, 0, 0);  // x を右に60の位置に
+            // カメラの上方向を回転させる
+            camera.up.set(0, 0, 1);  // 上方向を元の左方向に設定
 
-        // カメラの位置を設定（右側から見る）
-        camera.position.set(55, 0, 0);  // x を右に30の位置に
-        camera.position.z = 10;  // z を30に設定
-        
-        // カメラの上方向を回転させる
-        camera.up.set(0, 0, 1);  // 上方向を元の左方向に設定
+        }
         // カメラが平面の中心を向くようにする
-        camera.lookAt(new THREE.Vector3(0, 0, -10));  // 平面の中心(0, 0, 0)を向く
+        camera.lookAt(new THREE.Vector3(0, 0, -15));  // 平面の中心(0, 0, 0)を向く
+        camera.position.z = 10;  // z を10に設定
 
     } else {
         camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 20, 60);
@@ -439,27 +445,58 @@ function onKeyDown(e) {
     } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
         moveDown3 = true;
     } else if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
-        moveUp1 = true;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveDown1 = true;
+        } else {
+            moveUp1 = true;
+        }
     } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
-        moveDown1 = true;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveUp1 = true;
+        } else {
+            moveDown1 = true;
+        }
     } else if (e.key === 'w' || e.key === 'W' || e.key === 'd' || e.key === 'D') {
-        moveUp2 = true;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveDown2 = true;
+        } else {
+            moveUp2 = true;
+        }
     } else if (e.key === 's' || e.key === 'S' || e.key === 'a' || e.key === 'A') {
-        moveDown2 = true;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveUp2 = true;
+        } else {
+            moveDown2 = true;
+        }        
     }}
 
 function onKeyUp(e) {
     if (e.key === 'i' || e.key === 'I' || e.key === 'l' || e.key === 'L') {
-        moveUp1 = false;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveDown1 = false;
+        } else {
+            moveUp1 = false;
+        }
     } else if (e.key === 'k' || e.key === 'K' || e.key === 'j' || e.key === 'J') {
-        moveDown1 = false;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveUp1 = false;
+        } else {
+            moveDown1 = false;
+        }
     } else if (e.key === 'w' || e.key === 'W' || e.key === 'd' || e.key === 'D') {
-        moveUp2 = false;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveDown2 = false;
+        } else {
+            moveUp2 = false;
+        }
     } else if (e.key === 's' || e.key === 'S' || e.key === 'a' || e.key === 'A') {
-        moveDown2 = false;
+        if (is_3d == 1 && (player_no == 2 || player_no == 4) ){
+            moveUp2 = false;
+        } else {
+            moveDown2 = false;
+        }        
     }
 }
-
 
 function connect(roomName){
     

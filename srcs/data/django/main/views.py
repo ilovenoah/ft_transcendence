@@ -527,7 +527,7 @@ def process_post_data(request):
                             'content':render_to_string('ponggame.html', {'room': room}),
                             'title': 'Pong Game ' + str(room.id),
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + room.paddle_size + ', \'' + is_3d + '\' )',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -601,7 +601,7 @@ def process_post_data(request):
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + room.paddle_size + ', \'' + is_3d + '\' )',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                         }
                 else:
                     rooms = get_available_rooms()
@@ -671,7 +671,7 @@ def process_post_data(request):
                                 'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + room.paddle_size + ', \'' + is_3d + '\' )',
+                                'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                             }
                         else: #tournamentとlevelが同じでuser1が存在しuser2が不在のroom
                             room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
@@ -682,7 +682,7 @@ def process_post_data(request):
                                 'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + room.paddle_size + ', \'' + is_3d + '\' )',
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                             }    
                     else:
                         response_data = {
@@ -753,7 +753,7 @@ def process_post_data(request):
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + room.paddle_size + ', \'' + is_3d + '\' )',       
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',       
                         }
                     else:
                         room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
@@ -765,7 +765,7 @@ def process_post_data(request):
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + room.paddle_size + ', \'' + is_3d + '\' )',      
+                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',      
                         }
                 else:
                     page = 'tournament'
@@ -792,7 +792,7 @@ def process_post_data(request):
                         'title': 'Pong Game ' + str(room.id),
                         'gameid': str(room.id), 
                         # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' + str(request.user.id) + ', 0, ' + room.paddle_size + ', \'' + is_3d + '\' )',
+                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' + str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                     }
                 else:
                     response_data = {
@@ -899,7 +899,7 @@ def process_post_data(request):
                                 'title': 'Pong Game ' + str(room.id),
                                 'gameid': str(room.id), 
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + room.paddle_size + ', \'' + is_3d + '\' )',                 
+                                'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',                 
                             }
                         else:
                             response_data = {
