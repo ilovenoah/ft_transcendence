@@ -6,6 +6,7 @@ django.setup()
 
 import json
 import math
+import time
 import asyncio
 import aioredis
 import random
@@ -37,6 +38,8 @@ HIT_MARGIN = 10
 #1秒間に何回表示するか
 interval = 1 / 60.0
 
+animate_interval = 1000 / 60.0
+
 #点数が入ったときに何秒間停止するか
 sleep_sec = 3.0
 
@@ -62,6 +65,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             self.single = self.match.is_single
             self.doubles = self.match.doubles_id
+   
+            self.lasttime = 0
+            self.aistrength = 0.6
 
             if self.match.user2_id is None and self.match.is_single is False :
                 self.user2 = user.id
@@ -136,8 +142,13 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.game_state['match_point'] = self.match.match_point
 
         #aiの強さ
-        self.game_state['ai'] = self.match.ai
- 
+        if self.match.ai ==  1:
+            self.aistrength = 0.4
+        elif self.match.ai ==  2:
+            self.aistrength = 0.6
+        elif self.match.ai ==  3:
+            self.aistrength = 0.8
+
     
 
         if self.single is True :
@@ -357,14 +368,20 @@ class PongConsumer(AsyncWebsocketConsumer):
 
                 #AIブロック
                 if self.single is True :
-                     # ランダム性を導入
-                    if random.random() < 0.6:
-                        self.game_state['paddle_2'][1] += random.randint(-300, 300)
-                    # シンプルな追尾アルゴリズム
-                    if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
-                        self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-                    elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
-                        self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
+                    currenttime = time.time() * 1000
+                    deltatime = currenttime - self.lasttime
+                    if deltatime > animate_interval:
+                        self.lasttime = currenttime - (deltatime % animate_interval)
+                         # ランダム性を導入
+                        # if random.random() < 0.6:
+                        #     self.game_state['paddle_2'][1] += random.randint(-100, 100)
+                        # シンプルな追尾アルゴリズム
+                        if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+                            if random.random() < self.aistrength:
+                                self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+                            if random.random() < self.aistrength:
+                                self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
 
                     #別のアルゴリズム
                     # 過去のボール位置を記憶

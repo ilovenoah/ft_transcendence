@@ -13,7 +13,7 @@ let gameSocket;
 let player_id = 0;
 let player_no = 0;
 let game_id;
-let is_doubles = 0;
+let is_doubles = 0; 
 
 let moveUp1 = false;
 let moveDown1 = false;
@@ -40,9 +40,10 @@ let game_state = 0;
 let score_match = 10;
 let paddleflag = 0;
 
-let lastUpdateTime = Date.now();
-const updateInterval = 1000;  // 1秒
-const animationInterval = 100;  // 10ms
+//let lastUpdateTime = Date.now();
+let lasttime = 0;
+const fps = 60;
+const animationInterval = 1000 / fps;
 
 let reconnectInterval = 100; // 再接続の間隔
 let first_flag;
@@ -78,12 +79,11 @@ function init() {
         camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 20, 60);
         camera.position.z = 30;
     }
-//    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
+    //    camera = new THREE.PerspectiveCamera(75, wwidth / wheight, 0.5, 1000);
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(wwidth, wheight);
     document.getElementById('gameCanvas').appendChild(renderer.domElement);
-
 
     // オーバーレイCanvasを作成
     overlayCanvas = document.createElement('canvas');
@@ -120,7 +120,6 @@ function init() {
     wallcenter.position.z = 0;
     scene.add(wallcenter);
 
-
     // const walllinegeometry = new THREE.BoxGeometry(60, 1.01, 1.01);
     // const walllinematerial = new THREE.MeshPhongMaterial({ color: 0x999999 });
     // walllineupper = new THREE.Mesh(walllinegeometry, walllinematerial);
@@ -129,7 +128,6 @@ function init() {
     // walllinelower = new THREE.Mesh(walllinegeometry, walllinematerial);
     // walllinelower.position.y = -20;
     // scene.add(walllinelower);
-
 
     const paddle1Geometry = new THREE.BoxGeometry(0.5, paddle1length, 0.5);
     const paddle1Material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
@@ -159,9 +157,6 @@ function init() {
         scene.add(paddle4);
     }
     
-
-
-
     const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
     const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
     ball = new THREE.Mesh(ballGeometry, ballMaterial);
@@ -173,9 +168,7 @@ function init() {
     scene.add(light);
 
 
-//    scene.fog = new THREE.fog(0xFFFFFF, 100, 200);
-
-
+    // scene.fog = new THREE.fog(0xFFFFFF, 100, 200);
 
     // // 形状データを作成
     // const SIZE = 1500;
@@ -209,7 +202,12 @@ function init() {
 
 }
 
-function animate() {
+function animate(currentTime) {
+
+    const deltatime = currentTime - lasttime;
+    if (deltatime > animationInterval)
+    {
+        lasttime = currentTime - (deltatime % animationInterval);
 
     if (paddleflag > 0){
         if (moveUp1 && player_no == 1) {
@@ -290,29 +288,25 @@ function animate() {
                     'player4_y': paddle4.position.y * 100,  // サーバーでのスケーリングを考慮        
                 }));
             }
-
-
-
-
         } else {
             // 接続が確立されるまで再試行
             // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
         }
-
-    }
+    
         
+        renderer.render(scene, camera);
     // } else {
     //     ball.position.x = targetBallPosition.x;
     //     ball.position.y = targetBallPosition.y;
+    }
 
+    }
     requestAnimationFrame(animate);
-    renderer.render(scene, camera);
 }
 
 function updateGameState(data) {
    //#endregion console.log(data);
     paddleflag = 1;
-
 
     if (data.info === 'paddle'){
         if (player_no !== 1){
@@ -403,9 +397,6 @@ function displayScore(score1, score2){
     const txt_score2_x = Math.trunc(canvas_left + canvas_width / 50.0 * 1.0); // テキストの描画位置（x座標）
     const txt_score2_y = Math.trunc(canvas_top + canvas_height / 10.0 ); // テキストの描画位置（y座標）
 
-
-
-
     // フォントとスタイルを設定
     context.font = canvas_width / 20.0 + 'px Arial';
     context.fillStyle = 'white';
@@ -441,7 +432,6 @@ function displayScore(score1, score2){
         context.fillText(txt_win, txt_win_x, txt_win_y);
         context.fillText(txt_lose, txt_lose_x, txt_lose_y);
     }
-
 
     // 一定時間後にテキストを消去
     // setTimeout(() => {
@@ -562,7 +552,6 @@ window.addEventListener('click', (event) => {
 
 window.addEventListener('beforeunload', () => {
     if (gameSocket) {
-
         game_state = 3;
         gameSocket.close();
     }
@@ -570,7 +559,6 @@ window.addEventListener('beforeunload', () => {
 
 window.addEventListener('popstate', function(event) {
     if (gameSocket) {
-
         game_state = 3;
         gameSocket.close();
     }
@@ -596,19 +584,16 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d){
         is_3d = 0;
     }
 
-
     init();
-
-    
 
     // let regexp = /\?gameid=(\d+)/
     // let match = document.currentScript.src.match(regexp);
     // let gameid = match[1];
     if (gameSocket) {
-
         game_state = 3;
         gameSocket.close();
     }
+
     first_flag = true;
     connect(game_id);
 }
