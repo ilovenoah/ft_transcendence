@@ -488,9 +488,9 @@ def process_post_data(request):
             elif page == 'lobby':
                 user = request.user
                 if user.is_authenticated:
-                    rooms = get_available_rooms()
-                    tournaments = get_available_tournaments()
-                    doubles = get_available_doubles()
+                    rooms = get_available_rooms(user)
+                    tournaments = get_available_tournaments(user)
+                    doubles = get_available_doubles(user)
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
@@ -504,35 +504,45 @@ def process_post_data(request):
                         'title': 'Login',
                     }
             elif page == 'enter_room':
+                user = request.user
                 room_id = post_data.get('room_id')
-                room = Matchmaking.objects.get(id=room_id) 
-                # room = Matchmaking.objects.filter(id=room_id, user2__isnull=True, timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
+                room = Matchmaking.objects.filter(id=room_id, timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
                 if room:
-                    if room.user1 == request.user: #user1とuser2が同一
-                        rooms = get_available_rooms()
-                        tournaments = get_available_tournaments()
-                        doubles = get_available_doubles()
-                        response_data = {
-                            'page': page,
-                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
-                            'title': 'Lobby',
-                            'isValid': 'False',
-                            'elem': 'room'
-                        }
-                    else:
-                        room.user2 = request.user
+                    if room.user2: #user2が存在している
+                        room.timestamp = timezone.now()
                         room.save()
                         response_data = {
-                            'page':page,
-                            'content':render_to_string('ponggame.html', {'room': room}),
-                            'title': 'Pong Game ' + str(room.id),
-                            # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                                'page':page,
+                                'content':render_to_string('ponggame.html', {'room': room}),
+                                'title': 'Pong Game ' + str(room.id),
+                                # 生のjavascriptを埋め込みたいとき
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                            }
+                    else: #user2が存在していない 
+                        if room.user1 == user: #user1とuser2が同一
+                            room.timestamp = timezone.now()
+                            room.save()
+                            response_data = {
+                                'page': page,
+                                'content': read_file('waiting.html'),
+                                'title': 'Room',
+                                'reload': page,
+                                'timeout' : '10000',
+                                'alert': '対戦相手を待っています',
                         }
+                        else:
+                            room.user2 = user
+                            room.save()
+                            response_data = {
+                                'page':page,
+                                'content':read_file('ponggame.html'),
+                                'title': title,
+                                'scriptfiles': '/static/js/game.js',
+                            }
                 else:
-                    rooms = get_available_rooms()
-                    tournaments = get_available_tournaments()
-                    doubles = get_available_doubles()
+                    rooms = get_available_rooms(user)
+                    tournaments = get_available_tournaments(user)
+                    doubles = get_available_doubles(user)
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
@@ -573,11 +583,21 @@ def process_post_data(request):
                     }
             elif page == 'room':
                 user = request.user
+                nocontent = post_data.get('nocontent') 
                 room_id = request.session.get('room_id')
                 room = Matchmaking.objects.get(id=room_id)
                 # room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30), id=room_id).first()
                 if room: 
-                    if not room.user2:
+                    if nocontent is not None :
+                        room.timestamp = timezone.now()
+                        room.save()
+                        response_data = {
+                            'page':page,
+                            'nocontent': 'yes',
+                            'reload': page,
+                            'timeout' : '10000',
+                        }
+                    elif not room.user2:
                         room.timestamp = timezone.now()
                         room.save()
                         response_data = {
@@ -589,7 +609,7 @@ def process_post_data(request):
                             'reload': page,
                             'timeout' : '10000',
                             'alert': '対戦相手を待っています',
-                    }
+                        }
                     else:
                         response_data = {
                             # 'page':page,
@@ -604,9 +624,9 @@ def process_post_data(request):
                             'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                         }
                 else:
-                    rooms = get_available_rooms()
-                    tournaments = get_available_tournaments()
-                    doubles = get_available_doubles()
+                    rooms = get_available_rooms(user)
+                    tournaments = get_available_tournaments(user)
+                    doubles = get_available_doubles(user)
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
@@ -694,9 +714,9 @@ def process_post_data(request):
                             'alert': '参加者を待っています',
                     }
                 else:
-                    rooms = get_available_rooms()
-                    tournaments = get_available_tournaments()
-                    doubles = get_available_doubles()
+                    rooms = get_available_rooms(user)
+                    tournaments = get_available_tournaments(user)
+                    doubles = get_available_doubles(user)
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
@@ -708,24 +728,10 @@ def process_post_data(request):
                 tournament_id = post_data.get('tournament_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 tournament = Tournament.objects.filter(id=tournament_id, timestamp__gte=thirty_seconds_ago).first()
-                if tournament:
-                    tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user)
-                    if tournament_user: #トーナメント内に同一のユーザーがいる
-                        rooms = get_available_rooms()
-                        tournaments = get_available_tournaments()
-                        doubles = get_available_doubles()
-                        response_data = {
-                            'page': page,
-                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
-                            'title': 'Lobby',
-                            'isValid': 'False',
-                            'elem': 'tournament'
-                        }
-                        return JsonResponse(response_data)
-                else: #存在しないはずのトーナメント
-                    rooms = get_available_rooms()
-                    tournaments = get_available_tournaments()
-                    doubles = get_available_doubles()
+                if not tournament: #存在しないトーナメント
+                    rooms = get_available_rooms(user)
+                    tournaments = get_available_tournaments(user)
+                    doubles = get_available_doubles(user)
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
@@ -734,20 +740,16 @@ def process_post_data(request):
                         'elem': 'tournament'
                     }
                     return JsonResponse(response_data)
-                tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
-                num_users = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
-                tournament.num_users = num_users 
-                tournament.save()
-                request.session['tournament_id'] = tournament.id
-                if num_users == tournament.size:
-                    tournament_user.is_complete = True
+                room = Matchmaking.objects.filter(tournament=tournament).first()
+                if room: #すでにトーナメントが成立してる
+                    room.timestamp = timezone.now()
+                    room.save()
+                    tournament.timestamp = timezone.now()
+                    tournament.save()
+                    tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user).first()
+                    tournament_user.timestamp = timezone.now()
                     tournament_user.save()
-                    make_tournament_matches(tournament)
-                    room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
-                    if room:
-                        room.user1 = user
-                        room.save()
-                        response_data = {
+                    response_data = {
                             'page':page,
                             'content':render_to_string('ponggame.html', {'room': room}),
                             'title': 'Pong Game ' + str(room.id),
@@ -755,9 +757,27 @@ def process_post_data(request):
                             # 生のjavascriptを埋め込みたいとき
                             'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',       
                         }
-                    else:
-                        room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
-                        room.user2 = user
+                else: #トーナメント未成立
+                    tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user).first()
+                    if tournament_user: #トーナメント内に同一のユーザーがいる
+                        tournament_user.timestamp = timezone.now()
+                        tournament_user.save()
+                    else: #トーナメント内に新たなユーザーが参加
+                        tournament_user = TournamentUser.objects.create(tournament=tournament, user=user)
+                    num_users = TournamentUser.objects.filter(tournament=tournament, timestamp__gte=thirty_seconds_ago).count()
+                    tournament.num_users = num_users 
+                    tournament.save()
+                    request.session['tournament_id'] = tournament.id
+                    if num_users == tournament.size:
+                        tournament_user.is_complete = True
+                        tournament_user.save()
+                        make_tournament_matches(tournament)
+                        room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
+                        if room:
+                            room.user1 = user
+                        else:
+                            room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
+                            room.user2 = user
                         room.save()
                         response_data = {
                             'page':page,
@@ -767,16 +787,16 @@ def process_post_data(request):
                             # 生のjavascriptを埋め込みたいとき
                             'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',      
                         }
-                else:
-                    page = 'tournament'
-                    response_data = {
-                        'page': page,
-                        'content': read_file('waiting.html'),
-                        'title': 'tournament',
-                        'reload': page,
-                        'timeout' : '10000',
-                        'alert': '参加者を待っています',
-                    }
+                    else:
+                        page = 'tournament'
+                        response_data = {
+                            'page': page,
+                            'content': read_file('waiting.html'),
+                            'title': 'tournament',
+                            'reload': page,
+                            'timeout' : '10000',
+                            'alert': '参加者を待っています',
+                        }
             elif page == 'single_play':
                 form = CustomizeSinglePlayForm(data=post_data)
                 if form.is_valid():
@@ -860,8 +880,18 @@ def process_post_data(request):
                 user = request.user
                 doubles_id = request.session.get('doubles_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
-                doubles_user = DoublesUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, doubles=doubles_id).first()
-                if doubles_user:
+                doubles_user = DoublesUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, doubles=doubles_id).first()            
+                nocontent = post_data.get('nocontent')
+                if nocontent is not None :
+                    doubles_user.timestamp = timezone.now()
+                    doubles_user.save()
+                    response_data = {
+                        'page':page,
+                        'nocontent': 'yes',
+                        'reload': page,
+                        'timeout' : '10000',
+                    }
+                elif doubles_user:
                     doubles_user.timestamp = timezone.now()
                     doubles_user.save()
                     doubles = doubles_user.doubles
@@ -920,9 +950,9 @@ def process_post_data(request):
                             'alert': '参加者を待っています',
                         }
                 else:
-                    rooms = get_available_rooms()
-                    tournaments = get_available_tournaments()
-                    doubles = get_available_doubles()
+                    rooms = get_available_rooms(user)
+                    tournaments = get_available_tournaments(user)
+                    doubles = get_available_doubles(user)
                     response_data = {
                         'page': page,
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
@@ -933,25 +963,10 @@ def process_post_data(request):
                 doubles_id = post_data.get('doubles_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 doubles = Doubles.objects.filter(id=doubles_id, timestamp__gte=thirty_seconds_ago).first()
-                if doubles:
-                    doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user)
-                    if doubles_user: #ダブルス内に同じユーザーがいる
-                        # logger.debug('hogehoge')
-                        rooms = get_available_rooms()
-                        tournaments = get_available_tournaments()
-                        doubles = get_available_doubles()
-                        response_data = {
-                            'page': page,
-                            'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
-                            'title': 'Lobby',
-                            'isValid': 'False',
-                            'elem': 'doubles'
-                        }
-                        return JsonResponse(response_data)
-                else: #存在しないはずのダブルス
-                    rooms = get_available_rooms()
-                    tournaments = get_available_tournaments()
-                    doubles = get_available_doubles()
+                if not doubles: #存在しないはずのダブルス
+                    rooms = get_available_rooms(user)
+                    tournaments = get_available_tournaments(user)
+                    doubles = get_available_doubles(user)
                     # logger.debug('hoge')
                     response_data = {
                         'page': page,
@@ -961,17 +976,38 @@ def process_post_data(request):
                         'elem': 'doubles'
                     }
                     return JsonResponse(response_data)
-                doubles_user = DoublesUser.objects.create(doubles=doubles, user=user)
-                request.session['doubles_id'] = doubles.id
-                page = 'doubles_room'
-                response_data = {
-                    'page': page,
-                    'content': read_file('waiting.html'),
-                    'title': 'doubles room',
-                    'reload': page,
-                    'timeout' : '10000',
-                    'alert': '参加者を待っています',
-                }
+                room = Matchmaking.objects.filter(doubles=doubles).first() 
+                if room: #すでにダブルスが成立してる
+                    room.timestamp = timezone.now()
+                    room.save()
+                    doubles.timestamp = timezone.now()
+                    doubles.save()
+                    doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user).first()
+                    doubles_user.timestamp = timezone.now()
+                    doubles_user.save()
+                    response_data = {
+                        'page':page,
+                        'content':read_file('ponggame.html'),
+                        'title': title,
+                        'scriptfiles': '/static/js/game.js',
+                    }
+                else: #まだマッチが成立してない
+                    doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user).first()
+                    if doubles_user: #ダブルス内に同じユーザーがいる
+                        doubles_user.timestamp = timezone.now()
+                        doubles_user.save()
+                    else:
+                        doubles_user = DoublesUser.objects.create(doubles=doubles, user=user)
+                    request.session['doubles_id'] = doubles.id
+                    page = 'doubles_room'
+                    response_data = {
+                        'page': page,
+                        'content': read_file('waiting.html'),
+                        'title': 'doubles room',
+                        'reload': page,
+                        'timeout' : '10000',
+                        'alert': '参加者を待っています',
+                    }
             elif page == 'game_stats':
                 user = request.user
                 if user.is_authenticated:
@@ -1086,33 +1122,46 @@ def heartbeat(request):
     user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
 
-#user2が不在でtimestampから30秒以内のroomを取得
-def get_available_rooms():
+def get_available_rooms(user):
     current_time = timezone.now()
     thirty_seconds_ago = current_time - timedelta(seconds=30)
     available_rooms = Matchmaking.objects.filter(
-        user2__isnull=True,
-        timestamp__gte=thirty_seconds_ago,
+        Q(user2__isnull=True) | Q(user1=user) | Q(user2=user), #user2が不在かuser1かuser2がuserと同じ
+        timestamp__gte=thirty_seconds_ago, #timestampから30秒以内
         is_single=False,
+        winner__isnull=True,
         level=-1,
     )
     return available_rooms
 
 #num_usersがsizeより小さくtimestampから30秒以内のtournamentを取得
-def get_available_tournaments():
+def get_available_tournaments(user):
     current_time = timezone.now()
     thirty_seconds_ago = current_time - timedelta(seconds=30)
     available_tournaments = Tournament.objects.filter(
-        num_users__lt=models.F('size'), 
+        Q(num_users__lt=F('size')) | #unm_usersがsizeより少ない
+        (Q(num_users=F('size')) & Q( #num_usersがsizeと同じでuser1か2にuserがいてwinnerがnull
+            Q(matchmaking__user1=user) | 
+            Q(matchmaking__user2=user),
+            matchmaking__winner__isnull=True
+        )),
         timestamp__gte=thirty_seconds_ago
     )
     return available_tournaments
 
-def get_available_doubles():
+
+def get_available_doubles(user):
     current_time = timezone.now()
     thirty_seconds_ago = current_time - timedelta(seconds=30)
     available_doubles = Doubles.objects.filter(
-        num_users__lt=4,
+        Q(num_users__lt=4) | #参加者が4人未満
+        (Q(num_users=4) & Q( #参加者が4人いてuser1-4にuserがいてwinnerがnull
+            Q(matchmaking__user1=user) | 
+            Q(matchmaking__user2=user) | 
+            Q(matchmaking__user3=user) | 
+            Q(matchmaking__user4=user),
+            matchmaking__winner__isnull=True
+        )),
         timestamp__gte=thirty_seconds_ago
     )
     # logger.debug(f'available_doubles: {available_doubles}')
