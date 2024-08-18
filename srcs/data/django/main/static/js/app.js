@@ -173,6 +173,9 @@ function updateContent(data) {
   // if (typeof data.exec !== 'undefined') {     
   //   eval(data.exec);
   // }
+  if (typeof data.lang !== 'undefined') {
+    loadLanguage(data.lang);
+  }
   if (typeof data.alert !== 'undefined') {     
     popupAlert(data.alert);
   }
@@ -622,8 +625,15 @@ function setLanguage(lang) {
   // xhr.send();
 }
 
-function loadLanguage() {
-  lang = getCookie('language') || 'ja'; // クッキーが見つからない場合はデフォルトで'ja'を使用
+function loadLanguage(lang) {
+  tmp = getCookie('language'); 
+  console.log('tmp: ', tmp)
+  if (tmp != null) {
+    lang = tmp
+  } else {
+    lang = 'ja'
+  }
+  console.log('lang: ', lang)
   setLanguage(lang);
 }
 

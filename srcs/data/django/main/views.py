@@ -169,6 +169,7 @@ def process_post_data(request):
                     user.is_online = True
                     user.last_active = timezone.now()
                     user.save(update_fields=['is_online', 'last_active'])
+                    lang = user.language
                     if not user.display_name:
                         form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                         if form_edit_display_name.is_valid():
@@ -180,6 +181,7 @@ def process_post_data(request):
                                 'login': 'true',
                                 'username' : user.username,
                                 'elem': 'top',
+                                'lang': lang,
                             }  
                         else:
                             response_data = {
@@ -188,6 +190,7 @@ def process_post_data(request):
                                 'title': 'Edit Display Name',
                                 'login': 'true',
                                 'username' : user.username,
+                                'lang': lang
                             }
                         return JsonResponse(response_data)
                     response_data = {
@@ -197,7 +200,8 @@ def process_post_data(request):
                         'login': 'true',
                         'username' : user.username,
                         'elem': 'top', 
-                        'alert': 'ログインしました'
+                        'alert': 'ログインしました',
+                        'lang': lang
                     }   
                 else:
                     response_data = {
@@ -968,6 +972,13 @@ def process_post_data(request):
                         'content': read_translations(lang + '.json'),
                         'nocontent' : 'lang'
                     }
+                else:
+                    response_data = {
+                        'page': page,
+                        'content': read_translations('ja.json'),
+                        'nocontent' : 'lang'
+                    }
+
 
 
             else:
@@ -1064,7 +1075,8 @@ def read_file(filename):
         return "Error: File not found."
     except Exception as e:
         return f"Error: {e}"
-    
+
+@csrf_exempt
 def read_translations(filename):
     # プロジェクトのベースディレクトリを取得
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
