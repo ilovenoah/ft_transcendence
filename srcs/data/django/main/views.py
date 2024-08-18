@@ -956,6 +956,18 @@ def process_post_data(request):
                         'content': render_to_string('game_stats.html', {'users': users}),
                         'title': 'game stats',
                     }
+            elif page == 'setlang':
+                user = request.user
+                if user.is_authenticated:
+                    lang = post_data.get('lang') 
+                    logger.debug(lang)
+                    user.lang = lang
+                    user.save()
+                    response_data = {
+                        'page': page,
+                        'content': read_translations(lang + '.json'),
+                        'nocontent' : 'lang'
+                    }
 
 
             else:
@@ -1044,6 +1056,20 @@ def read_file(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # ファイルのパスを構築
     file_path = os.path.join(base_dir, 'main/html', filename)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        return "Error: File not found."
+    except Exception as e:
+        return f"Error: {e}"
+    
+def read_translations(filename):
+    # プロジェクトのベースディレクトリを取得
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # ファイルのパスを構築
+    file_path = os.path.join(base_dir, 'main/static/translations', filename)
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()

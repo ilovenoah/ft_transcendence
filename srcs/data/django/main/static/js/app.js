@@ -294,6 +294,10 @@ function send_ajax(data)
           loadLanguage();
           //履歴にページを登録
           history.pushState({ data: response }, response.title, '');
+        } else if (response.nocontent == 'lang' ) {
+          var translations = JSON.parse(response.content);
+          applyTranslations(translations);
+          
         } else {
           noloadAjax(response.reload, response.timeout);
         }
@@ -372,7 +376,15 @@ function noloadAjax(page, timeout) {
 }
 
 
+function langAjax(lang){
 
+  var postData = {};
+  postData['page'] = 'setlang';
+  postData['nocontent'] = 'yes';
+  postData['lang'] = lang;
+  postData['data_url']= 'process-post/';
+  send_ajax(postData);
+}
 
 function popupAlert(mesg) {
   alertBox = document.getElementById('custom-alert');
@@ -592,22 +604,22 @@ function applyTranslations(translations) {
 
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
-
+  langAjax(lang);
   // console.log(lang)
   
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/static/translations/' + lang + '.json', true);
+  // var xhr = new XMLHttpRequest();
+  // xhr.open('GET', '/static/translations/' + lang + '.json', true);
 
-  xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-          var translations = JSON.parse(xhr.responseText);
-          applyTranslations(translations);
-      } else if (xhr.readyState === 4) {
-          // console.error('Error loading translations:', xhr.statusText);
-      }
-  };
+  // xhr.onreadystatechange = function () {
+  //     if (xhr.readyState === 4 && xhr.status === 200) {
+  //         var translations = JSON.parse(xhr.responseText);
+  //         applyTranslations(translations);
+  //     } else if (xhr.readyState === 4) {
+  //         // console.error('Error loading translations:', xhr.statusText);
+  //     }
+  // };
 
-  xhr.send();
+  // xhr.send();
 }
 
 function loadLanguage() {
