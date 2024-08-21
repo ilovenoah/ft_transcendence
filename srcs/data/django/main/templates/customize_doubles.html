@@ -2,9 +2,9 @@
     <form class="ajax-form px-5" action="process-post/">
         <input type="hidden" name="page" value="create_doubles">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary mb-4 mt-4 translations btn-lg" id="custom_doubles_button2">　</button>
+        <button type="submit" class="btn btn-primary mb-5 mt-3 translations" id="custom_doubles_button" style="width: 10rem;">　</button>
         <div class="accordion" >
-            <div class="accordion-item">
+            <div class="accordion-item" style="width: 20rem;">
                 <h2 class="accordion-header">
                     <button class="accordion-button bg-primary text-light translations" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="custom_doubles_header">
                     　
@@ -57,7 +57,6 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-5 mt-3 translations" id="custom_doubles_button">　</button>
                 </div>
             </div>
         </div>
