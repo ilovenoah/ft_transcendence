@@ -33,8 +33,6 @@ let score_player2;
 
 let speedrate = 5.0;
 
-let heartbeatFlag = 0;
-
 let is_3d;
 
 let game_state = 0;
@@ -511,16 +509,11 @@ function connect(roomName){
     };
     gameSocket.onopen = function(e) {
         console.log("WebSocket connection established");
-
-        heartbeatFlag = 1;
-        callGameHeartbeat();
-        
         //ゲームが始まったらやればいい
         animate();
     };
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
-        heartbeatFlag = 0;
         // 自動再接続
         if (game_state > 1){
             setTimeout( connect(game_id), reconnectInterval);
@@ -531,37 +524,6 @@ function connect(roomName){
 
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
-
-
-
-function callGameHeartbeat() {
-    sendGameHeartbeat(game_id);
-    // 10秒後に再び自分自身を呼び出す
-    if (heartbeatFlag > 0){
-        setTimeout(callGameHeartbeat, 10000);
-    }
-}
-  
-function sendGameHeartbeat(room_id){
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'gameHeartbeat/' + room_id + '/', true);
-    xhr.withCredentials = true;
-  
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
-                console.log('GameHeartbeat:', response.status);
-                // ログイン状態に応じた処理
-            } else {
-                console.error('Error: ', xhr.status);
-                // ログアウト状態に応じた処理
-            }
-        }
-    };
-    xhr.send();
-  
-}
 
 window.addEventListener('click', (event) => {
     // クリックされた要素を取得
@@ -634,5 +596,4 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d){
 
     first_flag = true;
     connect(game_id);
-
 }
