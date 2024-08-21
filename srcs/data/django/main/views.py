@@ -1021,27 +1021,6 @@ def process_post_data(request):
                         'content': render_to_string('game_stats.html', {'users': users}),
                         'title': 'game stats',
                     }
-            elif page == 'setlang':
-                user = request.user
-                if user.is_authenticated:
-                    lang = post_data.get('lang') 
-                    logger.debug(lang)
-                    user.lang = lang
-                    user.save()
-                    response_data = {
-                        'page': page,
-                        'content': read_translations(lang + '.json'),
-                        'nocontent' : 'lang'
-                    }
-                else:
-                    response_data = {
-                        'page': page,
-                        'content': read_translations('ja.json'),
-                        'nocontent' : 'lang'
-                    }
-
-
-
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
@@ -1073,6 +1052,16 @@ def heartbeat(request):
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({'csrfToken': token})
+
+@csrf_exempt
+def language(request, lang):
+    user = request.user
+    if user.is_authenticated:
+        logger.debug(lang)
+        user.language = lang
+        user.save()
+        return JsonResponse({'status': 'language_saved'})
+    return JsonResponse({'status': 'not_login'})
 
 @csrf_exempt
 def upload_image(request):
@@ -1152,13 +1141,6 @@ def read_translations(filename):
     except Exception as e:
         return f"Error: {e}"
 
-
-@login_required
-def heartbeat(request):
-    user = request.user
-    user.last_active = timezone.now()
-    user.save(update_fields=['last_active'])
-    return JsonResponse({'status': 'logged_in'})
 
 def get_available_rooms(user):
     current_time = timezone.now()

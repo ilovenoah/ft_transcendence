@@ -260,27 +260,6 @@ function updateContent(data) {
 
 
 
-function sendHeartbeat() {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'heartbeat/', true);
-  xhr.withCredentials = true;
-
-  xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-              var response = JSON.parse(xhr.responseText);
-              console.log('User is:', response.status);
-              // ログイン状態に応じた処理
-          } else {
-              console.error('Error: ', xhr.status);
-              // ログアウト状態に応じた処理
-          }
-      }
-  };
-
-  xhr.send();
-}
-
 function send_ajax(data)
 {
   // CSRFトークンをmetaタグから取得
@@ -380,17 +359,6 @@ function noloadAjax(page, timeout) {
         send_ajax(postData);
       } 
   }, timeout)
-}
-
-
-function langAjax(lang){
-
-  var postData = {};
-  postData['page'] = 'setlang';
-  postData['nocontent'] = 'yes';
-  postData['lang'] = lang;
-  postData['data_url']= 'process-post/';
-  send_ajax(postData);
 }
 
 function popupAlert(mesg) {
@@ -611,22 +579,30 @@ function applyTranslations(translations) {
 
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
-  langAjax(lang);
+  //langAjax(lang);
   // console.log(lang)
+
+  loadLanguage(lang)  
   
-  // var xhr = new XMLHttpRequest();
-  // xhr.open('GET', '/static/translations/' + lang + '.json', true);
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'language/' + lang + '/', true);
+  xhr.withCredentials = true;
 
-  // xhr.onreadystatechange = function () {
-  //     if (xhr.readyState === 4 && xhr.status === 200) {
-  //         var translations = JSON.parse(xhr.responseText);
-  //         applyTranslations(translations);
-  //     } else if (xhr.readyState === 4) {
-  //         // console.error('Error loading translations:', xhr.statusText);
-  //     }
-  // };
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+              var response = JSON.parse(xhr.responseText);
+              console.log('User is:', response.status);
+              // ログイン状態に応じた処理
+          } else {
+              console.error('Error: ', xhr.status);
+              // ログアウト状態に応じた処理
+          }
+      }
+  };
 
-  // xhr.send();
+  xhr.send();
+ 
 }
 
 function loadLanguage(lang) {
@@ -638,7 +614,20 @@ function loadLanguage(lang) {
     lang = 'ja'
   }
   console.log('lang: ', lang)
-  setLanguage(lang);
+  // setLanguage(lang);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/static/translations/' + lang + '.json', true);
+
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+          var translations = JSON.parse(xhr.responseText);
+          applyTranslations(translations);
+      } else if (xhr.readyState === 4) {
+          // console.error('Error loading translations:', xhr.statusText);
+      }
+  };
+  xhr.send();
 }
 
 // ページが読み込まれた時に言語を読み込む

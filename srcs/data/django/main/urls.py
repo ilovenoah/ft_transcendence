@@ -14,6 +14,7 @@ urlpatterns = [
     path('get-csrf-token/', views.get_csrf_token, name='get_csrf_token'),
     path('upload/', upload_image, name='upload_image'),    
     path('heartbeat/', heartbeat, name='heartbeat'),
+    path('language/<str:lang>/', views.language, name='language'),
     path('i18n/', include('django.conf.urls.i18n')),
 ]
 
