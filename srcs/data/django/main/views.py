@@ -1050,17 +1050,6 @@ def heartbeat(request):
     user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
 
-@login_required
-def gameHeartbeat(request, gameid):
-    user = request.user
-    if user.is_authenticated:
-        logger.debug(lang)
-        user.language = lang
-        user.save()
-        return JsonResponse({'status': 'language_saved'})
-    return JsonResponse({'status': 'not_login'})
-
-
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({'csrfToken': token})
