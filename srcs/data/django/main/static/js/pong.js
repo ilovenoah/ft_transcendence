@@ -403,8 +403,14 @@ function displayScore(score1, score2){
     
     context.clearRect(0, 0, screen.width, screen.height);
     // テキストを描画
-    context.fillText(txt_score2, txt_score2_x, txt_score2_y);
-    context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
+    if (is_3d == 1 && (player_no == 2 || player_no ==4)){
+        context.fillText(txt_score1, txt_score2_x, txt_score2_y);
+        context.fillText(txt_score2, txt_score1_x, txt_score1_y);   
+    }else{
+        context.fillText(txt_score2, txt_score2_x, txt_score2_y);
+        context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
+    }
+
 
     if (score1 >= score_match || score2 >= score_match) {
         txt_win = "Win!";
@@ -429,8 +435,14 @@ function displayScore(score1, score2){
                 txt_lose_y = Math.trunc(canvas_top + canvas_height / 4.0 * 2);            
             }
         }
-        context.fillText(txt_win, txt_win_x, txt_win_y);
-        context.fillText(txt_lose, txt_lose_x, txt_lose_y);
+        
+        if (is_3d == 1 && (player_no == 2 || player_no ==4)){
+            context.fillText(txt_lose, txt_win_x, txt_win_y);
+            context.fillText(txt_win, txt_lose_x, txt_lose_y);
+        } else {         
+           context.fillText(txt_win, txt_win_x, txt_win_y);
+            context.fillText(txt_lose, txt_lose_x, txt_lose_y);
+        }
     }
 
     // 一定時間後にテキストを消去
