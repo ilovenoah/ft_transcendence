@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
     while (link && link.tagName !== 'A') {
       link = link.parentElement;
     }
-    if (link && link.tagName === 'A') {
+    if (link != null && link.tagName === 'A') {
       event.preventDefault();
       // 属性を取得し、オブジェクトに変換
       var postData = {};
@@ -92,7 +92,8 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
             }
-        };
+            gameSocket.close();
+          };
         xhr.send(formData);
 
     //textデータを送信するときのform
@@ -129,6 +130,8 @@ document.addEventListener("DOMContentLoaded", function() {
             // エラー処理をここに追加します     
         }
         loadLanguage();
+        // gameSocket.close();
+
       };
   
       xhr.onerror = function() {
@@ -229,7 +232,8 @@ function updateContent(data) {
       // 新しいスクリプトタグを作成してコードを追加
       let arrayScript = document.createElement('script');
       //キャッシュされたjsファイルが利用されないようにtimestampを付加する
-      arrayScript.src = scriptFiles[i].trim() + "?ts=" + new Date().getTime();
+      // arrayScript.src = scriptFiles[i].trim() + "?ts=" + new Date().getTime();
+      arrayScript.src = scriptFiles[i].trim();
       // <foot> タグに新しいスクリプトタグを挿入
       foot.appendChild(arrayScript);
     }
@@ -283,7 +287,7 @@ function send_ajax(data)
   const csrfToken = getCSRFToken();
 
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", data.data_url, true);
+  xhr.open("POST", data.data_url+= "?t=" + new Date().getTime(), true);
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xhr.setRequestHeader("X-CSRFToken", csrfToken);  // CSRFトークンをヘッダーに設定
   xhr.onreadystatechange = function() {
@@ -470,6 +474,7 @@ function toggleVisibility(login, username, elem) {
           <a href="#" class="nav-link active post-link" aria-current="page" data_url="process-post/" page="lobby" title="lobby">Pong Lobby</a>
         </li>
       </ul>
+
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -570,7 +575,6 @@ function displayAlert(elem) {
       `;
     }
   }
-
 }
 
 function setCookie(name, value, days) {

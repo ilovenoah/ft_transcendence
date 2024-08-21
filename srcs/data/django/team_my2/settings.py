@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
 
      # 自作アプリケーション
     'main', 
@@ -80,7 +81,30 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'team_my2.wsgi.application'
+ASGI_APPLICATION = 'team_my2.asgi.application'
 
+# Redis Channel Layer Configuration
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis4242", 6379)],
+            "capacity": 1000,  # メッセージバッファの容量（デフォルトは100）
+            "expiry": 10,  # メッセージがどのくらいの時間、バッファに留まるか（秒）
+        },
+    },
+}
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis4242:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -126,7 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'http://localhost']
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'http://localhost','https://127.0.0.1', 'http://127.0.0.1']
 
 LOGGING = {
     'version': 1,
@@ -137,6 +161,10 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'debug.log'),
         },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
     },
     'loggers': {
         # 'django': {
@@ -144,7 +172,7 @@ LOGGING = {
         #     'level': 'DEBUG',
         #     'propagate': True,
         # },
-        'main': {
+        'main': {  
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,

@@ -1,5 +1,26 @@
 #version: '3'
 services:
+ 
+
+  redis:
+    build:
+      context: ./requirements/redis/
+      dockerfile: Dockerfile
+    image: redis:4242
+    container_name: redis4242
+    env_file: 
+      - .env
+    networks:
+      - net_trans
+    expose:
+      - "6379"
+    # ports:
+    #   - "6379:6379"
+    depends_on:
+      - django
+    init: true
+    restart: always  
+
   nginx:
     build:
       context: ./requirements/nginx/
@@ -31,6 +52,7 @@ services:
     #   - "8000"
     ports:
       - "8000:8000"
+      - "8001:8001"
     depends_on:
       postgres:
         condition: service_healthy
