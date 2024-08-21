@@ -9,6 +9,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
+from django.http import HttpResponse
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
@@ -1054,7 +1055,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': token})
 
 @csrf_exempt
-def language(request, lang):
+def setLanguage(request, lang):
     user = request.user
     if user.is_authenticated:
         logger.debug(lang)
@@ -1062,6 +1063,16 @@ def language(request, lang):
         user.save()
         return JsonResponse({'status': 'language_saved'})
     return JsonResponse({'status': 'not_login'})
+
+@csrf_exempt
+def getLanguage(request, lang):
+    user = request.user
+    if lang == '00' and user.is_authenticated:
+        # logger.debug(lang)
+        lang = user.language
+    elif lang == '00':
+        lang = 'ja'
+    return HttpResponse(read_translations(lang + '.json'))
 
 @csrf_exempt
 def upload_image(request):

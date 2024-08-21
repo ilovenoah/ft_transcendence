@@ -582,10 +582,10 @@ function setLanguage(lang) {
   //langAjax(lang);
   // console.log(lang)
 
-  loadLanguage(lang)  
+  loadLanguage(lang)
   
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'language/' + lang + '/', true);
+  xhr.open('GET', 'setLanguage/' + lang + '/', true);
   xhr.withCredentials = true;
 
   xhr.onreadystatechange = function() {
@@ -607,17 +607,18 @@ function setLanguage(lang) {
 
 function loadLanguage(lang) {
   tmp = getCookie('language'); 
-  console.log('tmp: ', tmp)
+  // console.log('tmp: ', tmp)
   if (tmp != null) {
     lang = tmp
   } else {
-    lang = 'ja'
+    lang = '00'
   }
-  console.log('lang: ', lang)
+  // console.log('lang: ', lang)
   // setLanguage(lang);
 
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/static/translations/' + lang + '.json', true);
+//  xhr.open('GET', '/static/translations/' + lang + '.json', true);
+  xhr.open('GET', 'getLanguage/' + lang + '/', true);
 
   xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
