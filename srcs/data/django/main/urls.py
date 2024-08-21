@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 from .views import process_post_data
 from .views import upload_image
 from .views import heartbeat
+from .views import ja
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -14,7 +15,7 @@ urlpatterns = [
     path('get-csrf-token/', views.get_csrf_token, name='get_csrf_token'),
     path('upload/', upload_image, name='upload_image'),    
     path('heartbeat/', heartbeat, name='heartbeat'),
-    path('i18n/', include('django.conf.urls.i18n')),
+    path('static/translations/ja.json', ja, name='ja_translation'),
 ]
 
 if settings.DEBUG:
