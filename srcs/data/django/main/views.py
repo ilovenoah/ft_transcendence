@@ -1050,6 +1050,13 @@ def heartbeat(request):
     user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
 
+@login_required
+def gameheartbeat(request):
+    user = request.user
+    user.last_active = timezone.now()
+    user.save(update_fields=['last_active'])
+    return JsonResponse({'status': 'logged_in'})
+
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({'csrfToken': token})
