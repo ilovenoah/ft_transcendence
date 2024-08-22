@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 from .views import process_post_data
 from .views import upload_image
 from .views import heartbeat
+from .views import ja
 
 urlpatterns = [
     path('', views.index, name='index'),

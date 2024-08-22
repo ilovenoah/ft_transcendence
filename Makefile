@@ -5,6 +5,7 @@ build:
 
 up: build
 	docker compose -f $(DOCKER_COMPOSE_YML) up -d
+	docker exec -it django4242 python manage.py migrate
 #	chmod -R 777 ./srcs/data/postgres
 
 stop:

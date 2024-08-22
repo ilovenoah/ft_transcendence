@@ -1222,3 +1222,7 @@ def calculate_loss(user, win):
     loss = count1 + count2 - win
     return loss
 
+@login_required
+def ja(request):
+    logger.debug('im here')
+    return JsonResponse({'language': 'ja'})
