@@ -183,8 +183,12 @@ def process_post_data(request):
                     user = request.user
                     user.is_online = True
                     user.last_active = timezone.now()
+                    if form.lang == "00":
+                        lang = user.language
+                    else:
+                        lang = form.lang
+                        user.save(update_fields=['language', lang])
                     user.save(update_fields=['is_online', 'last_active'])
-                    lang = user.language
                     if not user.display_name:
                         form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                         if form_edit_display_name.is_valid():
@@ -224,7 +228,8 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                         'login': 'false',
-                        'elem': 'login'
+                        'elem': 'login',
+                        'rawscripts': 'embedLoginLang();',
                     }
             elif page == 'profile':
                 user = request.user

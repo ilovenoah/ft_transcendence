@@ -605,6 +605,10 @@ function setLanguage(lang) {
  
 }
 
+function embedLoginLang(){
+  document.getElementById('form_lang').value = getCookie('language');
+}
+
 function loadLanguage(lang) {
   tmp = getCookie('language'); 
   // console.log('tmp: ', tmp)
