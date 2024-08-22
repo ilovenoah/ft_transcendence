@@ -577,7 +577,6 @@ function applyTranslations(translations) {
   });
 }
 
-
 function setLanguage(lang) {
   setCookie('language', lang, 7); // 言語設定を7日間保存
   //langAjax(lang);

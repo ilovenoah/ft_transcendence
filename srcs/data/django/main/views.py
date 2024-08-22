@@ -9,6 +9,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
+from django.http import HttpResponse
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
@@ -183,6 +184,7 @@ def process_post_data(request):
                     user.is_online = True
                     user.last_active = timezone.now()
                     user.save(update_fields=['is_online', 'last_active'])
+                    lang = user.language
                     if not user.display_name:
                         form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                         if form_edit_display_name.is_valid():
@@ -194,6 +196,7 @@ def process_post_data(request):
                                 'login': 'true',
                                 'username' : user.username,
                                 'elem': 'top',
+                                'lang': lang,
                             }  
                         else:
                             response_data = {
@@ -202,6 +205,7 @@ def process_post_data(request):
                                 'title': 'Edit Display Name',
                                 'login': 'true',
                                 'username' : user.username,
+                                'lang': lang
                             }
                         return JsonResponse(response_data)
                     response_data = {
@@ -211,7 +215,8 @@ def process_post_data(request):
                         'login': 'true',
                         'username' : user.username,
                         'elem': 'top', 
-                        'alert': 'ログインしました'
+                        'alert': 'ログインしました',
+                        'lang': lang
                     }   
                 else:
                     response_data = {
@@ -583,21 +588,11 @@ def process_post_data(request):
                     }
             elif page == 'room':
                 user = request.user
-                nocontent = post_data.get('nocontent') 
                 room_id = request.session.get('room_id')
                 room = Matchmaking.objects.get(id=room_id)
                 # room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30), id=room_id).first()
                 if room: 
-                    if nocontent is not None :
-                        room.timestamp = timezone.now()
-                        room.save()
-                        response_data = {
-                            'page':page,
-                            'nocontent': 'yes',
-                            'reload': page,
-                            'timeout' : '10000',
-                        }
-                    elif not room.user2:
+                    if not room.user2:
                         room.timestamp = timezone.now()
                         room.save()
                         response_data = {
@@ -881,17 +876,7 @@ def process_post_data(request):
                 doubles_id = request.session.get('doubles_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 doubles_user = DoublesUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, doubles=doubles_id).first()            
-                nocontent = post_data.get('nocontent')
-                if nocontent is not None :
-                    doubles_user.timestamp = timezone.now()
-                    doubles_user.save()
-                    response_data = {
-                        'page':page,
-                        'nocontent': 'yes',
-                        'reload': page,
-                        'timeout' : '10000',
-                    }
-                elif doubles_user:
+                if doubles_user:
                     doubles_user.timestamp = timezone.now()
                     doubles_user.save()
                     doubles = doubles_user.doubles
@@ -1017,8 +1002,6 @@ def process_post_data(request):
                         'content': render_to_string('game_stats.html', {'users': users}),
                         'title': 'game stats',
                     }
-
-
             else:
                 if is_file_exists(page + '.html') :
                     response_data = {
@@ -1047,9 +1030,37 @@ def heartbeat(request):
     user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
 
+@login_required
+def gameHeartbeat(request, roomid):
+    user = request.user
+    room = Matchmaking.objects.get(id=roomid)
+    room.timestamp = timezone.now()
+    room.save()
+    return JsonResponse({'timestamp': 'refreshed'})
+
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({'csrfToken': token})
+
+@csrf_exempt
+def setLanguage(request, lang):
+    user = request.user
+    if user.is_authenticated:
+        logger.debug(lang)
+        user.language = lang
+        user.save()
+        return JsonResponse({'status': 'language_saved'})
+    return JsonResponse({'status': 'not_login'})
+
+@csrf_exempt
+def getLanguage(request, lang):
+    user = request.user
+    if lang == '00' and user.is_authenticated:
+        # logger.debug(lang)
+        lang = user.language
+    elif lang == '00':
+        lang = 'ja'
+    return HttpResponse(read_translations(lang + '.json'))
 
 @csrf_exempt
 def upload_image(request):
@@ -1114,13 +1125,21 @@ def read_file(filename):
     except Exception as e:
         return f"Error: {e}"
 
+@csrf_exempt
+def read_translations(filename):
+    # プロジェクトのベースディレクトリを取得
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # ファイルのパスを構築
+    file_path = os.path.join(base_dir, 'main/static/translations', filename)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        return "Error: File not found."
+    except Exception as e:
+        return f"Error: {e}"
 
-@login_required
-def heartbeat(request):
-    user = request.user
-    user.last_active = timezone.now()
-    user.save(update_fields=['last_active'])
-    return JsonResponse({'status': 'logged_in'})
 
 def get_available_rooms(user):
     current_time = timezone.now()
