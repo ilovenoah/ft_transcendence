@@ -604,6 +604,7 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d){
     if (gameSocket) {
         game_state = 3;
         gameSocket.close();
+        return;
     }
 
     first_flag = true;

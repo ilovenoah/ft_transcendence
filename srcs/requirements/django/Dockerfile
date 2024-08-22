@@ -12,6 +12,7 @@ RUN     pip install --no-cache-dir -r requirements.txt
 
 RUN     pip install Pillow
 RUN     pip install channels
+RUN     pip install redis
 RUN     pip install channels-redis
 RUN     pip install django-redis
 RUN     pip install aioredis
