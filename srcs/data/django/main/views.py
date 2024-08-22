@@ -593,21 +593,11 @@ def process_post_data(request):
                     }
             elif page == 'room':
                 user = request.user
-                nocontent = post_data.get('nocontent') 
                 room_id = request.session.get('room_id')
                 room = Matchmaking.objects.get(id=room_id)
                 # room = Matchmaking.objects.filter(timestamp__gte=timezone.now() - timezone.timedelta(seconds=30), id=room_id).first()
                 if room: 
-                    if nocontent is not None :
-                        room.timestamp = timezone.now()
-                        room.save()
-                        response_data = {
-                            'page':page,
-                            'nocontent': 'yes',
-                            'reload': page,
-                            'timeout' : '10000',
-                        }
-                    elif not room.user2:
+                    if not room.user2:
                         room.timestamp = timezone.now()
                         room.save()
                         response_data = {
@@ -891,17 +881,7 @@ def process_post_data(request):
                 doubles_id = request.session.get('doubles_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 doubles_user = DoublesUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, doubles=doubles_id).first()            
-                nocontent = post_data.get('nocontent')
-                if nocontent is not None :
-                    doubles_user.timestamp = timezone.now()
-                    doubles_user.save()
-                    response_data = {
-                        'page':page,
-                        'nocontent': 'yes',
-                        'reload': page,
-                        'timeout' : '10000',
-                    }
-                elif doubles_user:
+                if doubles_user:
                     doubles_user.timestamp = timezone.now()
                     doubles_user.save()
                     doubles = doubles_user.doubles
@@ -1054,6 +1034,14 @@ def heartbeat(request):
     user.last_active = timezone.now()
     user.save(update_fields=['last_active'])
     return JsonResponse({'status': 'logged_in'})
+
+@login_required
+def gameHeartbeat(request, roomid):
+    user = request.user
+    room = Matchmaking.objects.get(id=roomid)
+    room.timestamp = timezone.now()
+    room.save()
+    return JsonResponse({'timestamp': 'refreshed'})
 
 def get_csrf_token(request):
     token = get_token(request)
