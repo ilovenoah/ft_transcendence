@@ -39,6 +39,7 @@ def process_post_data(request):
             title = post_data.get('title') 
             content = post_data.get('content') 
             gameid = post_data.get('gameid') 
+            # loginlang = post_data.get('lang') 
 
             #送信データの作成
             if page == 'logout':
@@ -183,8 +184,13 @@ def process_post_data(request):
                     user = request.user
                     user.is_online = True
                     user.last_active = timezone.now()
+                    if  post_data.get('lang') == "00":
+                        lang = user.language
+                    else:
+                        lang = post_data.get('lang') 
+                        user.language = lang
+                        user.save(update_fields=['language'])
                     user.save(update_fields=['is_online', 'last_active'])
-                    lang = user.language
                     if not user.display_name:
                         form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                         if form_edit_display_name.is_valid():
@@ -224,7 +230,8 @@ def process_post_data(request):
                         'content': render_to_string('login.html', {'form': form, 'request': request}),
                         'title': 'Login',
                         'login': 'false',
-                        'elem': 'login'
+                        'elem': 'login',
+                        'rawscripts': 'embedLoginLang();',
                     }
             elif page == 'profile':
                 user = request.user
