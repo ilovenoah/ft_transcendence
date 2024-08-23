@@ -191,6 +191,7 @@ def process_post_data(request):
                         user.language = lang
                         user.save(update_fields=['language'])
                     user.save(update_fields=['is_online', 'last_active'])
+                    lang = user.language
                     if not user.display_name:
                         form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                         if form_edit_display_name.is_valid():
@@ -547,9 +548,11 @@ def process_post_data(request):
                             room.save()
                             response_data = {
                                 'page':page,
-                                'content':read_file('ponggame.html'),
-                                'title': title,
-                                'scriptfiles': '/static/js/game.js',
+                                'content':render_to_string('ponggame.html', {'room': room}),
+                                'title': 'Pong Game ' + str(room.id),
+                                'gameid': str(room.id), 
+                                # 生のjavascriptを埋め込みたいとき
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2, ' +  str(user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                             }
                 else:
                     rooms = get_available_rooms(user)
@@ -970,6 +973,16 @@ def process_post_data(request):
                     return JsonResponse(response_data)
                 room = Matchmaking.objects.filter(doubles=doubles).first() 
                 if room: #すでにダブルスが成立してる
+                    user_no = 1
+                    if user.id == room.user2_id:
+                        user_no = 2
+                    elif user.id == room.user3_id:
+                        user_no = 3
+                    elif user.id == room.user4_id:
+                        user_no = 4
+                    else :
+                        user_no = 1
+
                     room.timestamp = timezone.now()
                     room.save()
                     doubles.timestamp = timezone.now()
@@ -978,10 +991,15 @@ def process_post_data(request):
                     doubles_user.timestamp = timezone.now()
                     doubles_user.save()
                     response_data = {
+                        # 'page':page,
+                        # 'content':read_file('ponggame.html'),
+                        # 'title': title,
+                        # 'scriptfiles': '/static/js/game.js',
                         'page':page,
-                        'content':read_file('ponggame.html'),
-                        'title': title,
-                        'scriptfiles': '/static/js/game.js',
+                        'content':render_to_string('ponggame.html', {'room': room}),
+                        'title': 'Pong Game ' + str(room.id),
+                        'gameid': str(room.id), 
+                        'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
                     }
                 else: #まだマッチが成立してない
                     doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user).first()
