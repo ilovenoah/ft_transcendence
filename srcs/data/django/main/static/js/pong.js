@@ -38,6 +38,8 @@ let heartbeatFlag = 0;
 let is_3d;
 
 let game_state = 0;
+let button_flag = 0;
+let countdown_flag = 0;
 
 let score_match = 10;
 let paddleflag = 0;
@@ -329,11 +331,11 @@ function updateGameState(data) {
     } else if (data.info === 'score'){        
         if (score_player1 != data.scores[0]){
             score_player1 = data.scores[0];
-            displayScore(score_player1,score_player2);
+            displayScore(score_player1,score_player2, 0);
         }
         if (score_player2 != data.scores[1]){
             score_player2 = data.scores[1];
-            displayScore(score_player1,score_player2);
+            displayScore(score_player1,score_player2, 0);
         }
     } else {
         if (player_no !== 1){
@@ -357,24 +359,43 @@ function updateGameState(data) {
         if (first_flag) {
             score_player1 = data.scores[0];
             score_player2 = data.scores[1];
-            displayScore(score_player1,score_player2);
+            displayScore(score_player1,score_player2, 0);
             first_flag = false;
         } else {
             if (score_player1 != data.scores[0]){
                 score_player1 = data.scores[0];
-                displayScore(score_player1,score_player2);
+                displayScore(score_player1,score_player2, 0);
             }
             if (score_player2 != data.scores[1]){
                 score_player2 = data.scores[1];
-                displayScore(score_player1,score_player2);
+                displayScore(score_player1,score_player2, 0);
             }
         }
     }
-
-//    renderer.render(scene, camera);
+    if (button_flag == 0) {
+        if (data.user_status[player_no] == 1) {
+            button_flag == 1;
+            document.getElementById('game_ready').style.display = 'none';
+        }
+    }
+    if (countdown_flag == 0) {
+        if (data.user_status[0] == 1) {
+            countdown_flag = 1;
+            displayScore(0, 0, 3);
+            setTimeout(function() {
+                displayScore(0, 0, 2);
+            }, 1000);
+            
+            setTimeout(function() {
+                displayScore(0, 0, 1);
+            }, 2000);
+        }
+    }
+//   renderer.render(scene, camera);
 }
 
-function displayScore(score1, score2){
+
+function displayScore(score1, score2, count){
     // オーバーレイCanvasの2Dコンテキストを取得
     const context = overlayCanvas.getContext('2d');
 
@@ -402,51 +423,55 @@ function displayScore(score1, score2){
     // フォントとスタイルを設定
     context.font = canvas_width / 20.0 + 'px Arial';
     context.fillStyle = 'white';
-    
     context.clearRect(0, 0, screen.width, screen.height);
-    // テキストを描画
-    if (is_3d == 1 && (player_no == 2 || player_no ==4)){
-        context.fillText(txt_score1, txt_score2_x, txt_score2_y);
-        context.fillText(txt_score2, txt_score1_x, txt_score1_y);   
-    }else{
-        context.fillText(txt_score2, txt_score2_x, txt_score2_y);
-        context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
-    }
-
-
-    if (score1 >= score_match || score2 >= score_match) {
-        txt_win = "Win!";
-        txt_lose = "Lose!";
-        txt_win_x = 0;
-        txt_win_y = Math.trunc(canvas_top + canvas_height / 3.0 );
-        txt_lose_x = 0;
-        txt_lose_y = Math.trunc(canvas_top + canvas_height / 3.0 );
-        
-        if (score1 - score2 > 1) {
-            txt_win_x = Math.trunc(canvas_left + canvas_width / 50.0 * 33.0); // テキストの描画位置（x座標）
-            txt_lose_x = Math.trunc(canvas_left + canvas_width / 50.0 * 10.0); // テキストの描画位置（x座標）
-            if (is_3d == 1){
-                txt_win_y = Math.trunc(canvas_top + canvas_height / 4.0 * 3);            
-                txt_lose_y = Math.trunc(canvas_top + canvas_height / 4.0);            
-            }
-        } else if (score2 - score1 > 1){
-            txt_win_x = Math.trunc(canvas_left + canvas_width / 50.0 * 10.0); // テキストの描画位置（x座標）
-            txt_lose_x = Math.trunc(canvas_left + canvas_width / 50.0 * 33.0); // テキストの描画位置（x座標）
-            if (is_3d == 1){
-                txt_win_y = Math.trunc(canvas_top + canvas_height / 4.0);            
-                txt_lose_y = Math.trunc(canvas_top + canvas_height / 4.0 * 2);            
-            }
-        }
-        
+    if (count > 0){
+        context.fillText(count, (txt_score1_x + txt_score2_x) / 2.0 * 1.2 , screen.height / 2.0);
+        setTimeout(function() {
+            context.clearRect(0, 0, screen.width, screen.height);
+        }, 900);
+    } else {
+        // テキストを描画
         if (is_3d == 1 && (player_no == 2 || player_no ==4)){
-            context.fillText(txt_lose, txt_win_x, txt_win_y);
-            context.fillText(txt_win, txt_lose_x, txt_lose_y);
-        } else {         
-           context.fillText(txt_win, txt_win_x, txt_win_y);
-            context.fillText(txt_lose, txt_lose_x, txt_lose_y);
+            context.fillText(txt_score1, txt_score2_x, txt_score2_y);
+            context.fillText(txt_score2, txt_score1_x, txt_score1_y);   
+        }else{
+            context.fillText(txt_score2, txt_score2_x, txt_score2_y);
+            context.fillText(txt_score1, txt_score1_x, txt_score1_y);   
+        }
+
+        if (score1 >= score_match || score2 >= score_match) {
+            txt_win = "Win!";
+            txt_lose = "Lose!";
+            txt_win_x = 0;
+            txt_win_y = Math.trunc(canvas_top + canvas_height / 3.0 );
+            txt_lose_x = 0;
+            txt_lose_y = Math.trunc(canvas_top + canvas_height / 3.0 );
+        
+            if (score1 - score2 > 1) {
+                txt_win_x = Math.trunc(canvas_left + canvas_width / 50.0 * 33.0); // テキストの描画位置（x座標）
+                txt_lose_x = Math.trunc(canvas_left + canvas_width / 50.0 * 10.0); // テキストの描画位置（x座標）
+                if (is_3d == 1){
+                    txt_win_y = Math.trunc(canvas_top + canvas_height / 4.0 * 3);            
+                    txt_lose_y = Math.trunc(canvas_top + canvas_height / 4.0);            
+                }
+            } else if (score2 - score1 > 1){
+                txt_win_x = Math.trunc(canvas_left + canvas_width / 50.0 * 10.0); // テキストの描画位置（x座標）
+                txt_lose_x = Math.trunc(canvas_left + canvas_width / 50.0 * 33.0); // テキストの描画位置（x座標）
+                if (is_3d == 1){
+                    txt_win_y = Math.trunc(canvas_top + canvas_height / 4.0);            
+                    txt_lose_y = Math.trunc(canvas_top + canvas_height / 4.0 * 2);            
+                }
+            }
+        
+            if (is_3d == 1 && (player_no == 2 || player_no ==4)){
+                context.fillText(txt_lose, txt_win_x, txt_win_y);
+                context.fillText(txt_win, txt_lose_x, txt_lose_y);
+            } else {         
+                context.fillText(txt_win, txt_win_x, txt_win_y);
+                context.fillText(txt_lose, txt_lose_x, txt_lose_y);
+            }
         }
     }
-
     // 一定時間後にテキストを消去
     // setTimeout(() => {
     //     // テキストを消去するために背景色で上書き

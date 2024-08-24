@@ -41,7 +41,7 @@ interval = 1 / 60.0
 animate_interval = 1000 / 60.0
 
 #点数が入ったときに何秒間停止するか
-sleep_sec = 3.0
+sleep_sec = 4.0
 
  
 class PongConsumer(AsyncWebsocketConsumer):
@@ -95,7 +95,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'paddle_1':[3800, 0, 600], # x, y, length
                 'paddle_2':[-3800, 0, 600],
                 'scores':[0, 0],
-                'count_sleep': 0,
+                'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
            }
         else :
@@ -106,7 +106,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'paddle_3':[1800, 0, 600], # x, y, length
                 'paddle_4':[-1800, 0, 600],
                 'scores':[0, 0],
-                'count_sleep': 0,
+                'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
            }
 
@@ -264,17 +264,18 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1 and  self.game_state['user_status'][3] == 1 and self.game_state['user_status'][4] == 1:
                     self.game_state['user_status'][0] = 1
 
-            # ゲームの状態をクライアントに送信
-            try:
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "state_update",
-                        "state_update": '{"dango":1}',
-                    }
-                )            
-            except Exception as e:
-                logger.debug(f"{e}")
+            # ret.status = user.id
+            # # ゲームの状態をクライアントに送信
+            # try:
+            #     await self.channel_layer.group_send(
+            #         self.room_group_name,
+            #         {
+            #             "type": "state_update",
+            #             "state_update": ret,
+            #         }
+            #     )            
+            # except Exception as e:
+            #     logger.debug(f"{e}")
             # Redisに状態を保存
             # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
@@ -301,9 +302,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while True:
                 if self.game_state['user_status'][0] == 1 and self.game_state['count_sleep'] > 0 :
-                    self.game_state['count_sleep'] -= interval
+                    self.game_state['count_sleep'] -= 1
                     self.game_state['ball'][0] = 0
                     self.game_state['ball'][1] = 0
+                    await asyncio.sleep(1)
                 elif self.game_state['user_status'][0] == 1 :
                     # ボールの位置を更新
                     self.game_state['ball'][0] += self.game_state['ball'][2] * math.cos(self.game_state['ball'][3])
