@@ -676,7 +676,7 @@ def process_post_data(request):
                 user = request.user
                 tournament_id = request.session.get('tournament_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
-                tournament_user = TournamentUser.objects.filter(user=user, is_complete=False, timestamp__gte=thirty_seconds_ago, tournament=tournament_id).first()
+                tournament_user = TournamentUser.objects.filter(user=user, timestamp__gte=thirty_seconds_ago, tournament=tournament_id).first()
                 if tournament_user:
                     tournament_user.timestamp = timezone.now()
                     tournament_user.save()
@@ -685,30 +685,54 @@ def process_post_data(request):
                     tournament.num_users = num_users
                     tournament.save()
                     if num_users == tournament.size:
+                        # logger.debug(f'user: {user}')
                         tournament_user.is_complete = True
                         tournament_user.save()
-                        room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
-                        if room: #tournamentとlevelが同じでuser1が不在のroom
-                            room.user1 = user
-                            room.save()
-                            response_data = {
-                                'page':page,
-                                'content':render_to_string('ponggame.html', {'room': room}),
-                                'title': 'Pong Game ' + str(room.id),
-                                # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
-                            }
-                        else: #tournamentとlevelが同じでuser1が存在しuser2が不在のroom
-                            room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
-                            room.user2 = user
-                            room.save()
-                            response_data = {
-                                'page':page,
-                                'content':render_to_string('ponggame.html', {'room': room}),
-                                'title': 'Pong Game ' + str(room.id),
-                                # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
-                            }    
+                        room = Matchmaking.objects.filter(user1=user, tournament=tournament, level=1).first()
+                        if room:
+                            if room.user2: #user2が存在していたら
+                                    response_data = {
+                                    'page':page,
+                                    'content':render_to_string('ponggame.html', {'room': room}),
+                                    'title': 'Pong Game ' + str(room.id),
+                                    # 生のjavascriptを埋め込みたいとき
+                                    'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                                }
+                            else:
+                                response_data = {
+                                    'page': page,
+                                    'content': read_file('waiting.html'),
+                                    'title': 'tournament',
+                                    'reload': page,
+                                    'timeout' : '10000',
+                                    'alert': '参加者を待っています',
+                                }
+                        else:
+                            room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
+                            if room: #tournamentとlevelが同じでuser1が不在のroom
+                                # logger.debug('in tournament')
+                                # logger.debug(f'user: {user}')       
+                                room.user1 = user
+                                room.save()
+                                response_data = {
+                                    'page': page,
+                                    'content': read_file('waiting.html'),
+                                    'title': 'tournament',
+                                    'reload': page,
+                                    'timeout' : '10000',
+                                    'alert': '参加者を待っています',
+                                }
+                            else: #tournamentとlevelが同じでuser1が存在しuser2が不在のroom
+                                room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
+                                room.user2 = user
+                                room.save()
+                                response_data = {
+                                    'page':page,
+                                    'content':render_to_string('ponggame.html', {'room': room}),
+                                    'title': 'Pong Game ' + str(room.id),
+                                    # 生のjavascriptを埋め込みたいとき
+                                    'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                                }    
                     else:
                         response_data = {
                             'page': page,
@@ -717,7 +741,7 @@ def process_post_data(request):
                             'reload': page,
                             'timeout' : '10000',
                             'alert': '参加者を待っています',
-                    }
+                        }
                 else:
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
@@ -779,19 +803,31 @@ def process_post_data(request):
                         make_tournament_matches(tournament)
                         room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
                         if room:
+                            # logger.debug('in join tournament')
+                            # logger.debug(f'user: {user}')
                             room.user1 = user
+                            room.save()
+                            page = 'tournament'
+                            response_data = {
+                                'page': page,
+                                'content': read_file('waiting.html'),
+                                'title': 'tournament',
+                                'reload': page,
+                                'timeout' : '10000',
+                                'alert': '参加者を待っています',
+                            }
                         else:
                             room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
                             room.user2 = user
-                        room.save()
-                        response_data = {
-                            'page':page,
-                            'content':render_to_string('ponggame.html', {'room': room}),
-                            'title': 'Pong Game ' + str(room.id),
-                            'gameid': str(room.id), 
-                            # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',      
-                        }
+                            room.save()
+                            response_data = {
+                                'page':page,
+                                'content':render_to_string('ponggame.html', {'room': room}),
+                                'title': 'Pong Game ' + str(room.id),
+                                'gameid': str(room.id), 
+                                # 生のjavascriptを埋め込みたいとき
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',      
+                            }
                     else:
                         page = 'tournament'
                         response_data = {
