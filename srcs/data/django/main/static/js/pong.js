@@ -338,6 +338,10 @@ function updateGameState(data) {
             displayScore(score_player1,score_player2, 0);
         }
     } else {
+        if (data.winner !== undefined){
+            console.log("wineer :" + data.winner);
+        }
+
         if (player_no !== 1){
             paddle1.position.y = data.paddle_1[1] / 100;
         }

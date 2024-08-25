@@ -467,8 +467,21 @@ class PongConsumer(AsyncWebsocketConsumer):
                     else:
                         if self.game_state['scores'][0] > self.game_state['scores'][1] :
                             self.match.winner_id = self.user1 
+                            self.game_state['winner']  = self.user1
                         else:
                             self.match.winner_id = self.user2 
+                            self.game_state['winner']  = self.user2
+                    self.game_state['nextgame']  = self.match.parent_id
+                    
+                    # ゲームの状態をクライアントに送信
+                    await self.channel_layer.group_send(         
+                        self.room_group_name,
+                        {
+                            "type": "game_update",
+                            "game_state": self.game_state
+                        }
+                    )
+
                     await database_sync_to_async(self.match.save)()  # 非同期で保存
                     # await sync_to_async(self.match.save)()
 
