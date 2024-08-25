@@ -35,6 +35,8 @@ let speedrate = 5.0;
 
 let heartbeatFlag = 0;
 
+let parentgame = 0;
+
 let is_3d;
 
 let game_state = 0;
@@ -338,8 +340,13 @@ function updateGameState(data) {
             displayScore(score_player1,score_player2, 0);
         }
     } else {
+
+        // displayNextgame(data.winner, data.nextgame);
         if (data.winner !== undefined){
-            console.log("wineer :" + data.winner);
+            // console.log("wineer :" + data.winner);
+            if (parentgame == data.nextgame && player_id == data.winner ) {
+                displayNextgame(data.winner, data.nextgame);
+            }
         }
 
         if (player_no !== 1){
@@ -398,6 +405,29 @@ function updateGameState(data) {
 //   renderer.render(scene, camera);
 }
 
+
+
+
+function displayNextgame(winner, nextgame){
+    // オーバーレイCanvasの2Dコンテキストを取得
+    const context = overlayCanvas.getContext('2d');
+
+    // テキストの設定
+    const canvas_top = document.getElementById('gameCanvas').getBoundingClientRect().top;
+    const canvas_left = document.getElementById('gameCanvas').getBoundingClientRect().left;
+    const canvas_width = document.getElementById('gameCanvas').getBoundingClientRect().width;
+//    const canvas_height = document.getElementById('gameCanvas').getBoundingClientRect().height;
+    const canvas_height = window.innerHeight;
+    
+    context.font = canvas_width / 40 + 'px Arial';
+    context.fillStyle = 'Yellow';
+
+    txt_comment = "The winner, please proceed to the next match from the lobby.";
+    txt_x = Math.trunc(canvas_left + canvas_width / 50.0 * 9.0); // テキストの描画位置（x座標）
+    txt_y = Math.trunc(canvas_top + canvas_height / 10.0 * 0.5); // テキストの描画位置（y座標）
+    context.fillText(txt_comment, txt_x, txt_y);
+
+}
 
 function displayScore(score1, score2, count){
     // オーバーレイCanvasの2Dコンテキストを取得
@@ -655,6 +685,7 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
     game_id = gameid;
     player_id = playid;
     player_no = playno;
+    parentgame = parentid;
     is_doubles = dobules_flag;
     if (paddle_size == 1){
         paddle_length = 4;
