@@ -53,6 +53,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'pong_{self.room_name}'
         # first_flag = True
 
+        self.players = set()
+
         self.match = await sync_to_async(self.get_match)(self.room_name)
         # logger.debug(match.user1_id)
         user = self.scope["user"]
@@ -84,7 +86,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         # Redisから状態を取得
         game_state_raw = await self.redis.get(self.room_group_name)
 
-        self.memory = []
+        # self.memory = []
 
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
@@ -109,6 +111,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
            }
+
+
+        self.players.add(self.channel_name)
 
         #パドルサイズ
         if self.match.paddle_size == 1 :
@@ -172,6 +177,13 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.redis.set(self.room_group_name, json.dumps(self.game_state)) 
+        # 切断されたプレイヤーを記録
+        self.players.discard(self.channel_name)
+        #ゲーム開始前で誰もいなくなったら、closeする
+        if not self.players and self.game_state['user_status'][0] == 0:
+            # 全プレイヤーが切断された場合、クリーンアップ処理を行う
+            await self.end_game()
+
 
         # await self.channel_layer.group_discard(
         #     self.room_group_name,
@@ -432,8 +444,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                     #         self.game_state['paddle_2'][1] = MIN_Y
 
 
-                if self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point'] :
-                    self.game_state['status'] = 2
+                # if self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point'] :
+                #     self.game_state['status'] = 2
     
      
                 # ゲームの状態をクライアントに送信

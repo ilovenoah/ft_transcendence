@@ -364,7 +364,7 @@ function updateGameState(data) {
         ball.position.x = data.ball[0] / 100;
         ball.position.y = data.ball[1] / 100;
 
-        game_state = data.status;
+        game_state = data.user_status[0];
         
         if (first_flag) {
             score_player1 = data.scores[0];
@@ -591,18 +591,17 @@ function connect(roomName){
     gameSocket.onclose = function(e) {
         console.log("WebSocket connection closed");
         heartbeatFlag = 0;
-        // 自動再接続
-        if (game_state == 2){
-            // setTimeout( connect(game_id), reconnectInterval);
+        // 自動再接続　ゲームが終了している　２または　自分で接続を切った　３　ときは再接続しない
+        if (game_state < 2){ 
+            setTimeout(function() {
+                connect(game_id)
+            }, reconnectInterval);
         }
-
     };
 }
 
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
-
-
 
 function callGameHeartbeat() {
     sendGameHeartbeat(game_id);
@@ -621,11 +620,9 @@ function sendGameHeartbeat(room_id){
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 var response = JSON.parse(xhr.responseText);
-                console.log('GameHeartbeat:', response.status);
-                // ログイン状態に応じた処理
+                // console.log('GameHeartbeat:', xhr.status);
             } else {
                 console.error('Error: ', xhr.status);
-                // ログアウト状態に応じた処理
             }
         }
     };
@@ -648,7 +645,7 @@ window.addEventListener('click', (event) => {
             };
             gameSocket.send(JSON.stringify(message));
         }
-        // 要素が属性 page="ponggame" を持っているか確認
+        // 要素が属性 page="ponggame2" を持っているか確認
         else if (link.getAttribute('page') && link.getAttribute('page') !== 'ponggame2') {
             if (gameSocket) {
                 game_state = 3;
@@ -677,8 +674,6 @@ window.addEventListener('popstate', function(event) {
 
     }
 });
-
-
 
 function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, recconect ){
     game_id = gameid;
@@ -709,7 +704,6 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
         game_state = 3;
         gameSocket.close(); 
         gameSocket = null;
-        return;
     }
 
     first_flag = true;
