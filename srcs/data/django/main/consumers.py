@@ -41,7 +41,7 @@ interval = 1 / 60.0
 animate_interval = 1000 / 60.0
 
 #点数が入ったときに何秒間停止するか
-sleep_sec = 3.0
+sleep_sec = 4.0
 
  
 class PongConsumer(AsyncWebsocketConsumer):
@@ -95,7 +95,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'paddle_1':[3800, 0, 600], # x, y, length
                 'paddle_2':[-3800, 0, 600],
                 'scores':[0, 0],
-                'count_sleep': 0,
+                'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
            }
         else :
@@ -106,7 +106,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'paddle_3':[1800, 0, 600], # x, y, length
                 'paddle_4':[-1800, 0, 600],
                 'scores':[0, 0],
-                'count_sleep': 0,
+                'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
            }
 
@@ -198,46 +198,48 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if message == 'update_position':
             # if self.user1 == user.id :
-
-            if 'player1_y' in text_data_json:
-                tmp1 = text_data_json['player1_y']
-                if tmp1 != "":
-                    if tmp1 > MAX_Y :
-                        tmp1 = MAX_Y
+            try:
+                if 'player1_y' in text_data_json:
+                    tmp1 = text_data_json['player1_y']
+                    if tmp1 != "":
+                        if tmp1 > MAX_Y :
+                            tmp1 = MAX_Y
                         # tmp1 = MAX_Y - self.game_state['paddle_1'][2] / 10
-                    elif tmp1 < MIN_Y:
-                        tmp1 = MIN_Y
-                        # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
-                    self.game_state['paddle_1'][1] = tmp1
-            # elif self.user2 == user.id :
-            if 'player2_y' in text_data_json:
-                tmp2 = text_data_json['player2_y']
-                if tmp2 != "":
-                    if tmp2 > MAX_Y :
-                        tmp2 = MAX_Y
-                    elif tmp2 < MIN_Y :
-                        tmp2 = MIN_Y 
-                    self.game_state['paddle_2'][1] = tmp2
-            # elif self.user3 == user.id :
-            if 'player3_y' in text_data_json:
-                tmp3 = text_data_json['player3_y']
-                if tmp3 != "":
-                    if tmp3 > MAX_Y :
-                        tmp3 = MAX_Y
-                    elif tmp3 < MIN_Y :
-                        tmp3 = MIN_Y 
-                    self.game_state['paddle_3'][1] = tmp3
-            # elif self.user4 == user.id :
-            if 'player4_y' in text_data_json:
-                tmp4 = text_data_json['player4_y']
-                if tmp4 != "":
-                    if tmp4 > MAX_Y :
-                        tmp4 = MAX_Y
-                    elif tmp4 < MIN_Y :
-                        tmp4 = MIN_Y 
-                    self.game_state['paddle_4'][1] = tmp4
+                        elif tmp1 < MIN_Y:
+                            tmp1 = MIN_Y
+                            # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
+                        self.game_state['paddle_1'][1] = tmp1
+                # elif self.user2 == user.id :
+                if 'player2_y' in text_data_json:
+                    tmp2 = text_data_json['player2_y']
+                    if tmp2 != "":
+                        if tmp2 > MAX_Y :
+                            tmp2 = MAX_Y
+                        elif tmp2 < MIN_Y :
+                            tmp2 = MIN_Y 
+                        self.game_state['paddle_2'][1] = tmp2
+                # elif self.user3 == user.id :
+                if 'player3_y' in text_data_json:
+                    tmp3 = text_data_json['player3_y']
+                    if tmp3 != "":
+                        if tmp3 > MAX_Y :
+                            tmp3 = MAX_Y
+                        elif tmp3 < MIN_Y :
+                            tmp3 = MIN_Y 
+                        self.game_state['paddle_3'][1] = tmp3
+                # elif self.user4 == user.id :
+                if 'player4_y' in text_data_json:
+                    tmp4 = text_data_json['player4_y']
+                    if tmp4 != "":
+                        if tmp4 > MAX_Y :
+                            tmp4 = MAX_Y
+                        elif tmp4 < MIN_Y :
+                            tmp4 = MIN_Y 
+                        self.game_state['paddle_4'][1] = tmp4
 
-
+            except Exception as e:
+            # エラーログを確認
+                print(f"Error in group_send: {e}")
 
         elif message == 'ready_state' :
             # logger.debug(f'ユーザーID: {user.id}')
@@ -262,8 +264,18 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1 and  self.game_state['user_status'][3] == 1 and self.game_state['user_status'][4] == 1:
                     self.game_state['user_status'][0] = 1
 
-
-            
+            # ret.status = user.id
+            # # ゲームの状態をクライアントに送信
+            # try:
+            #     await self.channel_layer.group_send(
+            #         self.room_group_name,
+            #         {
+            #             "type": "state_update",
+            #             "state_update": ret,
+            #         }
+            #     )            
+            # except Exception as e:
+            #     logger.debug(f"{e}")
             # Redisに状態を保存
             # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
@@ -290,9 +302,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while True:
                 if self.game_state['user_status'][0] == 1 and self.game_state['count_sleep'] > 0 :
-                    self.game_state['count_sleep'] -= interval
+                    self.game_state['count_sleep'] -= 1
                     self.game_state['ball'][0] = 0
                     self.game_state['ball'][1] = 0
+                    await asyncio.sleep(1)
                 elif self.game_state['user_status'][0] == 1 :
                     # ボールの位置を更新
                     self.game_state['ball'][0] += self.game_state['ball'][2] * math.cos(self.game_state['ball'][3])
@@ -468,6 +481,10 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def game_update(self, event):
         self.game_state = event["game_state"]
         await self.send(text_data=json.dumps(self.game_state))
+
+    async def state_update(self, event):
+        tmp = event["state_update"]
+        await self.send(text_data=json.dumps(tmp))
 
         # game_state = event['game_state']
         # # クライアントにゲーム状態を送信
