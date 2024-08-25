@@ -269,12 +269,12 @@ function animate(currentTime) {
             }
 
 
-            if (gameSocket.readyState === WebSocket.OPEN) {
+            if (gameSocket && gameSocket.readyState === WebSocket.OPEN) {
                 if (player_no == 1) {
                     gameSocket.send(JSON.stringify({
                         'message': 'update_position',
                         'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
-                    }));
+                    })); 
                 }
                 else if (player_no == 2) {
                     gameSocket.send(JSON.stringify({
@@ -299,7 +299,6 @@ function animate(currentTime) {
                 // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
             }
         
-            
             renderer.render(scene, camera);
         // } else {
         //     ball.position.x = targetBallPosition.x;
@@ -594,7 +593,7 @@ function connect(roomName){
         heartbeatFlag = 0;
         // 自動再接続
         if (game_state == 2){
-            setTimeout( connect(game_id), reconnectInterval);
+            // setTimeout( connect(game_id), reconnectInterval);
         }
 
     };
