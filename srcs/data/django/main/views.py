@@ -945,7 +945,7 @@ def process_post_data(request):
                                 room.user2 = user
                             elif not room.user3:
                                 room.user3 = user
-                            else:
+                            elif not room.user4:
                                 room.user4 = user
                             room.save()
                         if room.user1 and room.user2 and room.user3 and room.user4:
@@ -1020,8 +1020,8 @@ def process_post_data(request):
                         user_no = 3
                     elif user.id == room.user4_id:
                         user_no = 4
-                    else :
-                        user_no = 1
+                    # else :
+                    #     user_no = 1
 
                     room.timestamp = timezone.now()
                     room.save()
