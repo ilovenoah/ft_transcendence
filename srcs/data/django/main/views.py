@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', context={})
 
 def process_post_data(request):
     if request.method == 'POST':
@@ -529,7 +529,7 @@ def process_post_data(request):
                                 'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)', 
                             }
                     else: #user2が存在していない 
                         if room.user1 == user: #user1とuser2が同一
@@ -552,7 +552,7 @@ def process_post_data(request):
                                 'title': 'Pong Game ' + str(room.id),
                                 'gameid': str(room.id), 
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 2, ' +  str(user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2, ' +  str(user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)', 
                             }
                 else:
                     rooms = get_available_rooms(user)
@@ -626,7 +626,7 @@ def process_post_data(request):
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)', 
                         }
                 else:
                     rooms = get_available_rooms(user)
@@ -690,24 +690,26 @@ def process_post_data(request):
                         room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
                         if room: #tournamentとlevelが同じでuser1が不在のroom
                             room.user1 = user
+                            room.user1_id = user.id
                             room.save()
                             response_data = {
                                 'page':page,
                                 'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                                'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', ' + str(room.parent.id) + ', 0)',
                             }
                         else: #tournamentとlevelが同じでuser1が存在しuser2が不在のroom
                             room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
                             room.user2 = user
+                            room.user2_id = user.id
                             room.save()
                             response_data = {
                                 'page':page,
                                 'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', ' + str(room.parent.id) + ', 0)',
                             }    
                     else:
                         response_data = {
@@ -727,13 +729,12 @@ def process_post_data(request):
                         'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
                         'title': 'Lobby'
                     }
-
             elif page == 'join_tournament':
                 user = request.user
                 tournament_id = post_data.get('tournament_id')
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 tournament = Tournament.objects.filter(id=tournament_id, timestamp__gte=thirty_seconds_ago).first()
-                if not tournament: #存在しないトーナメント
+                if not tournament: #存在しないトーナメント　→　タイムアウトで削除されている　→　ロビーへリダイレクト
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
                     doubles = get_available_doubles(user)
@@ -754,13 +755,16 @@ def process_post_data(request):
                     tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user).first()
                     tournament_user.timestamp = timezone.now()
                     tournament_user.save()
+                    gameplayer = 1
+                    if room.user2 == user:
+                        gameplayer = 2
                     response_data = {
                             'page':page,
                             'content':render_to_string('ponggame.html', {'room': room}),
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 1,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',       
+                            'rawscripts': 'startGame(' + str(room.id) + ', ' + str(gameplayer) + ',' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', ' + str(room.parent.id) + ', 1)',
                         }
                 else: #トーナメント未成立
                     tournament_user = TournamentUser.objects.filter(tournament=tournament, user=user).first()
@@ -778,11 +782,13 @@ def process_post_data(request):
                         tournament_user.save()
                         make_tournament_matches(tournament)
                         room = Matchmaking.objects.filter(user1__isnull=True, tournament=tournament, level=1).first()
+                        gameplayer = 1
                         if room:
                             room.user1 = user
                         else:
                             room = Matchmaking.objects.filter(user2__isnull=True, tournament=tournament, level=1).first()
                             room.user2 = user
+                            gameplayer = 2
                         room.save()
                         response_data = {
                             'page':page,
@@ -790,7 +796,7 @@ def process_post_data(request):
                             'title': 'Pong Game ' + str(room.id),
                             'gameid': str(room.id), 
                             # 生のjavascriptを埋め込みたいとき
-                            'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',      
+                            'rawscripts': 'startGame(' + str(room.id) + ', ' + str(gameplayer) + ',' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', ' + str(room.parent.id) + ', 0)',
                         }
                     else:
                         page = 'tournament'
@@ -817,7 +823,7 @@ def process_post_data(request):
                         'title': 'Pong Game ' + str(room.id),
                         'gameid': str(room.id), 
                         # 生のjavascriptを埋め込みたいとき
-                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' + str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                        'rawscripts': 'startGame(' + str(room.id) + ', 1,' + str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)',
                     }
                 else:
                     response_data = {
@@ -924,7 +930,7 @@ def process_post_data(request):
                                 'title': 'Pong Game ' + str(room.id),
                                 'gameid': str(room.id), 
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',                 
+                                'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)',        
                             }
                         else:
                             response_data = {
@@ -999,7 +1005,7 @@ def process_post_data(request):
                         'content':render_to_string('ponggame.html', {'room': room}),
                         'title': 'Pong Game ' + str(room.id),
                         'gameid': str(room.id), 
-                        'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\' )',
+                        'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)', 
                     }
                 else: #まだマッチが成立してない
                     doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user).first()
@@ -1071,7 +1077,6 @@ def get_csrf_token(request):
 def setLanguage(request, lang):
     user = request.user
     if user.is_authenticated:
-        logger.debug(lang)
         user.language = lang
         user.save()
         return JsonResponse({'status': 'language_saved'})
@@ -1080,11 +1085,14 @@ def setLanguage(request, lang):
 @csrf_exempt
 def getLanguage(request, lang):
     user = request.user
-    if lang == '00' and user.is_authenticated:
-        # logger.debug(lang)
+    if user.is_authenticated and lang == '00' :
         lang = user.language
-    elif lang == '00':
+        # デフォルトでDBにjaが入ってないらしい
+        if lang == "" :
+            lang = 'ja'
+    elif lang == '00' :
         lang = 'ja'
+    # logger.debug(lang)
     return HttpResponse(read_translations(lang + '.json'))
 
 @csrf_exempt

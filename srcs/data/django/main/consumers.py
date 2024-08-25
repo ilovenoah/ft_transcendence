@@ -53,7 +53,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'pong_{self.room_name}'
         # first_flag = True
 
-        self.match = await sync_to_async(self.get_match)()
+        self.match = await sync_to_async(self.get_match)(self.room_name)
         # logger.debug(match.user1_id)
         user = self.scope["user"]
         # ユーザーが認証されているかどうかを確認
@@ -69,10 +69,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.lasttime = 0
             self.aistrength = 0.6
 
-            if self.match.user2_id is None and self.match.is_single is False :
-                self.user2 = user.id
-                self.match.user2_id = user.id
-                await sync_to_async(self.match.save()) 
+            # if self.match.user2_id is None and self.match.is_single is False :
+            #     self.user2 = user.id
+            #     self.match.user2_id = user.id
+            #     await sync_to_async(self.match.save()) 
      
 
         # aioredisを使ってRedisに接続
@@ -179,15 +179,24 @@ class PongConsumer(AsyncWebsocketConsumer):
         # タスクをキャンセル
         # self.update_task.cancel()
         # Redis接続を閉じる
-        await self.redis.close()
-        await self.redis.wait_closed()
+        if self.redis:  # redis接続が存在するか確認
+            try: 
+                self.redis.close()
+                # await self.redis.wait_closed()
+            except Exception as e:
+                print(f"Error while closing Redis connection: {e}")
+
 
     async def server_disconnect(self):
         await self.close()
 
-    async def disconnect_after_delay(consumer):
-        await asyncio.sleep(5)
-        await consumer.server_disconnect()
+    async def disconnect_after_delay(self, delay, channel_name):
+        await asyncio.sleep(delay)
+        await self.channel_layer.group_discard(self.room_group_name, channel_name)
+
+    # async def disconnect_after_delay(consumer):
+    #     await asyncio.sleep(5)
+    #     await consumer.server_disconnect()
 
 
     async def receive(self, text_data):
@@ -448,7 +457,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     # await self.send(text_data=json.dumps({
                     #     'error': 'User not found'
                     # }))
-
+                    self.match = await sync_to_async(self.get_match)(self.room_name)
                     self.match.point1 = self.game_state['scores'][0]
                     self.match.point2 = self.game_state['scores'][1]        
                     #シングルプレイ、ダブルスのときはwinnerを設定しない
@@ -458,14 +467,38 @@ class PongConsumer(AsyncWebsocketConsumer):
                     else:
                         if self.game_state['scores'][0] > self.game_state['scores'][1] :
                             self.match.winner_id = self.user1 
+                            self.game_state['winner']  = self.user1
                         else:
                             self.match.winner_id = self.user2 
+                            self.game_state['winner']  = self.user2
+                    self.game_state['nextgame']  = self.match.parent_id
+
+                    #次の試合のuserに勝者を登録する
+                    if self.match.parent_id > 0:
+                        self.nextmatch = await sync_to_async(self.get_match)(self.match.parent_id)
+                        if self.nextmatch.user1_id is None:
+                            self.nextmatch.user1_id = self.match.winner_id
+                        else:
+                            self.nextmatch.user2_id = self.match.winner_id
+                        await database_sync_to_async(self.nextmatch.save)()  # 非同期で保存
+
+                    
+                    # ゲームの状態をクライアントに送信→nextgameを表示させる
+                    await self.channel_layer.group_send(         
+                        self.room_group_name,
+                        {
+                            "type": "game_update",
+                            "game_state": self.game_state
+                        }
+                    )
+
                     await database_sync_to_async(self.match.save)()  # 非同期で保存
                     # await sync_to_async(self.match.save)()
 
-                    await asyncio.sleep(3600)
+                    await asyncio.sleep(10)
                     PongConsumer.room_tasks[self.room_group_name].cancel()
-                    asyncio.create_task(disconnect_after_delay(self))
+                    # asyncio.create_task(disconnect_after_delay(self))
+                    await self.disconnect_after_delay(5, self.channel_name)
 
                 else:
                     await asyncio.sleep(interval)
@@ -492,9 +525,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         #     'game_state': game_state
         # }))
 
-    def get_match(self):
+    def get_match(self, id):
         # 同期的なDjango ORM操作＿
-        return Matchmaking.objects.get(pk=self.room_name)
+        return Matchmaking.objects.get(pk=id)
+        # return Matchmaking.objects.get(pk=self.room_name)
 
 
 

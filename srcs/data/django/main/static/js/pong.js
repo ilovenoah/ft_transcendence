@@ -35,6 +35,8 @@ let speedrate = 5.0;
 
 let heartbeatFlag = 0;
 
+let parentgame = 0;
+
 let is_3d;
 
 let game_state = 0;
@@ -213,96 +215,96 @@ function animate(currentTime) {
     {
         lasttime = currentTime - (deltatime % animationInterval);
 
-    if (paddleflag > 0){
-        if (moveUp1 && player_no == 1) {
-            paddle1.position.y += 0.1 * speedrate;
-            if (paddle1.position.y > MAXY){
-                paddle1.position.y = MAXY;
+        if (paddleflag > 0){
+            if (moveUp1 && player_no == 1) {
+                paddle1.position.y += 0.1 * speedrate;
+                if (paddle1.position.y > MAXY){
+                    paddle1.position.y = MAXY;
+                }
+            } else if (moveDown1 && player_no == 1) {
+                paddle1.position.y -= 0.1 * speedrate;
+                if (paddle1.position.y < MINY){
+                    paddle1.position.y = MINY;
+                }
+            } else if (moveUp2 && player_no == 2) {
+                paddle2.position.y += 0.1 * speedrate;
+                if (paddle2.position.y > MAXY){
+                    paddle2.position.y = MAXY;
+                }
+            } else if (moveDown2 && player_no == 2) {
+                paddle2.position.y -= 0.1 * speedrate;
+                if (paddle2.position.y < MINY){
+                    paddle2.position.y = MINY;
+                }
+            } else if (moveUp1 && player_no == 2) {
+                paddle2.position.y += 0.1 * speedrate;
+                if (paddle2.position.y > MAXY){
+                    paddle2.position.y = MAXY;
+                }
+            } else if (moveDown1 && player_no == 2) {
+                paddle2.position.y -= 0.1 * speedrate;
+                if (paddle2.position.y < MINY){
+                    paddle2.position.y = MINY;
+                }
+            } else if (moveUp1 && player_no == 3) {
+                paddle3.position.y += 0.1 * speedrate;
+                if (paddle3.position.y > MAXY){
+                    paddle3.position.y = MAXY;
+                }
+            } else if (moveDown1 && player_no == 3) {
+                paddle3.position.y -= 0.1 * speedrate;
+                if (paddle3.position.y < MINY){
+                    paddle3.position.y = MINY;
+                }
+            } else if (moveUp1 && player_no == 4) {
+                paddle4.position.y += 0.1 * speedrate;
+                if (paddle4.position.y > MAXY){
+                    paddle4.position.y = MAXY;
+                }
+            } else if (moveDown1 && player_no == 4) {
+                paddle4.position.y -= 0.1 * speedrate;
+                if (paddle4.position.y < MINY){
+                    paddle4.position.y = MINY;
+                }
             }
-        } else if (moveDown1 && player_no == 1) {
-            paddle1.position.y -= 0.1 * speedrate;
-            if (paddle1.position.y < MINY){
-                paddle1.position.y = MINY;
-            }
-        } else if (moveUp2 && player_no == 2) {
-            paddle2.position.y += 0.1 * speedrate;
-            if (paddle2.position.y > MAXY){
-                paddle2.position.y = MAXY;
-            }
-        } else if (moveDown2 && player_no == 2) {
-            paddle2.position.y -= 0.1 * speedrate;
-            if (paddle2.position.y < MINY){
-                paddle2.position.y = MINY;
-            }
-        } else if (moveUp1 && player_no == 2) {
-            paddle2.position.y += 0.1 * speedrate;
-            if (paddle2.position.y > MAXY){
-                paddle2.position.y = MAXY;
-            }
-        } else if (moveDown1 && player_no == 2) {
-            paddle2.position.y -= 0.1 * speedrate;
-            if (paddle2.position.y < MINY){
-                paddle2.position.y = MINY;
-            }
-        } else if (moveUp1 && player_no == 3) {
-            paddle3.position.y += 0.1 * speedrate;
-            if (paddle3.position.y > MAXY){
-                paddle3.position.y = MAXY;
-            }
-        } else if (moveDown1 && player_no == 3) {
-            paddle3.position.y -= 0.1 * speedrate;
-            if (paddle3.position.y < MINY){
-                paddle3.position.y = MINY;
-            }
-        } else if (moveUp1 && player_no == 4) {
-            paddle4.position.y += 0.1 * speedrate;
-            if (paddle4.position.y > MAXY){
-                paddle4.position.y = MAXY;
-            }
-        } else if (moveDown1 && player_no == 4) {
-            paddle4.position.y -= 0.1 * speedrate;
-            if (paddle4.position.y < MINY){
-                paddle4.position.y = MINY;
-            }
-        }
 
 
-        if (gameSocket.readyState === WebSocket.OPEN) {
-            if (player_no == 1) {
-                gameSocket.send(JSON.stringify({
-                    'message': 'update_position',
-                    'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
-                }));
+            if (gameSocket.readyState === WebSocket.OPEN) {
+                if (player_no == 1) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
+                    }));
+                }
+                else if (player_no == 2) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
+                    }));
+                }
+                else if (player_no == 3) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player3_y': paddle3.position.y * 100,  // サーバーでのスケーリングを考慮        
+                    }));
+                }
+                else if (player_no == 4) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player4_y': paddle4.position.y * 100,  // サーバーでのスケーリングを考慮        
+                    }));
+                }
+            } else {
+                // 接続が確立されるまで再試行
+                // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
             }
-            else if (player_no == 2) {
-                gameSocket.send(JSON.stringify({
-                    'message': 'update_position',
-                    'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
-                }));
-            }
-            else if (player_no == 3) {
-                gameSocket.send(JSON.stringify({
-                    'message': 'update_position',
-                    'player3_y': paddle3.position.y * 100,  // サーバーでのスケーリングを考慮        
-                }));
-            }
-            else if (player_no == 4) {
-                gameSocket.send(JSON.stringify({
-                    'message': 'update_position',
-                    'player4_y': paddle4.position.y * 100,  // サーバーでのスケーリングを考慮        
-                }));
-            }
-        } else {
-            // 接続が確立されるまで再試行
-            // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
-        }
-    
         
-        renderer.render(scene, camera);
-    // } else {
-    //     ball.position.x = targetBallPosition.x;
-    //     ball.position.y = targetBallPosition.y;
-    }
+            
+            renderer.render(scene, camera);
+        // } else {
+        //     ball.position.x = targetBallPosition.x;
+        //     ball.position.y = targetBallPosition.y;
+        }
 
     }
     requestAnimationFrame(animate);
@@ -338,6 +340,15 @@ function updateGameState(data) {
             displayScore(score_player1,score_player2, 0);
         }
     } else {
+
+        // displayNextgame(data.winner, data.nextgame);
+        if (data.winner !== undefined){
+            // console.log("wineer :" + data.winner);
+            if (parentgame == data.nextgame && player_id == data.winner ) {
+                displayNextgame(data.winner, data.nextgame);
+            }
+        }
+
         if (player_no !== 1){
             paddle1.position.y = data.paddle_1[1] / 100;
         }
@@ -395,6 +406,29 @@ function updateGameState(data) {
 }
 
 
+
+
+function displayNextgame(winner, nextgame){
+    // オーバーレイCanvasの2Dコンテキストを取得
+    const context = overlayCanvas.getContext('2d');
+
+    // テキストの設定
+    const canvas_top = document.getElementById('gameCanvas').getBoundingClientRect().top;
+    const canvas_left = document.getElementById('gameCanvas').getBoundingClientRect().left;
+    const canvas_width = document.getElementById('gameCanvas').getBoundingClientRect().width;
+//    const canvas_height = document.getElementById('gameCanvas').getBoundingClientRect().height;
+    const canvas_height = window.innerHeight;
+    
+    context.font = canvas_width / 40 + 'px Arial';
+    context.fillStyle = 'Yellow';
+
+    txt_comment = "The winner, please proceed to the next match from the lobby.";
+    txt_x = Math.trunc(canvas_left + canvas_width / 50.0 * 9.0); // テキストの描画位置（x座標）
+    txt_y = Math.trunc(canvas_top + canvas_height / 10.0 * 0.5); // テキストの描画位置（y座標）
+    context.fillText(txt_comment, txt_x, txt_y);
+
+}
+
 function displayScore(score1, score2, count){
     // オーバーレイCanvasの2Dコンテキストを取得
     const context = overlayCanvas.getContext('2d');
@@ -425,7 +459,7 @@ function displayScore(score1, score2, count){
     context.fillStyle = 'white';
     context.clearRect(0, 0, screen.width, screen.height);
     if (count > 0){
-        context.fillText(count, (txt_score1_x + txt_score2_x) / 2.0 * 1.2 , screen.height / 2.0);
+        context.fillText(count, (txt_score1_x + txt_score2_x) * 0.55 , screen.height / 2.0);
         setTimeout(function() {
             context.clearRect(0, 0, screen.width, screen.height);
         }, 900);
@@ -559,7 +593,7 @@ function connect(roomName){
         console.log("WebSocket connection closed");
         heartbeatFlag = 0;
         // 自動再接続
-        if (game_state > 1){
+        if (game_state == 2){
             setTimeout( connect(game_id), reconnectInterval);
         }
 
@@ -620,6 +654,8 @@ window.addEventListener('click', (event) => {
             if (gameSocket) {
                 game_state = 3;
                 gameSocket.close();
+                gameSocket = null;
+
             }
         }
     }
@@ -629,6 +665,8 @@ window.addEventListener('beforeunload', () => {
     if (gameSocket) {
         game_state = 3;
         gameSocket.close();
+        gameSocket = null;
+
     }
 });
 
@@ -636,15 +674,18 @@ window.addEventListener('popstate', function(event) {
     if (gameSocket) {
         game_state = 3;
         gameSocket.close();
+        gameSocket = null;
+
     }
 });
 
 
 
-function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d){
+function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, recconect ){
     game_id = gameid;
     player_id = playid;
     player_no = playno;
+    parentgame = parentid;
     is_doubles = dobules_flag;
     if (paddle_size == 1){
         paddle_length = 4;
@@ -659,6 +700,7 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d){
         is_3d = 0;
     }
 
+    countdown_flag = 0;
     init();
 
     // let regexp = /\?gameid=(\d+)/
@@ -666,7 +708,8 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d){
     // let gameid = match[1];
     if (gameSocket) {
         game_state = 3;
-        gameSocket.close();
+        gameSocket.close(); 
+        gameSocket = null;
         return;
     }
 
