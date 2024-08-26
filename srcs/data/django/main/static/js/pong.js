@@ -576,17 +576,18 @@ function connect(roomName){
     if (game_state < 2){
         let attempts = 0;
         let maxRetries = 10;
-        while (attempts < maxRetries) {
-            try {
-                gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
-            } catch (error) {
-                attempts++;
-                console.log(`Attempt ${attempts} failed: ${error.message}`);
-                if (attempts >= maxRetries) {
-                    throw new Error(`Failed after ${maxRetries} attempts: ${error.message}`);
-                }
-            }
-        }
+        gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
+        // while (attempts < maxRetries) {
+        //     try {
+        //         gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
+        //     } catch (error) {
+        //         attempts++;
+        //         console.log(`Attempt ${attempts} failed: ${error.message}`);
+        //         if (attempts >= maxRetries) {
+        //             throw new Error(`Failed after ${maxRetries} attempts: ${error.message}`);
+        //         }
+        //     }
+        // }
 
         gameSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);

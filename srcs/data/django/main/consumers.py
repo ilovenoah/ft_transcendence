@@ -107,7 +107,24 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'scores':[0, 0],
                 'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
-           }
+           }    
+
+
+        # すでにゲームが終了している場合は、切断する
+        if (self.match.point1 >= self.match.match_point or self.match.point2 >= self.match.match_point) and abs(self.match.point1 - self.match.point2) > 1 :
+            #クライアントにゲームの終了を通知する
+            self.game_state['user_status'][0] = 2
+
+            # ゲームの状態をクライアントに送信→nextgameを表示させる
+            await self.channel_layer.group_send(         
+                self.room_group_name,
+                {
+                    "type": "game_update",
+                    "game_state": self.game_state
+                }
+            )
+            self.end_game()
+            return
 
         self.players.add(self.channel_name)
 
