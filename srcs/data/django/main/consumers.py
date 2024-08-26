@@ -51,6 +51,13 @@ class PongConsumer(AsyncWebsocketConsumer):
  # self.room_name = "main"
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'pong_{self.room_name}'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
         # first_flag = True
 
         self.players = set()
@@ -171,11 +178,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.single is True :
             self.game_state['user_status'][2] = 1
 
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
 
         # ボールの位置を定期的に更新する非同期タスクを開始               
         if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
@@ -185,11 +187,16 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.redis.set(self.room_group_name, json.dumps(self.game_state)) 
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
         # 切断されたプレイヤーを記録
         self.players.discard(self.channel_name)
         #ゲーム開始前で誰もいなくなったら、closeする
         if not self.players and self.game_state['user_status'][0] == 0:
             # 全プレイヤーが切断された場合、クリーンアップ処理を行う
+     
             await self.end_game()
 
 
@@ -591,11 +598,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def end_game(self):
         await self.close()
-        logger.debug("クローズした")
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        # logger.debug("クローズした")
         # タスクをキャンセル
         # self.update_task.cancel()
         # Redis接続を閉じる

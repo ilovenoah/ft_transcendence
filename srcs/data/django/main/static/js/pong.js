@@ -54,6 +54,9 @@ const animationInterval = 1000 / fps;
 let reconnectInterval = 100; // 再接続の間隔
 let first_flag;
 
+const maxRetries = 5;
+let retryCount = 0;
+
 function init() {
     
     wwidth = window.innerWidth * 0.8;
@@ -458,7 +461,7 @@ function displayScore(score1, score2, count){
     context.fillStyle = 'white';
     context.clearRect(0, 0, screen.width, screen.height);
     if (count > 0){
-        context.fillText(count, (txt_score1_x + txt_score2_x) * 0.55 , screen.height / 2.0);
+        context.fillText(count, Math.trunc(canvas_left + canvas_width / 50.0 * 24.3) ,Math.trunc(canvas_top + canvas_height / 2.0 ));
         setTimeout(function() {
             context.clearRect(0, 0, screen.width, screen.height);
         }, 900);
@@ -574,23 +577,10 @@ function onKeyUp(e) {
 
 function connect(roomName){
     if (game_state < 2){
-        let attempts = 0;
-        let maxRetries = 10;
         gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
-        // while (attempts < maxRetries) {
-        //     try {
-        //         gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
-        //     } catch (error) {
-        //         attempts++;
-        //         console.log(`Attempt ${attempts} failed: ${error.message}`);
-        //         if (attempts >= maxRetries) {
-        //             throw new Error(`Failed after ${maxRetries} attempts: ${error.message}`);
-        //         }
-        //     }
-        // }
-
         gameSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            retryCount = 0; 
             updateGameState(data);
         };
         gameSocket.onopen = function(e) {
@@ -605,9 +595,19 @@ function connect(roomName){
             console.log("WebSocket connection closed");
             heartbeatFlag = 0;
             // 自動再接続
-            setTimeout(function() {
-                connect(game_id)
-            }, reconnectInterval);
+            // if (retryCount < maxRetries) {
+            //     retryCount++;
+            //    setTimeout(function() {
+            //         connect(game_id)         
+            //     }, reconnectInterval);
+            // } else {
+            //     console.log('Failed to connect after several attempts. Please check your connection.');             
+            // }
+        };
+
+        gameSocket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+            socket.close();  // エラー時に接続を閉じる
         };
 
     }
@@ -705,6 +705,8 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
         is_3d = 0;
     }
 
+    game_state = 0;
+
     countdown_flag = 0;
     init();
 
@@ -712,7 +714,6 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
     // let match = document.currentScript.src.match(regexp);
     // let gameid = match[1];
     if (gameSocket) {
-        game_state = 3;
         gameSocket.close(); 
         gameSocket = null;
     }
