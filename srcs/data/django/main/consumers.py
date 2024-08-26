@@ -191,12 +191,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        logger.debug("disconnectした")
         # 切断されたプレイヤーを記録
         self.players.discard(self.channel_name)
         #ゲーム開始前で誰もいなくなったら、closeする
         if not self.players and self.game_state['user_status'][0] == 0:
             # 全プレイヤーが切断された場合、クリーンアップ処理を行う
-     
             await self.end_game()
 
 
@@ -413,7 +413,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                             elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 2  + HIT_MARGIN and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 2 - HIT_MARGIN:
                                 self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                       
-
                 self.game_state['info'] = 'all'
 
                 #AIブロック
@@ -594,11 +593,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         #     self.game_state['paddle_2'][1] += random.randint(-10, 10)
         return
 
-
-
     async def end_game(self):
         await self.close()
-        # logger.debug("クローズした")
+        logger.debug("クローズした")
         # タスクをキャンセル
         # self.update_task.cancel()
         # Redis接続を閉じる

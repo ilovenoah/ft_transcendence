@@ -595,14 +595,14 @@ function connect(roomName){
             console.log("WebSocket connection closed");
             heartbeatFlag = 0;
             // 自動再接続
-            // if (retryCount < maxRetries) {
-            //     retryCount++;
-            //    setTimeout(function() {
-            //         connect(game_id)         
-            //     }, reconnectInterval);
-            // } else {
-            //     console.log('Failed to connect after several attempts. Please check your connection.');             
-            // }
+            if (retryCount < maxRetries) {
+                retryCount++;
+               setTimeout(function() {
+                    connect(game_id)         
+                }, reconnectInterval);
+            } else {
+                console.log('Failed to connect after several attempts. Please check your connection.');             
+            }
         };
 
         gameSocket.onerror = function(error) {
