@@ -79,15 +79,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         # aioredisを使ってRedisに接続
         # self.redis = await aioredis.create_redis_pool('redis://redis4242')
-
         self.redis = await aioredis.from_url('redis://redis4242:6379')
-
 
         # Redisから状態を取得
         game_state_raw = await self.redis.get(self.room_group_name)
 
         # self.memory = []
-
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
 
@@ -111,7 +108,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
            }
-
 
         self.players.add(self.channel_name)
 
@@ -154,7 +150,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         elif self.match.ai ==  3:
             self.aistrength = 0.8
 
-    
 
         if self.single is True :
             self.game_state['user_status'][2] = 1
@@ -165,13 +160,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         )
         await self.accept()
 
-        # ボールの位置を定期的に更新する非同期タスクを開始
-               
+        # ボールの位置を定期的に更新する非同期タスクを開始               
         if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
             PongConsumer.room_tasks[self.room_group_name] = asyncio.create_task(self.update_ball_position())
-
-
-
         # 接続されたクライアントに現在のゲーム状態を送信
         await self.send(text_data=json.dumps(self.game_state))
 
