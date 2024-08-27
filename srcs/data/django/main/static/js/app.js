@@ -316,24 +316,27 @@ function updateCSRFToken(callback) {
 }
 
 function sendHeartbeat() {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'heartbeat/', true);
-  xhr.withCredentials = true;
+  loginlink = document.getElementById('navbar_login');
+  if (loginlink === null){
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'heartbeat/', true);
+    xhr.withCredentials = true;
 
-  xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-              var response = JSON.parse(xhr.responseText);
-              console.log('User is:', response.status);
-              // ログイン状態に応じた処理
-          } else {
-              console.error('Error: ', xhr.status);
-              // ログアウト状態に応じた処理
-          }
-      }
-  };
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                console.log('User is:', response.status);
+                // ログイン状態に応じた処理
+            } else {
+                console.error('Error: ', xhr.status);
+                // ログアウト状態に応じた処理
+            }
+        }
+    };
 
-  xhr.send();
+    xhr.send();
+  }
 }
 
 function reloadAjax(page, timeout) {

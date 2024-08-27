@@ -24,10 +24,10 @@
             <form class="ajax-form" action="process-post/">
                 <input type="hidden" name="page" value="friend_request">
                 {% csrf_token %}
-                <div class="form-group mb-0">
+                <div class="form-group mb-0" style="width: 10rem;">
                     {{ form.to_user }}
                 </div>
-                <button type="submit" class="btn btn-primary btn-sm mt-2 translations" id="friend_requests_button3">　</button>
+                <button type="submit" class="btn btn-primary btn-sm mt-2 translations" id="friend_requests_button3" style="width: 4rem">　</button>
             </form>
         </div>
         <hr></hr>

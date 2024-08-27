@@ -19,7 +19,7 @@
         <table class="table table-borderless table-dark table-striped">
           {% for friend in friends %}
           <tr>
-            <td>
+            <td style="width: 4rem;">
               {% if friend.online_status == 'online' %}
                 <span class="status-dot" style="height:10px; width:10px; background-color: green; border-radius: 50%; display: inline-block;"></span>
               {% else %}
