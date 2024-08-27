@@ -763,6 +763,7 @@ def process_post_data(request):
                     Q(user2=user),
                     level=2,
                     winner__isnull=True,
+                    tournament=tournament_id
                     ).first()
                 if room: # 決勝戦の場合
                     if room.user1 == user:
@@ -793,7 +794,14 @@ def process_post_data(request):
                         'elem': 'tournament'
                     }
                     return JsonResponse(response_data)
-                room = Matchmaking.objects.filter(tournament=tournament).first()
+                room = Matchmaking.objects.filter(
+                    Q(user1=user) |
+                    Q(user2=user),
+                    level=1,
+                    winner__isnull=True,
+                    tournament=tournament
+                ).first()
+                # room = Matchmaking.objects.filter(tournament=tournament).first()
                 if room: #すでにトーナメントが成立してる
                     room.timestamp = timezone.now()
                     room.save()
