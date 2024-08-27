@@ -503,10 +503,11 @@ def process_post_data(request):
                 if user.is_authenticated:
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
+                    final_matches = get_final_matches(user)
                     doubles = get_available_doubles(user)
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'final_matches': final_matches, 'doubles': doubles}),
                         'title': 'Lobby'
                     }
                 else:
@@ -558,9 +559,10 @@ def process_post_data(request):
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
                     doubles = get_available_doubles(user)
+                    final_matches = get_final_matches(user)
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'final_matches': final_matches, 'doubles': doubles}),
                         'title': 'Lobby'
                     }
             elif page == 'create_room':
@@ -632,9 +634,10 @@ def process_post_data(request):
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
                     doubles = get_available_doubles(user)
+                    final_matches = get_final_matches(user)
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'final_matches': final_matches, 'doubles': doubles}),
                         'title': 'Lobby'
                     }
             elif page == 'create_tournament':
@@ -746,23 +749,45 @@ def process_post_data(request):
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
                     doubles = get_available_doubles(user)
+                    final_matches = get_final_matches(user)
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'final_matches': final_matches, 'doubles': doubles}),
                         'title': 'Lobby'
                     }
             elif page == 'join_tournament':
                 user = request.user
                 tournament_id = post_data.get('tournament_id')
+                room = Matchmaking.objects.filter(
+                    Q(user1=user) |
+                    Q(user2=user),
+                    level=2,
+                    winner__isnull=True,
+                    ).first()
+                if room: # 決勝戦の場合
+                    if room.user1 == user:
+                        gameplayer =1
+                    else:
+                        gameplayer = 2
+                    response_data = {
+                        'page':page,
+                        'content':render_to_string('ponggame.html', {'room': room}),
+                        'title': 'Pong Game ' + str(room.id),
+                        'gameid': str(room.id), 
+                        # 生のjavascriptを埋め込みたいとき
+                        'rawscripts': 'startGame(' + str(room.id) + ', ' + str(gameplayer) + ',' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', ' + str('0') + ', 0)',
+                    }
+                    return JsonResponse(response_data)
                 thirty_seconds_ago = timezone.now() - timezone.timedelta(seconds=30)
                 tournament = Tournament.objects.filter(id=tournament_id, timestamp__gte=thirty_seconds_ago).first()
                 if not tournament: #存在しないトーナメント　→　タイムアウトで削除されている　→　ロビーへリダイレクト
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
                     doubles = get_available_doubles(user)
+                    final_matches = get_final_matches(user)
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'final_matches': final_matches, 'doubles': doubles}),
                         'title': 'Lobby',
                         'isValid': 'False',
                         'elem': 'tournament'
@@ -988,9 +1013,10 @@ def process_post_data(request):
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
                     doubles = get_available_doubles(user)
+                    final_matches = get_final_matches(user)
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'final_matches': final_matches, 'doubles': doubles}),
                         'title': 'Lobby'
                     }
             elif page == 'join_doubles':
@@ -1002,10 +1028,11 @@ def process_post_data(request):
                     rooms = get_available_rooms(user)
                     tournaments = get_available_tournaments(user)
                     doubles = get_available_doubles(user)
+                    final_matches = get_final_matches(user)
                     # logger.debug('hoge')
                     response_data = {
                         'page': page,
-                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'doubles': doubles}),
+                        'content': render_to_string('lobby.html', {'rooms': rooms, 'tournaments': tournaments, 'final_matches': final_matches, 'doubles': doubles}),
                         'title': 'Lobby',
                         'isValid': 'False',
                         'elem': 'doubles'
@@ -1225,6 +1252,8 @@ def get_available_rooms(user):
         timestamp__gte=thirty_seconds_ago, #timestampから30秒以内
         is_single=False,
         winner__isnull=True,
+        tournament__isnull=True,
+        doubles__isnull=True,
         level=-1,
     )
     return available_rooms
@@ -1238,11 +1267,21 @@ def get_available_tournaments(user):
         (Q(num_users=F('size')) & Q( #num_usersがsizeと同じでuser1か2にuserがいてwinnerがnull
             Q(matchmaking__user1=user) | 
             Q(matchmaking__user2=user),
-            matchmaking__winner__isnull=True
+            matchmaking__winner__isnull=True,
+            matchmaking__level=1
         )),
         timestamp__gte=thirty_seconds_ago
     )
     return available_tournaments
+
+def get_final_matches(user):
+    final_matches = Tournament.objects.filter(
+        Q(matchmaking__user1=user) |
+        Q(matchmaking__user2=user),
+        matchmaking__level=2,
+        matchmaking__winner__isnull=True,
+    )
+    return final_matches
 
 
 def get_available_doubles(user):
