@@ -46,8 +46,7 @@ def process_post_data(request):
                 user = request.user
                 if user.is_authenticated:
                     user.is_online = False
-                    user.last_active = timezone.now()
-                    user.save(update_fields=['last_active', 'is_online'])
+                    user.save(update_fields=['is_online'])
                     logout(request)
                     response_data = {
                         'page': 'login',
@@ -480,7 +479,7 @@ def process_post_data(request):
                     five_minutes_ago = timezone.now() - timedelta(minutes=5)
                     # 各友達のオンラインステータスを設定
                     for friend in friends:
-                        if friend.is_online and friend.last_active >= five_minutes_ago:
+                        if friend.last_active >= five_minutes_ago:
                             friend.is_online = True
                         else:
                             friend.is_online = False
