@@ -20,7 +20,7 @@
           {% for friend in friends %}
           <tr>
             <td>
-              {% if friend.online_status == 'online' %}
+              {% if friend.is_online == True %}
                 <span class="status-dot" style="height:10px; width:10px; background-color: green; border-radius: 50%; display: inline-block;"></span>
               {% else %}
                 <span class="status-dot" style="height:10px; width:10px; background-color: gray; border-radius: 50%; display: inline-block;"></span>

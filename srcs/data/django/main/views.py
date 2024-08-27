@@ -481,9 +481,10 @@ def process_post_data(request):
                     # 各友達のオンラインステータスを設定
                     for friend in friends:
                         if friend.is_online and friend.last_active >= five_minutes_ago:
-                            friend.online_status = 'Online'
+                            friend.is_online = True
                         else:
-                            friend.online_status = 'Offline'
+                            friend.is_online = False
+                        friend.save()
                     pending_requests = FriendRequest.objects.filter(from_user_id=user.id, status='P')
                     response_data = {
                         'page': page,
