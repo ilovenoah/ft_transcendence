@@ -46,7 +46,8 @@ def process_post_data(request):
                 user = request.user
                 if user.is_authenticated:
                     user.is_online = False
-                    user.save(update_fields=['is_online'])
+                    user.last_active = timezone.now() - timedelta(minutes=5)
+                    user.save(update_fields=['is_online', 'last_active'])
                     logout(request)
                     response_data = {
                         'page': 'login',
