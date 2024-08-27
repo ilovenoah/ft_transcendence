@@ -1108,11 +1108,6 @@ def gameHeartbeat(request, roomid):
     room = Matchmaking.objects.get(id=roomid)
     room.timestamp = timezone.now()
     room.save()
-    tournament = Matchmaking.objects.get(id=room.tournament)
-
-
-
-
     return JsonResponse({'timestamp': 'refreshed'})
 
 def get_csrf_token(request):

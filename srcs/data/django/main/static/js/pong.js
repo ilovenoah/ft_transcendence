@@ -688,7 +688,6 @@ window.addEventListener('popstate', function(event) {
         game_state = 3;
         gameSocket.close();
         gameSocket = null;
-
     }
 });
 
