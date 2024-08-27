@@ -1108,6 +1108,11 @@ def gameHeartbeat(request, roomid):
     room = Matchmaking.objects.get(id=roomid)
     room.timestamp = timezone.now()
     room.save()
+    tournament = Matchmaking.objects.get(id=room.tournament)
+
+
+
+
     return JsonResponse({'timestamp': 'refreshed'})
 
 def get_csrf_token(request):
@@ -1171,8 +1176,6 @@ def upload_image(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
-
-
 
 #ファイルの存在チェック
 def is_file_exists(filename):
