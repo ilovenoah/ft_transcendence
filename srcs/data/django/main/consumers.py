@@ -595,7 +595,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def end_game(self):
         await self.close()
-        logger.debug("クローズした")
+        # logger.debug("クローズした")
         # タスクをキャンセル
         # self.update_task.cancel()
         # Redis接続を閉じる

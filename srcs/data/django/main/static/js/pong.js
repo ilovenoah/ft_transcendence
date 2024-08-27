@@ -43,8 +43,12 @@ let game_state = 0;
 let button_flag = 0;
 let countdown_flag = 0;
 
+let is_reconnect = 0;
+
 let score_match = 10;
-let paddleflag = 0;
+
+// これは必要なんですか？？？？
+let paddleflag = 1;
 
 //let lastUpdateTime = Date.now();
 let lasttime = 0;
@@ -395,7 +399,7 @@ function updateGameState(data) {
         }
     }
     if (countdown_flag == 0) {
-        if (data.user_status[0] == 1) {
+        if (is_reconnect == 0 && data.user_status[0] == 1) {
             countdown_flag = 1;
             displayScore(0, 0, 3);
             setTimeout(function() {
@@ -589,6 +593,8 @@ function connect(roomName){
             heartbeatFlag = 1;
             callGameHeartbeat();        
             //ゲームが始まったらやればいい
+            console.debug("よばれてる")
+
             animate();
         };
         gameSocket.onclose = function(e) {
@@ -686,11 +692,12 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, recconect ){
+function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, reconnect ){
     game_id = gameid;
     player_id = playid;
     player_no = playno;
     parentgame = parentid;
+    is_reconnect = reconnect;
     is_doubles = dobules_flag;
     if (paddle_size == 1){
         paddle_length = 4;

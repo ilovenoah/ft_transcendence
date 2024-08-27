@@ -1,4 +1,4 @@
-From    dpage/pgadmin4:latest
+FROM   dpage/pgadmin4:latest
 
 # From    debian:bullseye-slim
 

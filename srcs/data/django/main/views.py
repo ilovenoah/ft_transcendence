@@ -521,15 +521,22 @@ def process_post_data(request):
                 room_id = post_data.get('room_id')
                 room = Matchmaking.objects.filter(id=room_id, timestamp__gte=timezone.now() - timezone.timedelta(seconds=30)).first()
                 if room:
-                    if room.user2: #user2が存在している
+                    if room.user2: #user2が存在している→つまり再接続
                         room.timestamp = timezone.now()
                         room.save()
+                        player_num = 0
+                        
+                        if room.user1_id == user.id :
+                            player_num = 1
+                        elif room.user2_id == user.id :
+                            player_num = 2
+
                         response_data = {
                                 'page':page,
                                 'content':render_to_string('ponggame.html', {'room': room}),
                                 'title': 'Pong Game ' + str(room.id),
                                 # 生のjavascriptを埋め込みたいとき
-                                'rawscripts': 'startGame(' + str(room.id) + ', 2,' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)', 
+                                'rawscripts': 'startGame(' + str(room.id) + ', ' + str(player_num) + ', ' +  str(request.user.id) + ', 0, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 1)', 
                             }
                     else: #user2が存在していない 
                         if room.user1 == user: #user1とuser2が同一
@@ -543,7 +550,7 @@ def process_post_data(request):
                                 'timeout' : '10000',
                                 'alert': '対戦相手を待っています',
                         }
-                        else:
+                        else: #user2をぺゲームに参加させる
                             room.user2 = user
                             room.save()
                             response_data = {
@@ -1012,7 +1019,7 @@ def process_post_data(request):
                     }
                     return JsonResponse(response_data)
                 room = Matchmaking.objects.filter(doubles=doubles).first() 
-                if room: #すでにダブルスが成立してる
+                if room: #すでにダブルスが成立してる→つまりreconnect
                     user_no = 1
                     if user.id == room.user2_id:
                         user_no = 2
@@ -1039,7 +1046,7 @@ def process_post_data(request):
                         'content':render_to_string('ponggame.html', {'room': room}),
                         'title': 'Pong Game ' + str(room.id),
                         'gameid': str(room.id), 
-                        'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 0)', 
+                        'rawscripts': 'startGame(' + str(room.id) + ', ' + str(user_no) + ', ' +  str(user.id) + ', 1, ' + str(room.paddle_size) + ', \'' + str(room.is_3d) + '\', 0, 1)', 
                     }
                 else: #まだマッチが成立してない
                     doubles_user = DoublesUser.objects.filter(doubles=doubles, user=user).first()
