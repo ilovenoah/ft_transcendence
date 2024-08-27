@@ -471,10 +471,13 @@ class PongConsumer(AsyncWebsocketConsumer):
                         else:
                             self.match.winner_id = self.user2 
                             self.game_state['winner']  = self.user2
+
+                    await database_sync_to_async(self.match.save)()  # 非同期で保存
+                    # await sync_to_async(self.match.save)()
                     self.game_state['nextgame']  = self.match.parent_id
 
                     #次の試合のuserに勝者を登録する
-                    if self.match.parent_id > 0:
+                    if self.match.parent_id is not None and self.match.parent_id > 0:
                         self.nextmatch = await sync_to_async(self.get_match)(self.match.parent_id)
                         if self.nextmatch.user1_id is None:
                             self.nextmatch.user1_id = self.match.winner_id
@@ -492,8 +495,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
-                    await database_sync_to_async(self.match.save)()  # 非同期で保存
-                    # await sync_to_async(self.match.save)()
 
                     await asyncio.sleep(10)
                     PongConsumer.room_tasks[self.room_group_name].cancel()

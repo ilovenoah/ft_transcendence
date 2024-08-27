@@ -269,7 +269,7 @@ function animate(currentTime) {
             }
 
 
-            if (gameSocket.readyState === WebSocket.OPEN) {
+            if (gameSocket && gameSocket.readyState === WebSocket.OPEN) {
                 if (player_no == 1) {
                     gameSocket.send(JSON.stringify({
                         'message': 'update_position',
@@ -700,6 +700,8 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
         is_3d = 0;
     }
 
+    game_state = 0;
+
     countdown_flag = 0;
     init();
 
@@ -707,10 +709,8 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
     // let match = document.currentScript.src.match(regexp);
     // let gameid = match[1];
     if (gameSocket) {
-        game_state = 3;
         gameSocket.close(); 
         gameSocket = null;
-        return;
     }
 
     first_flag = true;
