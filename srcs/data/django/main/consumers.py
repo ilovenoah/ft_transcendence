@@ -51,7 +51,16 @@ class PongConsumer(AsyncWebsocketConsumer):
  # self.room_name = "main"
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'pong_{self.room_name}'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
         # first_flag = True
+
+        self.players = set()
 
         self.match = await sync_to_async(self.get_match)(self.room_name)
         # logger.debug(match.user1_id)
@@ -77,15 +86,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         # aioredisを使ってRedisに接続
         # self.redis = await aioredis.create_redis_pool('redis://redis4242')
-
         self.redis = await aioredis.from_url('redis://redis4242:6379')
-
 
         # Redisから状態を取得
         game_state_raw = await self.redis.get(self.room_group_name)
 
-        self.memory = []
-
+        # self.memory = []
         if game_state_raw:
             self.game_state = json.loads(game_state_raw)
 
@@ -108,7 +114,26 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'scores':[0, 0],
                 'count_sleep': sleep_sec,
                 'user_status':[0,0,0,0,0],
-           }
+           }    
+
+
+        # すでにゲームが終了している場合は、切断する
+        if (self.match.point1 >= self.match.match_point or self.match.point2 >= self.match.match_point) and abs(self.match.point1 - self.match.point2) > 1 :
+            #クライアントにゲームの終了を通知する
+            self.game_state['user_status'][0] = 2
+
+            # ゲームの状態をクライアントに送信→nextgameを表示させる
+            await self.channel_layer.group_send(         
+                self.room_group_name,
+                {
+                    "type": "game_update",
+                    "game_state": self.game_state
+                }
+            )
+            self.end_game()
+            return
+
+        self.players.add(self.channel_name)
 
         #パドルサイズ
         if self.match.paddle_size == 1 :
@@ -149,24 +174,14 @@ class PongConsumer(AsyncWebsocketConsumer):
         elif self.match.ai ==  3:
             self.aistrength = 0.8
 
-    
 
         if self.single is True :
             self.game_state['user_status'][2] = 1
 
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
 
-        # ボールの位置を定期的に更新する非同期タスクを開始
-               
+        # ボールの位置を定期的に更新する非同期タスクを開始               
         if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
             PongConsumer.room_tasks[self.room_group_name] = asyncio.create_task(self.update_ball_position())
-
-
-
         # 接続されたクライアントに現在のゲーム状態を送信
         await self.send(text_data=json.dumps(self.game_state))
 
@@ -176,23 +191,36 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        # タスクをキャンセル
-        # self.update_task.cancel()
-        # Redis接続を閉じる
-        if self.redis:  # redis接続が存在するか確認
-            try: 
-                self.redis.close()
-                # await self.redis.wait_closed()
-            except Exception as e:
-                print(f"Error while closing Redis connection: {e}")
+        logger.debug("disconnectした")
+        # 切断されたプレイヤーを記録
+        self.players.discard(self.channel_name)
+        #ゲーム開始前で誰もいなくなったら、closeする
+        if not self.players and self.game_state['user_status'][0] == 0:
+            # 全プレイヤーが切断された場合、クリーンアップ処理を行う
+            await self.end_game()
 
 
-    async def server_disconnect(self):
-        await self.close()
+        # await self.channel_layer.group_discard(
+        #     self.room_group_name,
+        #     self.channel_name
+        # )
+        # # タスクをキャンセル
+        # # self.update_task.cancel()
+        # # Redis接続を閉じる
+        # if self.redis:  # redis接続が存在するか確認
+        #     try: 
+        #         self.redis.close()
+        #         # await self.redis.wait_closed()
+        #     except Exception as e:
+        #         print(f"Error while closing Redis connection: {e}")
 
-    async def disconnect_after_delay(self, delay, channel_name):
-        await asyncio.sleep(delay)
-        await self.channel_layer.group_discard(self.room_group_name, channel_name)
+
+    # async def server_disconnect(self):
+    #     await self.close()
+
+    # async def disconnect_after_delay(self, delay, channel_name):
+    #     await asyncio.sleep(delay)
+    #     await self.channel_layer.group_discard(self.room_group_name, channel_name)
 
     # async def disconnect_after_delay(consumer):
     #     await asyncio.sleep(5)
@@ -385,7 +413,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                             elif self.game_state['ball'][1] < self.game_state['paddle_4'][1] + self.game_state['paddle_4'][2] / 2  + HIT_MARGIN and self.game_state['ball'][1] > self.game_state['paddle_4'][1] - self.game_state['paddle_4'][2] / 2 - HIT_MARGIN:
                                 self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                       
-
                 self.game_state['info'] = 'all'
 
                 #AIブロック
@@ -431,8 +458,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                     #         self.game_state['paddle_2'][1] = MIN_Y
 
 
-                if self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point'] :
-                    self.game_state['status'] = 2
+                # if self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point'] :
+                #     self.game_state['status'] = 2
     
      
                 # ゲームの状態をクライアントに送信
@@ -473,8 +500,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                             self.game_state['winner']  = self.user2
                     self.game_state['nextgame']  = self.match.parent_id
 
+
                     #次の試合のuserに勝者を登録する
-                    if self.match.parent_id > 0:
+                    if self.match.parent_id is not None and self.match.parent_id > 0:
                         self.nextmatch = await sync_to_async(self.get_match)(self.match.parent_id)
                         if self.nextmatch.user1_id is None:
                             self.nextmatch.user1_id = self.match.winner_id
@@ -482,7 +510,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                             self.nextmatch.user2_id = self.match.winner_id
                         await database_sync_to_async(self.nextmatch.save)()  # 非同期で保存
 
-                    
+                    #クライアントにゲームの終了を通知する
+                    self.game_state['user_status'][0] = 2
+
                     # ゲームの状態をクライアントに送信→nextgameを表示させる
                     await self.channel_layer.group_send(         
                         self.room_group_name,
@@ -496,9 +526,12 @@ class PongConsumer(AsyncWebsocketConsumer):
                     # await sync_to_async(self.match.save)()
 
                     await asyncio.sleep(10)
+                    #gameupdateなどを停止
                     PongConsumer.room_tasks[self.room_group_name].cancel()
+                    #接続を切断
+                    await self.end_game()
                     # asyncio.create_task(disconnect_after_delay(self))
-                    await self.disconnect_after_delay(5, self.channel_name)
+                    # await self.disconnect_after_delay(5, self.channel_name)
 
                 else:
                     await asyncio.sleep(interval)
@@ -559,3 +592,16 @@ class PongConsumer(AsyncWebsocketConsumer):
         # if random.random() < 0.1:
         #     self.game_state['paddle_2'][1] += random.randint(-10, 10)
         return
+
+    async def end_game(self):
+        await self.close()
+        logger.debug("クローズした")
+        # タスクをキャンセル
+        # self.update_task.cancel()
+        # Redis接続を閉じる
+        if self.redis:  # redis接続が存在するか確認
+            try: 
+                self.redis.close()
+                # await self.redis.wait_closed()
+            except Exception as e:
+                print(f"Error while closing Redis connection: {e}")
