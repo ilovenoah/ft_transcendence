@@ -300,7 +300,6 @@ function animate(currentTime) {
                 // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
             }
         
-            
             renderer.render(scene, camera);
         // } else {
         //     ball.position.x = targetBallPosition.x;
@@ -582,10 +581,8 @@ function connect(roomName){
     };
     gameSocket.onopen = function(e) {
         console.log("WebSocket connection established");
-
         heartbeatFlag = 1;
         callGameHeartbeat();
-        
         //ゲームが始まったらやればいい
         animate();
     };
@@ -593,7 +590,7 @@ function connect(roomName){
         console.log("WebSocket connection closed");
         heartbeatFlag = 0;
         // 自動再接続
-        if (game_state == 2){
+        if (game_state < 2){
             setTimeout( connect(game_id), reconnectInterval);
         }
     };
