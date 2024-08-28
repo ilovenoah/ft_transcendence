@@ -59,10 +59,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
         var image = document.getElementById('image').files[0];
 
-        var maxSize = 5 * 1024 * 1024;  // 5MB
+        var maxSize = 3 * 1024 * 1024;  // 1MB
         if (image.size > maxSize) {
-            document.getElementById('result').innerText = "ファイルサイズが5MBを超えています。";
+            document.getElementById('result').innerText = "ファイルサイズが3MBを超えています。";
             return;
+        }
+        const fileType = image.type; // ファイルタイプを取得
+        const validTypes = ['image/png', 'image/jpeg'];
+        if (validTypes.includes(fileType)) {
+        } else {
+          document.getElementById('result').innerText = "ファイルはjpegかpngを指定してください";
+          return;
         }
 
         var formData = new FormData();
