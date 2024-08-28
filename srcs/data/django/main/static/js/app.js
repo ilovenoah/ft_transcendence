@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
             }
-            gameSocket.close();
+            // gameSocket.close();
           };
         xhr.send(formData);
 
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (typeof csrfToken !== 'undefined') {
         xhr.setRequestHeader('X-CSRFToken', csrfToken);
       } else {
-        console.error('CSRF token is not defined.');
+        console.debug('CSRF token is not defined.');
         return;
       }
   
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
           // 履歴にページを登録
           history.pushState({ data: response }, response.title, '');
         } else {
-          console.error('Error:', xhr.statusText);
+          console.debug('Error:', xhr.statusText);
             // エラー処理をここに追加します     
         }
         loadLanguage();
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
       };
   
       xhr.onerror = function() {
-        console.error('Request failed');
+        console.debug('Request failed');
         // ネットワークエラーの処理をここに追加します
       };
 
@@ -288,7 +288,7 @@ function send_ajax(data)
           noloadAjax(response.reload, response.timeout);
         }
       } else {
-        console.error('There was a problem with the request:', xhr.statusText);
+        console.debug('There was a problem with the request:', xhr.statusText);
       }
     }
   };  
@@ -328,7 +328,7 @@ function sendHeartbeat() {
                 console.log('User is:', response.status);
                 // ログイン状態に応じた処理
             } else {
-                console.error('Error: ', xhr.status);
+                console.debug('Error: ', xhr.status);
                 // ログアウト状態に応じた処理
             }
         }
@@ -597,7 +597,7 @@ function setLanguage(lang) {
               console.log('User is:', response.status);
               // ログイン状態に応じた処理
           } else {
-              console.error('Error: ', xhr.status);
+              console.debug('Error: ', xhr.status);
               // ログアウト状態に応じた処理
           }
       }
@@ -631,7 +631,7 @@ function loadLanguage(lang) {
           var translations = JSON.parse(xhr.responseText);
           applyTranslations(translations);
       } else if (xhr.readyState === 4) {
-          // console.error('Error loading translations:', xhr.statusText);
+          console.debug('Error loading translations:', xhr.statusText);
       }
   };
   xhr.send();

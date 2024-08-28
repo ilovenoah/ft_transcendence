@@ -136,7 +136,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.end_game()
             return
 
-        # self.players.add(self.channel_name)
+        self.players.add(self.channel_name)
 
         #パドルサイズ
         if self.match.paddle_size == 1 :
@@ -205,38 +205,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         # logger.debug("disconnectした")
         # 切断されたプレイヤーを記録
-        # self.players.discard(self.channel_name)
-        # #ゲーム開始前で誰もいなくなったら、closeする
-        # if not self.players and self.game_state['user_status'][0] == 0:
-        #     # 全プレイヤーが切断された場合、クリーンアップ処理を行う
-        #     await self.end_game()
-
-
-        # await self.channel_layer.group_discard(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
-        # # タスクをキャンセル
-        # # self.update_task.cancel()
-        # # Redis接続を閉じる
-        # if self.redis:  # redis接続が存在するか確認
-        #     try: 
-        #         self.redis.close()
-        #         # await self.redis.wait_closed()
-        #     except Exception as e:
-        #         print(f"Error while closing Redis connection: {e}")
-
-
-    # async def server_disconnect(self):
-    #     await self.close()
-
-    # async def disconnect_after_delay(self, delay, channel_name):
-    #     await asyncio.sleep(delay)
-    #     await self.channel_layer.group_discard(self.room_group_name, channel_name)
-
-    # async def disconnect_after_delay(consumer):
-    #     await asyncio.sleep(5)
-    #     await consumer.server_disconnect()
+        self.players.discard(self.channel_name)
+        #ゲーム開始前で誰もいなくなったら、closeする
+        if not self.players and self.game_state['user_status'][0] == 0:
+            # 全プレイヤーが切断された場合、クリーンアップ処理を行う
+            await self.end_game()
 
 
     async def receive(self, text_data):

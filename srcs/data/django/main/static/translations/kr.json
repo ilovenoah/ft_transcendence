@@ -232,5 +232,7 @@
     "game_stats_user": "유저",
     "game_stats_wins": "승리",
     "game_stats_losses": "패배",
-    "game_stats_win_rate": "승률(%)"
+    "game_stats_win_rate": "승률(%)",
+    "game_stats_button": "표시"
+    
 }

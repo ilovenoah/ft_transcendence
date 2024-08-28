@@ -458,7 +458,7 @@ function displayScore(score1, score2, count){
     context.fillStyle = 'white';
     context.clearRect(0, 0, screen.width, screen.height);
     if (count > 0){
-        context.fillText(count,  Math.trunc(canvas_left + canvas_width / 50.0 * 23.5) , Math.trunc(canvas_top + canvas_height / 2.0 ));
+        context.fillText(count,  Math.trunc(canvas_left + canvas_width / 50.0 * 24.3) , Math.trunc(canvas_top + canvas_height / 2.0 ));
         setTimeout(function() {
             context.clearRect(0, 0, screen.width, screen.height);
         }, 900);
@@ -596,7 +596,7 @@ function connect(roomName){
     };
 
     gameSocket.onerror = function(error) {
-        console.error('WebSocket error:', error);
+        console.debug('WebSocket error:', error);
         socket.close();  // エラー時に接続を閉じる
         gameSocket.close();  // エラー時に接続を閉じる
     };
@@ -627,7 +627,7 @@ function sendGameHeartbeat(room_id){
                 // console.log('GameHeartbeat:', response.status);
                 // ログイン状態に応じた処理
             } else {
-                // console.error('Error: ', xhr.status);
+                // console.debug('Error: ', xhr.status);
                 // ログアウト状態に応じた処理
             }
         }
@@ -681,8 +681,6 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-
-
 function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, reconnect ){
     game_id = gameid;
     player_id = playid;
@@ -711,9 +709,6 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
     
     init();
 
-    // let regexp = /\?gameid=(\d+)/
-    // let match = document.currentScript.src.match(regexp);
-    // let gameid = match[1];
     if (gameSocket) {
         gameSocket.close(); 
         gameSocket = null;
