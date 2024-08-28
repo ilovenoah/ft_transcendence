@@ -311,8 +311,8 @@ function animate(currentTime) {
         }
         requestAnimationFrame(animate);
     } else {
+        game_state = 3;
         if (gameSocket) {
-            game_state = 3;
             gameSocket.close();
             gameSocket = null;
         }    
@@ -593,8 +593,7 @@ function connect(roomName){
             heartbeatFlag = 1;
             callGameHeartbeat();        
             //ゲームが始まったらやればいい
-            console.debug("よばれてる")
-
+            // console.debug("よばれてる")
             animate();
         };
         gameSocket.onclose = function(e) {
@@ -613,7 +612,7 @@ function connect(roomName){
 
         gameSocket.onerror = function(error) {
             console.error('WebSocket error:', error);
-            socket.close();  // エラー時に接続を閉じる
+            gameSocket.close();  // エラー時に接続を閉じる
         };
 
     }
@@ -641,7 +640,7 @@ function sendGameHeartbeat(room_id){
                 var response = JSON.parse(xhr.responseText);
                 // console.log('GameHeartbeat:', xhr.status);
             } else {
-                console.error('Error: ', xhr.status);
+                // console.error('Error: ', xhr.status);
             }
         }
     };
@@ -665,8 +664,8 @@ window.addEventListener('click', (event) => {
         }
         // 要素が属性 page="ponggame2" を持っているか確認
         else if (link.getAttribute('page') && link.getAttribute('page') !== 'ponggame2') {
+            game_state = 3;
             if (gameSocket) {
-                game_state = 3;
                 gameSocket.close();
                 gameSocket = null;
 
@@ -676,16 +675,16 @@ window.addEventListener('click', (event) => {
 });
 
 window.addEventListener('beforeunload', () => {
+    game_state = 3;
     if (gameSocket) {
-        game_state = 3;
         gameSocket.close();
         gameSocket = null;
     }
 });
 
 window.addEventListener('popstate', function(event) {
+    game_state = 3;
     if (gameSocket) {
-        game_state = 3;
         gameSocket.close();
         gameSocket = null;
     }
