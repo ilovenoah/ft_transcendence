@@ -297,8 +297,7 @@ function animate(currentTime) {
                 } else {
                     // 接続が確立されるまで再試行
                     // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
-                }
-            
+                }            
                 renderer.render(scene, camera);
             // } else {
             //     ball.position.x = targetBallPosition.x;

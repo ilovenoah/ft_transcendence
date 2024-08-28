@@ -498,6 +498,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                         else:
                             self.match.winner_id = self.user2 
                             self.game_state['winner']  = self.user2
+
+                    await database_sync_to_async(self.match.save)()  # 非同期で保存
+                    # await sync_to_async(self.match.save)()
                     self.game_state['nextgame']  = self.match.parent_id
 
 
@@ -522,8 +525,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
-                    await database_sync_to_async(self.match.save)()  # 非同期で保存
-                    # await sync_to_async(self.match.save)()
 
                     await asyncio.sleep(10)
                     #gameupdateなどを停止
