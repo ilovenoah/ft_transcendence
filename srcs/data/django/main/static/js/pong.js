@@ -351,6 +351,8 @@ function updateGameState(data) {
             // console.log("wineer :" + data.winner);
             if (parentgame == data.nextgame && player_id == data.winner ) {
                 displayNextgame(data.winner, data.nextgame);
+            } else if (player_id == data.winner) {
+                displayWinner(data.winner);
             }
         }
 
@@ -408,6 +410,34 @@ function updateGameState(data) {
         }
     }
 //   renderer.render(scene, camera);
+}
+
+function displayWinner(winner){
+    // オーバーレイCanvasの2Dコンテキストを取得
+    const context = overlayCanvas.getContext('2d');
+
+    // テキストの設定
+    const canvas_top = document.getElementById('gameCanvas').getBoundingClientRect().top;
+    const canvas_left = document.getElementById('gameCanvas').getBoundingClientRect().left;
+    const canvas_width = document.getElementById('gameCanvas').getBoundingClientRect().width;
+//    const canvas_height = document.getElementById('gameCanvas').getBoundingClientRect().height;
+    const canvas_height = window.innerHeight;
+    
+    context.font = canvas_width / 40 + 'px Arial';
+    context.fillStyle = 'Yellow';
+
+    lang = getCookie('language')
+    if (lang === 'en') {
+        txt_comment = "You are the winner";
+    } else if (lang === 'kr') {
+        txt_comment = "당신이 승자입니다";
+    } else {
+        txt_comment = "あなたが勝者です";
+    }
+    txt_x = Math.trunc(canvas_left + canvas_width / 50.0 * 9.0); // テキストの描画位置（x座標）
+    txt_y = Math.trunc(canvas_top + canvas_height / 10.0 * 0.5); // テキストの描画位置（y座標）
+    context.fillText(txt_comment, txt_x, txt_y);
+
 }
 
 function displayNextgame(winner, nextgame){
