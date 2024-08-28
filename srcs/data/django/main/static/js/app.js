@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         var image = document.getElementById('image').files[0];
 
-        var maxSize = 1 * 1024 * 1024;  // 1MB
+        var maxSize = 3 * 1024 * 1024;  // 1MB
         if (image.size > maxSize) {
           lang = getCookie('language') || 'ja';
           if (lang === 'ja') {
