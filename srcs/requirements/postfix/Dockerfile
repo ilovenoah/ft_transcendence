@@ -1,6 +1,6 @@
 # Dockerfile
 
-From    debian:bullseye-slim
+FROM    debian:bullseye-slim
 
 # 環境変数を設定して、インタラクティブモードのプロンプトを抑制
 ENV     DEBIAN_FRONTEND=noninteractive
