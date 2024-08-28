@@ -233,6 +233,8 @@
     "game_stats_wins": "승리",
     "game_stats_losses": "패배",
     "game_stats_win_rate": "승률(%)",
-    "game_stats_button": "표시"
+    "game_stats_button": "표시",
+    "file_size": "파일 크기가 3MB를 초과합니다",
+    "file_type": "파일은 jpeg나 png를 지정해주세요"
     
 }

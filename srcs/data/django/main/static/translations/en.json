@@ -233,6 +233,8 @@
     "game_stats_wins": "Wins",
     "game_stats_losses": "Losses",
     "game_stats_win_rate": "Win Rate(%)",
-    "game_stats_button": "Display"
+    "game_stats_button": "Display",
+    "file_size": "File size is over 3MB",
+    "file_type": "File must be jpeg or png"
     
 }

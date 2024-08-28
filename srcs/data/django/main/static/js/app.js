@@ -59,16 +59,30 @@ document.addEventListener("DOMContentLoaded", function() {
 
         var image = document.getElementById('image').files[0];
 
-        var maxSize = 3 * 1024 * 1024;  // 1MB
+        var maxSize = 1 * 1024 * 1024;  // 1MB
         if (image.size > maxSize) {
-            document.getElementById('result').innerText = "ファイルサイズが3MBを超えています。";
+          lang = getCookie('language') || 'ja';
+          if (lang === 'ja') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_size\">ファイルサイズが3MBを超えています</div>";
+          } else if (lang === 'en') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_size\">File size is over 3MB</div>";
+          } else {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_size\">파일 크기가 3MB를 초과합니다</div>";
+          }
             return;
         }
         const fileType = image.type; // ファイルタイプを取得
         const validTypes = ['image/png', 'image/jpeg'];
         if (validTypes.includes(fileType)) {
         } else {
-          document.getElementById('result').innerText = "ファイルはjpegかpngを指定してください";
+          lang = getCookie('language') || 'ja';
+          if (lang === 'ja') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_type\">ファイルはjpegかpngを指定してください</div>";
+          } else if (lang === 'en') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_type\">File must be jpeg or png</div>";
+          } else {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_type\">파일은 jpeg나 png를 지정해주세요</div>";
+          }
           return;
         }
 
