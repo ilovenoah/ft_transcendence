@@ -160,6 +160,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         )
         await self.accept()
 
+
         # ボールの位置を定期的に更新する非同期タスクを開始
                
         if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
@@ -168,6 +169,13 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
         # 接続されたクライアントに現在のゲーム状態を送信
+        await self.channel_layer.group_send(         
+            self.room_group_name,
+            {
+                "type": "game_update",
+                "game_state": self.game_state
+            }
+        )
         await self.send(text_data=json.dumps(self.game_state))
 
     async def disconnect(self, close_code):
@@ -209,6 +217,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             # if self.user1 == user.id :
             try:
                 if 'player1_y' in text_data_json:
+                    logger.debug(f"player1_y: {text_data_json['player1_y']}")
                     tmp1 = text_data_json['player1_y']
                     if tmp1 != "":
                         if tmp1 > MAX_Y :
@@ -248,7 +257,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             except Exception as e:
             # エラーログを確認
-                print(f"Error in group_send: {e}")
+                logger.debug(f"Error in group_send: {e}")
 
         elif message == 'ready_state' :
             # logger.debug(f'ユーザーID: {user.id}')

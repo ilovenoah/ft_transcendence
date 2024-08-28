@@ -42,7 +42,7 @@ let is_3d;
 
 let game_state = 0;
 let button_flag = 0;
-let countdown_flag = 0;
+let countdown_flag;
 
 let score_match = 10;
 let paddleflag = 0;
@@ -390,7 +390,7 @@ function updateGameState(data) {
             document.getElementById('game_ready').style.display = 'none';
         }
     }
-    if (countdown_flag == 0 || is_reconnect == 0) {
+    if (countdown_flag == 0) {
         if (data.user_status[0] == 1) {
             countdown_flag = 1;
             displayScore(0, 0, 3);
@@ -459,7 +459,7 @@ function displayScore(score1, score2, count){
     context.fillStyle = 'white';
     context.clearRect(0, 0, screen.width, screen.height);
     if (count > 0){
-        context.fillText(count, (txt_score1_x + txt_score2_x) * 0.55 , screen.height / 2.0);
+        context.fillText(count,  Math.trunc(canvas_left + canvas_width / 50.0 * 23.5) , Math.trunc(canvas_top + canvas_height / 2.0 ));
         setTimeout(function() {
             context.clearRect(0, 0, screen.width, screen.height);
         }, 900);
@@ -626,11 +626,11 @@ function sendGameHeartbeat(room_id){
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
-                console.log('GameHeartbeat:', response.status);
+                // var response = JSON.parse(xhr.responseText);
+                // console.log('GameHeartbeat:', response.status);
                 // ログイン状態に応じた処理
             } else {
-                console.error('Error: ', xhr.status);
+                // console.error('Error: ', xhr.status);
                 // ログアウト状態に応じた処理
             }
         }
