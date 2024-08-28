@@ -596,7 +596,12 @@ function connect(roomName){
         if (game_state == 2){
             setTimeout( connect(game_id), reconnectInterval);
         }
+    };
 
+    gameSocket.onerror = function(error) {
+        console.error('WebSocket error:', error);
+        socket.close();  // エラー時に接続を閉じる
+        gameSocket.close();  // エラー時に接続を閉じる
     };
 }
 
