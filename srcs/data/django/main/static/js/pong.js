@@ -424,7 +424,14 @@ function displayNextgame(winner, nextgame){
     context.font = canvas_width / 40 + 'px Arial';
     context.fillStyle = 'Yellow';
 
-    txt_comment = "The winner, please proceed to the next match from the lobby.";
+    lang = getCookie('language')
+    if (lang === 'en') {
+        txt_comment = "The winner, please proceed to the next match from the lobby";
+    } else if (lang === 'kr') {
+        txt_comment = "승자는 로비에서 다음 게임에 참여하세요";
+    } else {
+        txt_comment = "勝者はロビーから次のゲームに参加してください";
+    }
     txt_x = Math.trunc(canvas_left + canvas_width / 50.0 * 9.0); // テキストの描画位置（x座標）
     txt_y = Math.trunc(canvas_top + canvas_height / 10.0 * 0.5); // テキストの描画位置（y座標）
     context.fillText(txt_comment, txt_x, txt_y);
