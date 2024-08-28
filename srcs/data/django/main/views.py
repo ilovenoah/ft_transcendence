@@ -17,7 +17,7 @@ from .forms import SignUpForm, EmailForm, AvatarForm, DisplayNameForm, PasswordC
 from .forms import CustomizeGameForm, CustomizeSinglePlayForm, CustomizeTournamentForm, CustomizeDoublesForm
 from .models import CustomUser, FriendRequest, Matchmaking, Tournament, TournamentUser, Doubles, DoublesUser
 from django.core.exceptions import ValidationError
-from django.db.models import Q, F
+from django.db.models import Q, F, ExpressionWrapper, IntegerField
 from django.db import models
 from math import log2, ceil
 from PIL import Image as PilImage, Image
@@ -548,7 +548,7 @@ def process_post_data(request):
                                 'timeout' : '10000',
                                 'alert': '対戦相手を待っています',
                         }
-                        else:
+                        else: #user2として入室
                             room.user2 = user
                             room.save()
                             response_data = {
@@ -621,7 +621,7 @@ def process_post_data(request):
                             'timeout' : '10000',
                             'alert': '対戦相手を待っています',
                         }
-                    else:
+                    else: #待ってるからplayer1として入室
                         response_data = {
                             # 'page':page,
                             # 'content':read_file('ponggame.html'),
@@ -975,7 +975,7 @@ def process_post_data(request):
                         room = Matchmaking.objects.filter(doubles=doubles).first()
                         user_no = 0
                         if not room:
-                            room = Matchmaking.objects.create(user1=user, doubles=doubles)
+                            room = Matchmaking.objects.create(user1=user, doubles=doubles, level=0)
                         else:
                             if not room.user2:
                                 room.user2 = user
@@ -1266,7 +1266,7 @@ def get_available_rooms(user):
     thirty_seconds_ago = current_time - timedelta(seconds=30)
     available_rooms = Matchmaking.objects.filter(
         Q(user2__isnull=True) | Q(user1=user) | Q(user2=user), #user2が不在かuser1かuser2がuserと同じ
-        timestamp__gte=thirty_seconds_ago, #timestampから30秒以内
+        timestamp__gte=thirty_seconds_ago, #timest.exam.expから30秒以内
         is_single=False,
         winner__isnull=True,
         tournament__isnull=True,
@@ -1300,22 +1300,55 @@ def get_final_matches(user):
     )
     return final_matches
 
+# def get_available_doubles(user):
+#     current_time = timezone.now()
+#     thirty_seconds_ago = current_time - timedelta(seconds=30)
+#     available_doubles = Doubles.objects.filter(
+#         Q(num_users__lt=4) | #参加者が4人未満
+#         (Q(num_users=4) & Q( #参加者が4人いてuser1-4にuserがいてwinnerがnull
+#             Q(matchmaking__user1=user) | 
+#             Q(matchmaking__user2=user) | 
+#             Q(matchmaking__user3=user) | 
+#             Q(matchmaking__user4=user),
+#             matchmaking__winner__isnull=True,
+#         )),
+#         timestamp__gte=thirty_seconds_ago
+#     )
+#     # logger.debug(f'available_doubles: {available_doubles}')
+#     return available_doubles
 
 def get_available_doubles(user):
     current_time = timezone.now()
     thirty_seconds_ago = current_time - timedelta(seconds=30)
-    available_doubles = Doubles.objects.filter(
-        Q(num_users__lt=4) | #参加者が4人未満
-        (Q(num_users=4) & Q( #参加者が4人いてuser1-4にuserがいてwinnerがnull
+
+    available_doubles = Doubles.objects.annotate(
+        point_diff=ExpressionWrapper(
+            F('matchmaking__point1') - F('matchmaking__point2'),
+            output_field=IntegerField()
+        )
+    ).filter(
+        Q(num_users__lt=4) |  # 参加者が4人未満
+        (Q(num_users=4) & Q(  # 参加者が4人いて、user1-4にuserがいて、winnerがnull
             Q(matchmaking__user1=user) | 
             Q(matchmaking__user2=user) | 
             Q(matchmaking__user3=user) | 
             Q(matchmaking__user4=user),
-            matchmaking__winner__isnull=True
+            Q(
+                Q(
+                    Q(matchmaking__point1__gte=F('matchmaking__match_point')) | 
+                    Q(matchmaking__point2__gte=F('matchmaking__match_point'))
+                ) & Q(
+                    Q(point_diff__gt=-1) &
+                    Q(point_diff__lt=1)
+                )
+            ) |
+            Q(
+                Q(matchmaking__point1__lt=10) & 
+                Q(matchmaking__point2__lt=10)
+            )
         )),
         timestamp__gte=thirty_seconds_ago
     )
-    # logger.debug(f'available_doubles: {available_doubles}')
     return available_doubles
 
     

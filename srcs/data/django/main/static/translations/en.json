@@ -235,6 +235,10 @@
     "game_stats_win_rate": "Win Rate(%)",
     "game_stats_button": "Display",
     "file_size": "File size is over 3MB",
-    "file_type": "File must be jpeg or png"
-    
+    "file_type": "File must be jpeg or png",
+    "game_ready": "Ready?",
+    "game_operation": "Operation",
+    "game_up_down": "Up - Down",
+    "game_left_right": "Left - Right"
+
 }

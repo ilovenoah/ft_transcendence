@@ -235,6 +235,10 @@
     "game_stats_win_rate": "勝率(%)",
     "game_stats_button": "表示",
     "file_size": "ファイルサイズが3MBを超えています",
-    "file_type": "ファイルはjpegかpngを指定してください"
-    
+    "file_type": "ファイルはjpegかpngを指定してください",
+    "game_ready": "準備はいい？",
+    "game_operation": "操作",
+    "game_up_down": "上 - 下",
+    "game_left_right": "左 - 右"
+
 }

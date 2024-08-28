@@ -235,6 +235,9 @@
     "game_stats_win_rate": "승률(%)",
     "game_stats_button": "표시",
     "file_size": "파일 크기가 3MB를 초과합니다",
-    "file_type": "파일은 jpeg나 png를 지정해주세요"
-    
+    "file_type": "파일은 jpeg나 png를 지정해주세요",
+    "game_ready": "준비됐어?",
+    "game_operation": "조작",
+    "game_up_down": "위 - 아래",
+    "game_left_right": "좌 - 우"
 }

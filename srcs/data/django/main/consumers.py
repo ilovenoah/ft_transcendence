@@ -461,8 +461,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 #Dueceを設定
                 if self.game_state['scores'][0] == (self.game_state['match_point']  - 1) and self.game_state['scores'][1] == (self.game_state['match_point']  - 1) :
                     self.game_state['match_point']  += 1
-                #matchの終了判断
-                if (self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point']) and abs(self.game_state['scores'][0] - self.game_state['scores'][1] > 1) :
+                #matchの終了判断 match_pointが上がっていくから、 2点差は要らない こっちでぇあ
+                if (self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point']) :
                     
                     # logger = logger.debug(self.match.point1)
                     # logger = logger.debug(self.match.point2)
