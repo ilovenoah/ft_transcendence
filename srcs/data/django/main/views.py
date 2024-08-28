@@ -1206,7 +1206,13 @@ def upload_image(request):
                 }
                 return JsonResponse(response_data)
             else:
-                return JsonResponse({'error': 'Invalid form data'}, status=400)
+                lang = request.user.language
+                if lang == 'en':    
+                    return JsonResponse({'error': 'Invalid data'}, status=400)
+                elif lang == 'kr':
+                    return JsonResponse({'error': '부정한 데이터입니다'}, status=400)
+                else:
+                    return JsonResponse({'error': '不正なデータです'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
     else:

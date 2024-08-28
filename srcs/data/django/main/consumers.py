@@ -518,7 +518,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 else:
                     await asyncio.sleep(interval)
 
-              
         # async def send_game_state(self, game_state):
         #     await self.send(text_data=json.dumps(game_state))
         except Exception as e:
@@ -543,8 +542,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         return Matchmaking.objects.get(pk=id)
         # return Matchmaking.objects.get(pk=self.room_name)
 
-
-
     # def game_start(self, event):
     #     //ここでゲームスタートの初期設定
 
@@ -560,22 +557,9 @@ class PongConsumer(AsyncWebsocketConsumer):
     #         ball.sety(-29)
     #         self.game_state['ball'][1]_direction = self.game_state['ball'][1]_direction * -1
 
-
-    def ai_move(self):
-        # シンプルな追尾アルゴリズム
-        # if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
-        #     self.game_state['paddle_2'][1] += min(5, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-        # elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
-        #     self.game_state['paddle_2'][1] -= min(5, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-
-        # # ランダム性を導入
-        # if random.random() < 0.1:
-        #     self.game_state['paddle_2'][1] += random.randint(-10, 10)
-        return
-
     async def end_game(self):
         await self.close()
-        logger.debug("クローズした")
+        # logger.debug("クローズした")
         # タスクをキャンセル
         if self.update_task :
             self.update_task.cancel()
