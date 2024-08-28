@@ -14,6 +14,7 @@ let player_id = 0;
 let player_no = 0;
 let game_id;
 let is_doubles = 0; 
+let is_reconnect = 0;
 
 let moveUp1 = false;
 let moveDown1 = false;
@@ -389,14 +390,13 @@ function updateGameState(data) {
             document.getElementById('game_ready').style.display = 'none';
         }
     }
-    if (countdown_flag == 0) {
+    if (countdown_flag == 0 || is_reconnect == 0) {
         if (data.user_status[0] == 1) {
             countdown_flag = 1;
             displayScore(0, 0, 3);
             setTimeout(function() {
                 displayScore(0, 0, 2);
             }, 1000);
-            
             setTimeout(function() {
                 displayScore(0, 0, 1);
             }, 2000);
@@ -686,12 +686,13 @@ window.addEventListener('popstate', function(event) {
 
 
 
-function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, recconect ){
+function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, reconnect ){
     game_id = gameid;
     player_id = playid;
     player_no = playno;
     parentgame = parentid;
     is_doubles = dobules_flag;
+    is_reconnect = reconnect;
     if (paddle_size == 1){
         paddle_length = 4;
     } else if (paddle_size == 2){
@@ -707,7 +708,10 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
 
     game_state = 0;
 
-    countdown_flag = 0;
+    if (is_reconnect == 0){
+        countdown_flag = 0;
+    }
+    
     init();
 
     // let regexp = /\?gameid=(\d+)/
