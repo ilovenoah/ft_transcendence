@@ -232,5 +232,9 @@
     "game_stats_user": "ユーザー",
     "game_stats_wins": "勝ち",
     "game_stats_losses": "負け",
-    "game_stats_win_rate": "勝率(%)"
+    "game_stats_win_rate": "勝率(%)",
+    "game_ready": "準備はいい？",
+    "game_operation": "操作",
+    "game_up_down": "上 - 下",
+    "game_left_right": "左 - 右"
 }
