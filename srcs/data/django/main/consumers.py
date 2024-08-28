@@ -53,7 +53,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         if not user.is_authenticated:
             self.disconnect
 
- # self.room_name = "main"
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'pong_{self.room_name}'
 
@@ -201,15 +200,16 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # await self.redis.wait_closed()
             except Exception as e:
                 print(f"Error while closing Redis connection: {e}")
+        #ゲーム開始前で誰もいなくなったら、closeする
+        self.players.discard(self.channel_name)
+        if not self.players and self.game_state['user_status'][0] == 0:
+            # 全プレイヤーが切断された場合、クリーンアップ処理を行う
+            await self.end_game()
         self.game_state = None
 
         # logger.debug("disconnectした")
         # 切断されたプレイヤーを記録
-        self.players.discard(self.channel_name)
-        #ゲーム開始前で誰もいなくなったら、closeする
-        if not self.players and self.game_state['user_status'][0] == 0:
-            # 全プレイヤーが切断された場合、クリーンアップ処理を行う
-            await self.end_game()
+
 
 
     async def receive(self, text_data):
