@@ -426,13 +426,13 @@ function updateGameState(data) {
         }
     }
     if (button_flag == 0) {
-        if (data.user_status[player_no] == 1) {
+        if (data.user_status[player_no] >= 1) {
             button_flag == 1;
             document.getElementById('game_ready').style.display = 'none';
         }
     }
     if (countdown_flag == 0) {
-        if (data.user_status[0] == 1) {
+        if (data.user_status[0] == 1 && data.user_status[player_no] == 1) {
             countdown_flag = 1;
             displayScore(0, 0, 3);
             setTimeout(function() {
@@ -441,6 +441,12 @@ function updateGameState(data) {
             setTimeout(function() {
                 displayScore(0, 0, 1);
             }, 2000);
+            const message = {
+                'message': 'ready_state',
+                'player': player_no,
+                'data': 2
+            };
+            gameSocket.send(JSON.stringify(message));
         }
     }
 //   renderer.render(scene, camera);
@@ -754,7 +760,8 @@ window.addEventListener('click', (event) => {
             event.preventDefault();
             const message = {
                 'message': 'ready_state',
-                'data': player_id
+                'player': player_no,
+                'data': 1
             };
             gameSocket.send(JSON.stringify(message));
         }

@@ -176,7 +176,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         elif self.match.ai ==  3:
             self.aistrength = 0.8
 
-
+        #AIはすでに準備完了
         if self.single is True :
             self.game_state['user_status'][2] = 1
 
@@ -188,12 +188,14 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(self.game_state))
 
     async def disconnect(self, close_code):
-        # await self.redis.set(self.room_group_name, json.dumps(self.game_state)) 
+        # Redisに状態を保存
+        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-
+        
         if self.redis:  # redis接続が存在するか確認
             try: 
                 self.redis.close()
@@ -230,7 +232,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                         elif tmp1 < MIN_Y:
                             tmp1 = MIN_Y
                             # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
-                        logger.debug(f'pl1_y: {tmp1}')
+                        # logger.debug(f'pl1_y: {tmp1}')
                         self.game_state['paddle_1'][1] = tmp1
                 if 'player2_y' in text_data_json:
                     tmp2 = text_data_json['player2_y']
@@ -268,25 +270,25 @@ class PongConsumer(AsyncWebsocketConsumer):
             # logger.debug(f'11: {self.user1}')
             # logger.debug(f'22: {self.user2}')
             # logger.debug(f'dd: {self.doubles}')
+            if 'player' in text_data_json and 'data' in text_data_json :
+                if self.user1 == user.id and text_data_json['player'] == 1:
+                    self.game_state['user_status'][1] = text_data_json['data']
+                elif self.user2 == user.id and text_data_json['player'] == 2:
+                    self.game_state['user_status'][2] = text_data_json['data']
+                elif self.user3 == user.id and text_data_json['player'] == 3:
+                    self.game_state['user_status'][3] = text_data_json['data']
+                elif self.user4 == user.id and text_data_json['player'] == 4:
+                    self.game_state['user_status'][4] = text_data_json['data']
+                if self.doubles is None :
+                    if self.game_state['user_status'][1] >= 1 and self.game_state['user_status'][2] >= 1:
+                        self.game_state['user_status'][0] = 1
+                else:
+                    if self.game_state['user_status'][1] >= 1 and self.game_state['user_status'][2] >= 1 and  self.game_state['user_status'][3] >= 1 and self.game_state['user_status'][4] >= 1:
+                        self.game_state['user_status'][0] = 1
+                # Redisに状態を保存
+                await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
-            if self.user1 == user.id :
-                self.game_state['user_status'][1] = 1
-            elif self.user2 == user.id :
-                self.game_state['user_status'][2] = 1
-            elif self.user3 == user.id :
-                self.game_state['user_status'][3] = 1
-            elif self.user4 == user.id :
-                self.game_state['user_status'][4] = 1
-
-
-            if self.doubles is None :
-                if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1:
-                    self.game_state['user_status'][0] = 1
-            else:
-                if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1 and  self.game_state['user_status'][3] == 1 and self.game_state['user_status'][4] == 1:
-                    self.game_state['user_status'][0] = 1
-        # Redisに状態を保存
-        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+        # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
             # ret.status = user.id
             # # ゲームの状態をクライアントに送信
@@ -347,12 +349,16 @@ class PongConsumer(AsyncWebsocketConsumer):
                         self.game_state['count_sleep'] = sleep_sec
                         self.game_state['ball'][0] = 0
                         self.game_state['ball'][1] = 0
+                        #pointが入ったときはredisに保存
+                        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                     elif self.game_state['ball'][0] <= MIN_X:
                         # self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                         self.game_state['scores'][0] += 1
                         self.game_state['count_sleep'] = sleep_sec
                         self.game_state['ball'][0] = 0
                         self.game_state['ball'][1] = 0                    
+                        #pointが入ったときはredisに保存
+                        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                     elif self.game_state['ball'][0] >= self.game_state['paddle_1'][0] and self.game_state['ball'][0] <= self.game_state['paddle_1'][0] + 100:
                         if self.game_state['ball'][1] > self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2:
                             self.game_state['ball'][3] = math.pi / 3 * 2
@@ -461,9 +467,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 #Dueceを設定
                 if self.game_state['scores'][0] == (self.game_state['match_point']  - 1) and self.game_state['scores'][1] == (self.game_state['match_point']  - 1) :
                     self.game_state['match_point']  += 1
-                #matchの終了判断 match_pointが上がっていくから、 2点差は要らない こっちでぇあ
+                #matchの終了判断 match_pointが上がっていくから、 2点差は要らない こっちではね
                 if (self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point']) :
-                    
+                    # Redisに状態を保存
+                    await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
                     # logger = logger.debug(self.match.point1)
                     # logger = logger.debug(self.match.point2)
 
@@ -518,8 +526,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 else:
                     await asyncio.sleep(interval)
 
-        # async def send_game_state(self, game_state):
-        #     await self.send(text_data=json.dumps(game_state))
+                # Redisに状態を保存
+                # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
+                # async def send_game_state(self, game_state):
+                #await self.send(text_data=json.dumps(game_state))
         except Exception as e:
             print(f"Error in update_ball_position: {e}")
 
@@ -558,11 +569,19 @@ class PongConsumer(AsyncWebsocketConsumer):
     #         self.game_state['ball'][1]_direction = self.game_state['ball'][1]_direction * -1
 
     async def end_game(self):
+        # Redisに状態を保存
+        # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
         await self.close()
         # logger.debug("クローズした")
+
         # タスクをキャンセル
-        if self.update_task :
-            self.update_task.cancel()
+        task = PongConsumer.room_tasks.get(self.room_group_name)
+        # タスクが存在すれば、それをキャンセルします
+        if task is not None:
+            task.cancel()
+            del PongConsumer.room_tasks[self.room_group_name]
+
         # Redis接続を閉じる
         if self.redis:  # redis接続が存在するか確認
             try: 
