@@ -14,6 +14,7 @@ let player_id = 0;
 let player_no = 0;
 let game_id;
 let is_doubles = 0; 
+let is_reconnect = 0;
 
 let moveUp1 = false;
 let moveDown1 = false;
@@ -41,7 +42,7 @@ let is_3d;
 
 let game_state = 0;
 let button_flag = 0;
-let countdown_flag = 0;
+let countdown_flag;
 
 let score_match = 10;
 let paddleflag = 0;
@@ -297,13 +298,47 @@ function animate(currentTime) {
                 } else {
                     // 接続が確立されるまで再試行
                     // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
-                }
-            
+                }            
                 renderer.render(scene, camera);
             // } else {
             //     ball.position.x = targetBallPosition.x;
             //     ball.position.y = targetBallPosition.y;
             }
+
+            if (gameSocket && gameSocket.readyState === WebSocket.OPEN) {
+                if (player_no == 1) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player1_y': paddle1.position.y * 100,  // サーバーでのスケーリングを考慮
+                    }));
+                }
+                else if (player_no == 2) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player2_y': paddle2.position.y * 100,  // サーバーでのスケーリングを考慮        
+                    }));
+                }
+                else if (player_no == 3) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player3_y': paddle3.position.y * 100,  // サーバーでのスケーリングを考慮        
+                    }));
+                }
+                else if (player_no == 4) {
+                    gameSocket.send(JSON.stringify({
+                        'message': 'update_position',
+                        'player4_y': paddle4.position.y * 100,  // サーバーでのスケーリングを考慮        
+                    }));
+                }
+            } else {
+                // 接続が確立されるまで再試行
+                // setTimeout(() => sendMessage(message), 100);  // 100ms後に再試行
+            }
+        
+            renderer.render(scene, camera);
+        // } else {
+        //     ball.position.x = targetBallPosition.x;
+        //     ball.position.y = targetBallPosition.y;
         }
         requestAnimationFrame(animate);
     } else {
@@ -351,6 +386,8 @@ function updateGameState(data) {
             // console.log("wineer :" + data.winner);
             if (parentgame == data.nextgame && player_id == data.winner ) {
                 displayNextgame(data.winner, data.nextgame);
+            } else if (player_id == data.winner) {
+                displayWinner(data.winner);
             }
         }
 
@@ -401,13 +438,40 @@ function updateGameState(data) {
             setTimeout(function() {
                 displayScore(0, 0, 2);
             }, 1000);
-            
             setTimeout(function() {
                 displayScore(0, 0, 1);
             }, 2000);
         }
     }
 //   renderer.render(scene, camera);
+}
+
+function displayWinner(winner){
+    // オーバーレイCanvasの2Dコンテキストを取得
+    const context = overlayCanvas.getContext('2d');
+
+    // テキストの設定
+    const canvas_top = document.getElementById('gameCanvas').getBoundingClientRect().top;
+    const canvas_left = document.getElementById('gameCanvas').getBoundingClientRect().left;
+    const canvas_width = document.getElementById('gameCanvas').getBoundingClientRect().width;
+//    const canvas_height = document.getElementById('gameCanvas').getBoundingClientRect().height;
+    const canvas_height = window.innerHeight;
+    
+    context.font = canvas_width / 40 + 'px Arial';
+    context.fillStyle = 'Yellow';
+
+    lang = getCookie('language')
+    if (lang === 'en') {
+        txt_comment = "You are the winner";
+    } else if (lang === 'kr') {
+        txt_comment = "당신이 승자입니다";
+    } else {
+        txt_comment = "あなたが勝者です";
+    }
+    txt_x = Math.trunc(canvas_left + canvas_width / 50.0 * 9.0); // テキストの描画位置（x座標）
+    txt_y = Math.trunc(canvas_top + canvas_height / 10.0 * 0.5); // テキストの描画位置（y座標）
+    context.fillText(txt_comment, txt_x, txt_y);
+
 }
 
 function displayNextgame(winner, nextgame){
@@ -424,7 +488,14 @@ function displayNextgame(winner, nextgame){
     context.font = canvas_width / 40 + 'px Arial';
     context.fillStyle = 'Yellow';
 
-    txt_comment = "The winner, please proceed to the next match from the lobby.";
+    lang = getCookie('language')
+    if (lang === 'en') {
+        txt_comment = "The winner, please proceed to the next match from the lobby";
+    } else if (lang === 'kr') {
+        txt_comment = "승자는 로비에서 다음 게임에 참여하세요";
+    } else {
+        txt_comment = "勝者はロビーから次のゲームに参加してください";
+    }
     txt_x = Math.trunc(canvas_left + canvas_width / 50.0 * 9.0); // テキストの描画位置（x座標）
     txt_y = Math.trunc(canvas_top + canvas_height / 10.0 * 0.5); // テキストの描画位置（y座標）
     context.fillText(txt_comment, txt_x, txt_y);
@@ -576,41 +647,69 @@ function onKeyUp(e) {
 }
 
 function connect(roomName){
-    if (game_state < 2){
-        gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
-        gameSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            retryCount = 0; 
-            updateGameState(data);
-        };
-        gameSocket.onopen = function(e) {
-            console.log("WebSocket connection established");
-            game_state = 0;
-            heartbeatFlag = 1;
-            callGameHeartbeat();        
-            //ゲームが始まったらやればいい
-            animate();
-        };
-        gameSocket.onclose = function(e) {
-            console.log("WebSocket connection closed");
-            heartbeatFlag = 0;
-            // 自動再接続
-            if (retryCount < maxRetries) {
-                retryCount++;
-               setTimeout(function() {
-                    connect(game_id)         
-                }, reconnectInterval);
-            } else {
-                console.log('Failed to connect after several attempts. Please check your connection.');             
-            }
-        };
+    
+    gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
+    gameSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        updateGameState(data);
+    };
+    gameSocket.onopen = function(e) {
+        console.log("WebSocket connection established");
+        heartbeatFlag = 1;
+        callGameHeartbeat();
+        //ゲームが始まったらやればいい
+        animate();
+    };
+    gameSocket.onclose = function(e) {
+        console.log("WebSocket connection closed");
+        heartbeatFlag = 0;
+        // 自動再接続
+        if (game_state < 2){
+            setTimeout( connect(game_id), reconnectInterval);
+        }
+    };
 
-        gameSocket.onerror = function(error) {
-            console.error('WebSocket error:', error);
-            socket.close();  // エラー時に接続を閉じる
-        };
+    gameSocket.onerror = function(error) {
+        console.debug('WebSocket error:', error);
+        socket.close();  // エラー時に接続を閉じる
+        gameSocket.close();  // エラー時に接続を閉じる
+    };
 
-    }
+    // if (game_state < 2){
+    //     gameSocket = new WebSocket('wss://' + window.location.host + '/ws/pong/' + roomName + "/");
+    //     gameSocket.onmessage = function(e) {
+    //         const data = JSON.parse(e.data);
+    //         retryCount = 0; 
+    //         updateGameState(data);
+    //     };
+    //     gameSocket.onopen = function(e) {
+    //         console.log("WebSocket connection established");
+    //         game_state = 0;
+    //         heartbeatFlag = 1;
+    //         callGameHeartbeat();        
+    //         //ゲームが始まったらやればいい
+    //         animate();
+    //     };
+    //     gameSocket.onclose = function(e) {
+    //         console.log("WebSocket connection closed");
+    //         heartbeatFlag = 0;
+    //         // 自動再接続
+    //         if (retryCount < maxRetries) {
+    //             retryCount++;
+    //            setTimeout(function() {
+    //                 connect(game_id)         
+    //             }, reconnectInterval);
+    //         } else {
+    //             console.log('Failed to connect after several attempts. Please check your connection.');             
+    //         }
+    //     };
+
+    //     gameSocket.onerror = function(error) {
+    //         console.error('WebSocket error:', error);
+    //         socket.close();  // エラー時に接続を閉じる
+    //     };
+
+    // }
 }
 
 document.addEventListener('keydown', onKeyDown);
@@ -632,10 +731,12 @@ function sendGameHeartbeat(room_id){
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
-                // console.log('GameHeartbeat:', xhr.status);
+                // var response = JSON.parse(xhr.responseText);
+                // console.log('GameHeartbeat:', response.status);
+                // ログイン状態に応じた処理
             } else {
-                console.error('Error: ', xhr.status);
+                // console.debug('Error: ', xhr.status);
+                // ログアウト状態に応じた処理
             }
         }
     };
@@ -686,12 +787,13 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, recconect ){
+function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, parentid, reconnect ){
     game_id = gameid;
     player_id = playid;
     player_no = playno;
     parentgame = parentid;
     is_doubles = dobules_flag;
+    is_reconnect = reconnect;
     if (paddle_size == 1){
         paddle_length = 4;
     } else if (paddle_size == 2){
@@ -707,12 +809,12 @@ function startGame(gameid, playno, playid, dobules_flag, paddle_size, flag3d, pa
 
     game_state = 0;
 
-    countdown_flag = 0;
+    if (is_reconnect == 0){
+        countdown_flag = 0;
+    }
+    
     init();
 
-    // let regexp = /\?gameid=(\d+)/
-    // let match = document.currentScript.src.match(regexp);
-    // let gameid = match[1];
     if (gameSocket) {
         gameSocket.close(); 
         gameSocket = null;

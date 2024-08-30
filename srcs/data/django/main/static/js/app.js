@@ -59,10 +59,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
         var image = document.getElementById('image').files[0];
 
-        var maxSize = 5 * 1024 * 1024;  // 5MB
+        var maxSize = 3 * 1024 * 1024;  // 1MB
         if (image.size > maxSize) {
-            document.getElementById('result').innerText = "ファイルサイズが5MBを超えています。";
+          lang = getCookie('language') || 'ja';
+          if (lang === 'ja') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_size\">ファイルサイズが3MBを超えています</div>";
+          } else if (lang === 'en') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_size\">File size is over 3MB</div>";
+          } else {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_size\">파일 크기가 3MB를 초과합니다</div>";
+          }
             return;
+        }
+        const fileType = image.type; // ファイルタイプを取得
+        const validTypes = ['image/png', 'image/jpeg'];
+        if (validTypes.includes(fileType)) {
+        } else {
+          lang = getCookie('language') || 'ja';
+          if (lang === 'ja') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_type\">ファイルはjpegかpngを指定してください</div>";
+          } else if (lang === 'en') {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_type\">File must be jpeg or png</div>";
+          } else {
+            document.getElementById('result').innerHTML = "<div class=\"translations\" id=\"file_type\">파일은 jpeg나 png를 지정해주세요</div>";
+          }
+          return;
         }
 
         var formData = new FormData();
@@ -92,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 document.getElementById('result').innerText = JSON.parse(xhr.responseText).error;
             }
-            gameSocket.close();
+            // gameSocket.close();
           };
         xhr.send(formData);
 
@@ -114,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (typeof csrfToken !== 'undefined') {
         xhr.setRequestHeader('X-CSRFToken', csrfToken);
       } else {
-        console.error('CSRF token is not defined.');
+        console.debug('CSRF token is not defined.');
         return;
       }
   
@@ -126,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function() {
           // 履歴にページを登録
           history.pushState({ data: response }, response.title, '');
         } else {
-          console.error('Error:', xhr.statusText);
+          console.debug('Error:', xhr.statusText);
             // エラー処理をここに追加します     
         }
         loadLanguage();
@@ -135,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function() {
       };
   
       xhr.onerror = function() {
-        console.error('Request failed');
+        console.debug('Request failed');
         // ネットワークエラーの処理をここに追加します
       };
 
@@ -288,7 +309,7 @@ function send_ajax(data)
           noloadAjax(response.reload, response.timeout);
         }
       } else {
-        console.error('There was a problem with the request:', xhr.statusText);
+        console.debug('There was a problem with the request:', xhr.statusText);
       }
     }
   };  
@@ -316,24 +337,25 @@ function updateCSRFToken(callback) {
 }
 
 function sendHeartbeat() {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'heartbeat/', true);
-  xhr.withCredentials = true;
-
-  xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-              var response = JSON.parse(xhr.responseText);
-              console.log('User is:', response.status);
-              // ログイン状態に応じた処理
-          } else {
-              console.error('Error: ', xhr.status);
-              // ログアウト状態に応じた処理
-          }
-      }
-  };
-
-  xhr.send();
+  loginlink = document.getElementById('navbar_login');
+  if (loginlink === null){
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'heartbeat/', true);
+    xhr.withCredentials = true;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                console.log('User is:', response.status);
+                // ログイン状態に応じた処理
+            } else {
+                console.debug('Error: ', xhr.status);
+                // ログアウト状態に応じた処理
+            }
+        }
+    };
+    xhr.send();
+  }
 }
 
 function reloadAjax(page, timeout) {
@@ -596,7 +618,7 @@ function setLanguage(lang) {
               console.log('User is:', response.status);
               // ログイン状態に応じた処理
           } else {
-              console.error('Error: ', xhr.status);
+              console.debug('Error: ', xhr.status);
               // ログアウト状態に応じた処理
           }
       }
@@ -630,7 +652,7 @@ function loadLanguage(lang) {
           var translations = JSON.parse(xhr.responseText);
           applyTranslations(translations);
       } else if (xhr.readyState === 4) {
-          // console.error('Error loading translations:', xhr.statusText);
+          console.debug('Error loading translations:', xhr.statusText);
       }
   };
   xhr.send();
