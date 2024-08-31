@@ -38,8 +38,7 @@ HIT_MARGIN = 10
 #1秒間に何回表示するか
 interval = 1 / 60.0
 
-animate_interval = 1000 / 60.0
-
+animate_interval = 1 / 60.0 * 1000
 #点数が入ったときに何秒間停止するか
 sleep_sec = 4.0
 
@@ -170,16 +169,16 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         #aiの強さ
         if self.match.ai ==  1:
-            self.aistrength = 0.4
+            self.aistrength = 0.5
         elif self.match.ai ==  2:
-            self.aistrength = 0.6
+            self.aistrength = 0.575
         elif self.match.ai ==  3:
-            self.aistrength = 0.8
+            self.aistrength = 0.65
 
         #AIはすでに準備完了
         if self.single is True :
             self.game_state['user_status'][2] = 1
-
+            self.last_update_time = 0
 
         # ボールの位置を定期的に更新する非同期タスクを開始               
         if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
@@ -408,22 +407,49 @@ class PongConsumer(AsyncWebsocketConsumer):
                       
                 self.game_state['info'] = 'all'
 
+
+
                 #AIブロック
                 if self.single is True :
+                    #１秒に1回だけボールの位置を見に行く
+                    current_time = time.time()
+                    if current_time - self.last_update_time >= 1:
+                        self.last_update_time = current_time
+                        self.last_seen_ball = self.game_state['ball']
+                        # AIが次の動きを決定
+                        # self.move_ai_paddle()
+                    #1/60に１回だけパドルを動かす
                     currenttime = time.time() * 1000
                     deltatime = currenttime - self.lasttime
                     if deltatime > animate_interval:
                         self.lasttime = currenttime - (deltatime % animate_interval)
-                         # ランダム性を導入
-                        # if random.random() < 0.6:
-                        #     self.game_state['paddle_2'][1] += random.randint(-100, 100)
-                        # シンプルな追尾アルゴリズム
-                        if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
-                            if random.random() < self.aistrength:
-                                self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
-                            if random.random() < self.aistrength:
-                                self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
+                        k = 1
+                        if random.random() > self.aistrength:
+                            k = 1.5
+                        t = (-3800 - self.last_seen_ball[0]) / (math.cos(self.last_seen_ball[3]) * self.last_seen_ball[2]) * k
+                        predicted_y = self.last_seen_ball[1] + math.sin(self.last_seen_ball[3]) * self.last_seen_ball[2] * t
+                        if predicted_y > MAX_Y:
+                            predicted_y = MAX_Y - (predicted_y - MAX_Y)
+                        elif predicted_y < MIN_Y:
+                            predicted_y = MIN_Y + (MIN_Y - predicted_y)
+
+                        # パドルの移動を決定
+                        if predicted_y > self.game_state['paddle_2'][1]:
+                            self.game_state['paddle_2'][1] += min(50, predicted_y - self.game_state['paddle_2'][1])
+                            if self.game_state['paddle_2'][1] > MAX_Y :
+                                self.game_state['paddle_2'][1] = MAX_Y                                 
+                        elif predicted_y < self.game_state['paddle_2'][1]:
+                            self.game_state['paddle_2'][1] -= min(50, self.game_state['paddle_2'][1] - predicted_y)
+                            if self.game_state['paddle_2'][1] < MIN_Y :
+                                self.game_state['paddle_2'][1] = MIN_Y                                 
+
+
+                        # if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+                        #     if random.random() < self.aistrength:
+                        #         self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+                        # elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+                        #     if random.random() < self.aistrength:
+                        #         self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
 
                     #別のアルゴリズム
                     # 過去のボール位置を記憶
@@ -547,6 +573,23 @@ class PongConsumer(AsyncWebsocketConsumer):
         # await self.send(text_data=json.dumps({
         #     'game_state': game_state
         # }))
+
+
+    def move_ai_paddle(self):
+        if self.last_seen_ball_position :
+            # 1秒後のボール位置を予測
+            predicted_y = self.last_seen_ball_position['y'] + \
+                          self.last_seen_ball_velocity['y']
+
+            # パドルの移動を決定
+            if predicted_y > self.ai_paddle_position:
+                self.ai_paddle_position += min(6, predicted_y - self.ai_paddle_position)
+            elif predicted_y < self.ai_paddle_position:
+                self.ai_paddle_position -= min(6, self.ai_paddle_position - predicted_y)
+
+
+
+        
 
     def get_match(self, id):
         # 同期的なDjango ORM操作＿
