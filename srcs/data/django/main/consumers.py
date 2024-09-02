@@ -38,8 +38,7 @@ HIT_MARGIN = 10
 #1秒間に何回表示するか
 interval = 1 / 60.0
 
-animate_interval = 1000 / 60.0
-
+animate_interval = 1 / 60.0 * 1000
 #点数が入ったときに何秒間停止するか
 sleep_sec = 4.0
 
@@ -170,16 +169,16 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         #aiの強さ
         if self.match.ai ==  1:
-            self.aistrength = 0.4
+            self.aistrength = 0.5
         elif self.match.ai ==  2:
-            self.aistrength = 0.6
+            self.aistrength = 0.575
         elif self.match.ai ==  3:
-            self.aistrength = 0.8
+            self.aistrength = 0.65
 
-
+        #AIはすでに準備完了
         if self.single is True :
             self.game_state['user_status'][2] = 1
-
+            self.last_update_time = 0
 
         # ボールの位置を定期的に更新する非同期タスクを開始               
         if self.room_group_name not in PongConsumer.room_tasks or PongConsumer.room_tasks[self.room_group_name].done():
@@ -188,12 +187,14 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(self.game_state))
 
     async def disconnect(self, close_code):
-        # await self.redis.set(self.room_group_name, json.dumps(self.game_state)) 
+        # Redisに状態を保存
+        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-
+        
         if self.redis:  # redis接続が存在するか確認
             try: 
                 self.redis.close()
@@ -230,7 +231,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                         elif tmp1 < MIN_Y:
                             tmp1 = MIN_Y
                             # tmp1 = MAX_Y + self.game_state['paddle_1'][2] / 10
-                        logger.debug(f'pl1_y: {tmp1}')
+                        # logger.debug(f'pl1_y: {tmp1}')
                         self.game_state['paddle_1'][1] = tmp1
                 if 'player2_y' in text_data_json:
                     tmp2 = text_data_json['player2_y']
@@ -268,25 +269,25 @@ class PongConsumer(AsyncWebsocketConsumer):
             # logger.debug(f'11: {self.user1}')
             # logger.debug(f'22: {self.user2}')
             # logger.debug(f'dd: {self.doubles}')
+            if 'player' in text_data_json and 'data' in text_data_json :
+                if self.user1 == user.id and text_data_json['player'] == 1:
+                    self.game_state['user_status'][1] = text_data_json['data']
+                elif self.user2 == user.id and text_data_json['player'] == 2:
+                    self.game_state['user_status'][2] = text_data_json['data']
+                elif self.user3 == user.id and text_data_json['player'] == 3:
+                    self.game_state['user_status'][3] = text_data_json['data']
+                elif self.user4 == user.id and text_data_json['player'] == 4:
+                    self.game_state['user_status'][4] = text_data_json['data']
+                if self.doubles is None :
+                    if self.game_state['user_status'][1] >= 1 and self.game_state['user_status'][2] >= 1:
+                        self.game_state['user_status'][0] = 1
+                else:
+                    if self.game_state['user_status'][1] >= 1 and self.game_state['user_status'][2] >= 1 and  self.game_state['user_status'][3] >= 1 and self.game_state['user_status'][4] >= 1:
+                        self.game_state['user_status'][0] = 1
+                # Redisに状態を保存
+                await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
-            if self.user1 == user.id :
-                self.game_state['user_status'][1] = 1
-            elif self.user2 == user.id :
-                self.game_state['user_status'][2] = 1
-            elif self.user3 == user.id :
-                self.game_state['user_status'][3] = 1
-            elif self.user4 == user.id :
-                self.game_state['user_status'][4] = 1
-
-
-            if self.doubles is None :
-                if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1:
-                    self.game_state['user_status'][0] = 1
-            else:
-                if self.game_state['user_status'][1] == 1 and self.game_state['user_status'][2] == 1 and  self.game_state['user_status'][3] == 1 and self.game_state['user_status'][4] == 1:
-                    self.game_state['user_status'][0] = 1
-        # Redisに状態を保存
-        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+        # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
 
             # ret.status = user.id
             # # ゲームの状態をクライアントに送信
@@ -347,12 +348,16 @@ class PongConsumer(AsyncWebsocketConsumer):
                         self.game_state['count_sleep'] = sleep_sec
                         self.game_state['ball'][0] = 0
                         self.game_state['ball'][1] = 0
+                        #pointが入ったときはredisに保存
+                        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                     elif self.game_state['ball'][0] <= MIN_X:
                         # self.game_state['ball'][3] = math.pi - self.game_state['ball'][3]
                         self.game_state['scores'][0] += 1
                         self.game_state['count_sleep'] = sleep_sec
                         self.game_state['ball'][0] = 0
                         self.game_state['ball'][1] = 0                    
+                        #pointが入ったときはredisに保存
+                        await self.redis.set(self.room_group_name, json.dumps(self.game_state))
                     elif self.game_state['ball'][0] >= self.game_state['paddle_1'][0] and self.game_state['ball'][0] <= self.game_state['paddle_1'][0] + 100:
                         if self.game_state['ball'][1] > self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 5 * 2 and self.game_state['ball'][1] <= self.game_state['paddle_1'][1] + self.game_state['paddle_1'][2] / 2:
                             self.game_state['ball'][3] = math.pi / 3 * 2
@@ -402,22 +407,49 @@ class PongConsumer(AsyncWebsocketConsumer):
                       
                 self.game_state['info'] = 'all'
 
+
+
                 #AIブロック
                 if self.single is True :
+                    #１秒に1回だけボールの位置を見に行く
+                    current_time = time.time()
+                    if current_time - self.last_update_time >= 1:
+                        self.last_update_time = current_time
+                        self.last_seen_ball = self.game_state['ball']
+                        # AIが次の動きを決定
+                        # self.move_ai_paddle()
+                    #1/60に１回だけパドルを動かす
                     currenttime = time.time() * 1000
                     deltatime = currenttime - self.lasttime
                     if deltatime > animate_interval:
                         self.lasttime = currenttime - (deltatime % animate_interval)
-                         # ランダム性を導入
-                        # if random.random() < 0.6:
-                        #     self.game_state['paddle_2'][1] += random.randint(-100, 100)
-                        # シンプルな追尾アルゴリズム
-                        if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
-                            if random.random() < self.aistrength:
-                                self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
-                        elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
-                            if random.random() < self.aistrength:
-                                self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
+                        k = 1
+                        if random.random() > self.aistrength:
+                            k = 1.5
+                        t = (-3800 - self.last_seen_ball[0]) / (math.cos(self.last_seen_ball[3]) * self.last_seen_ball[2]) * k
+                        predicted_y = self.last_seen_ball[1] + math.sin(self.last_seen_ball[3]) * self.last_seen_ball[2] * t
+                        if predicted_y > MAX_Y:
+                            predicted_y = MAX_Y - (predicted_y - MAX_Y)
+                        elif predicted_y < MIN_Y:
+                            predicted_y = MIN_Y + (MIN_Y - predicted_y)
+
+                        # パドルの移動を決定
+                        if predicted_y > self.game_state['paddle_2'][1]:
+                            self.game_state['paddle_2'][1] += min(50, predicted_y - self.game_state['paddle_2'][1])
+                            if self.game_state['paddle_2'][1] > MAX_Y :
+                                self.game_state['paddle_2'][1] = MAX_Y                                 
+                        elif predicted_y < self.game_state['paddle_2'][1]:
+                            self.game_state['paddle_2'][1] -= min(50, self.game_state['paddle_2'][1] - predicted_y)
+                            if self.game_state['paddle_2'][1] < MIN_Y :
+                                self.game_state['paddle_2'][1] = MIN_Y                                 
+
+
+                        # if self.game_state['ball'][1] > self.game_state['paddle_2'][1]:
+                        #     if random.random() < self.aistrength:
+                        #         self.game_state['paddle_2'][1] += min(100, self.game_state['ball'][1] - self.game_state['paddle_2'][1])
+                        # elif self.game_state['ball'][1] < self.game_state['paddle_2'][1]:
+                        #     if random.random() < self.aistrength:
+                        #         self.game_state['paddle_2'][1] -= min(100, - self.game_state['ball'][1] + self.game_state['paddle_2'][1])
 
                     #別のアルゴリズム
                     # 過去のボール位置を記憶
@@ -461,9 +493,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 #Dueceを設定
                 if self.game_state['scores'][0] == (self.game_state['match_point']  - 1) and self.game_state['scores'][1] == (self.game_state['match_point']  - 1) :
                     self.game_state['match_point']  += 1
-                #matchの終了判断 match_pointが上がっていくから、 2点差は要らない こっちでぇあ
+                #matchの終了判断 match_pointが上がっていくから、 2点差は要らない こっちではね
                 if (self.game_state['scores'][0] >= self.game_state['match_point']  or self.game_state['scores'][1] >= self.game_state['match_point']) :
-                    
+                    # Redisに状態を保存
+                    await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
                     # logger = logger.debug(self.match.point1)
                     # logger = logger.debug(self.match.point2)
 
@@ -518,8 +552,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 else:
                     await asyncio.sleep(interval)
 
-        # async def send_game_state(self, game_state):
-        #     await self.send(text_data=json.dumps(game_state))
+                # Redisに状態を保存
+                # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
+                # async def send_game_state(self, game_state):
+                #await self.send(text_data=json.dumps(game_state))
         except Exception as e:
             print(f"Error in update_ball_position: {e}")
 
@@ -536,6 +573,23 @@ class PongConsumer(AsyncWebsocketConsumer):
         # await self.send(text_data=json.dumps({
         #     'game_state': game_state
         # }))
+
+
+    def move_ai_paddle(self):
+        if self.last_seen_ball_position :
+            # 1秒後のボール位置を予測
+            predicted_y = self.last_seen_ball_position['y'] + \
+                          self.last_seen_ball_velocity['y']
+
+            # パドルの移動を決定
+            if predicted_y > self.ai_paddle_position:
+                self.ai_paddle_position += min(6, predicted_y - self.ai_paddle_position)
+            elif predicted_y < self.ai_paddle_position:
+                self.ai_paddle_position -= min(6, self.ai_paddle_position - predicted_y)
+
+
+
+        
 
     def get_match(self, id):
         # 同期的なDjango ORM操作＿
@@ -558,11 +612,19 @@ class PongConsumer(AsyncWebsocketConsumer):
     #         self.game_state['ball'][1]_direction = self.game_state['ball'][1]_direction * -1
 
     async def end_game(self):
+        # Redisに状態を保存
+        # await self.redis.set(self.room_group_name, json.dumps(self.game_state))
+
         await self.close()
         # logger.debug("クローズした")
+
         # タスクをキャンセル
-        if self.update_task :
-            self.update_task.cancel()
+        task = PongConsumer.room_tasks.get(self.room_group_name)
+        # タスクが存在すれば、それをキャンセルします
+        if task is not None:
+            task.cancel()
+            del PongConsumer.room_tasks[self.room_group_name]
+
         # Redis接続を閉じる
         if self.redis:  # redis接続が存在するか確認
             try: 
