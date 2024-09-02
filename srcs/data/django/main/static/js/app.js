@@ -199,6 +199,7 @@ function updateContent(data) {
   // }
   if (typeof data.lang !== 'undefined') {
     loadLanguage(data.lang);
+    setCookie('language', data.lang, 7);
   }
   if (typeof data.alert !== 'undefined') {     
     popupAlert(data.alert);
@@ -605,8 +606,6 @@ function setLanguage(lang) {
   //langAjax(lang);
   // console.log(lang)
 
-  loadLanguage(lang)
-  
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'setLanguage/' + lang + '/', true);
   xhr.withCredentials = true;
@@ -615,6 +614,7 @@ function setLanguage(lang) {
       if (xhr.readyState === 4) {
           if (xhr.status === 200) {
               var response = JSON.parse(xhr.responseText);
+              loadLanguage(lang)
               console.log('User is:', response.status);
               // ログイン状態に応じた処理
           } else {
@@ -638,7 +638,7 @@ function loadLanguage(lang) {
   if (tmp != null) {
     lang = tmp
   } else {
-    lang = '00'
+    lang = 'ja'
   }
   // console.log('lang: ', lang)
   // setLanguage(lang);

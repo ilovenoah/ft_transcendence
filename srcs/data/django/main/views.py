@@ -184,14 +184,14 @@ def process_post_data(request):
                     user = request.user
                     user.is_online = True
                     user.last_active = timezone.now()
-                    if  post_data.get('lang') == "00":
-                        lang = user.language
-                    else:
+                    
+                    lang = user.language
+                    if lang == "":
                         lang = post_data.get('lang') 
                         user.language = lang
                         user.save(update_fields=['language'])
                     user.save(update_fields=['is_online', 'last_active'])
-                    lang = user.language
+
                     if not user.display_name:
                         form_edit_display_name = DisplayNameForm(data=post_data, instance=user)
                         if form_edit_display_name.is_valid():
@@ -1166,11 +1166,12 @@ def setLanguage(request, lang):
 @csrf_exempt
 def getLanguage(request, lang):
     user = request.user
-    if user.is_authenticated and lang == '00' :
-        lang = user.language
+    if user.is_authenticated:
+        tmplang = user.language
         # デフォルトでDBにjaが入ってないらしい
-        if lang == "" :
-            lang = 'ja'
+        if tmplang == "" :
+            user.language = lang
+        lang = tmplang
     elif lang == '00' :
         lang = 'ja'
     # logger.debug(lang)
@@ -1377,5 +1378,5 @@ def calculate_loss(user, win):
 
 @login_required
 def ja(request):
-    logger.debug('im here')
+    # logger.debug('im here')
     return JsonResponse({'language': 'ja'})
